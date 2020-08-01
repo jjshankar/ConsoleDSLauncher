@@ -1,0 +1,315 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ECAR.DocuSign</name>
+    </assembly>
+    <members>
+        <member name="T:ECAR.DocuSign.DocuSignConfig">
+            <summary>
+            Configuration for ECAR.DocuSign access.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.DocuSignConfig.AccountID">
+            <summary>
+            Your DocuSign organization number (also known as Account ID).
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.DocuSignConfig.ClientID">
+            <summary>
+            Your DocuSign integration key (also known as Client ID).
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.DocuSignConfig.UserGUID">
+            <summary>
+            DocuSign User ID to send as (also known as API Username).
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.DocuSignConfig.AuthServer">
+            <summary>
+            DocuSign server to connect to.
+            Use: 'account-d.docusign.com' for Development.
+            Use: 'account.docusign.com' for Production.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.DocuSignConfig.RSAKey">
+            <summary>
+            DocuSign RSA Security key.  
+            Pass contents of the key file as UTF8 byte array (not the file name).
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.DocuSignConfig.AccessToken">
+            <summary>
+            DocuSign Access Token (read only).
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.DocuSignConfig.AccessTokenExpiration">
+            <summary>
+            DocuSign Access Token Expiration Date (read only).
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.DocuSignConfig.BasePath">
+            <summary>
+            DocuSign server path to use (internal).
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.DocuSignConfig.APISuffix">
+            <summary>
+            DocuSign service endpoint (internal).
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.DocuSignConfig.Ready">
+            <summary>
+            Configuration readiness indicator.
+            </summary>
+        </member>
+        <member name="T:ECAR.DocuSign.Models.Presets">
+            <summary>
+            Available types of DocuSign fields (tabs) for prefilling.
+            </summary>
+        </member>
+        <member name="F:ECAR.DocuSign.Models.Presets.Date">
+            <summary>
+            A date field in the DocuSign document. Pass a formatted value (##/##/####).
+            </summary>
+        </member>
+        <member name="F:ECAR.DocuSign.Models.Presets.Text">
+            <summary>
+            A text field in the DocuSign document.
+            </summary>
+        </member>
+        <member name="F:ECAR.DocuSign.Models.Presets.Ssn">
+            <summary>
+            An SSN field in the DocuSign document.  Pass a formatted value (###-##-####).
+            </summary>
+        </member>
+        <member name="F:ECAR.DocuSign.Models.Presets.Checkbox">
+            <summary>
+            A checkbox field in the DocuSign document.  Pass "true"/"false" as value.
+            </summary>
+        </member>
+        <member name="T:ECAR.DocuSign.Models.DocPreset">
+            <summary>
+            Data model for prefilling fields in a DocuSign document.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.DocPreset.Label">
+            <summary>
+            The name of the field to set in the DocuSign document.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.DocPreset.Value">
+            <summary>
+            The value to set in the DocuSign document.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.DocPreset.Type">
+            <summary>
+            The type of field in the DocuSign document.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.DocPreset.Locked">
+            <summary>
+            Specifies whether the pre-filled field should be locked for user entry. Default: false (not locked).
+            </summary>
+        </member>
+        <member name="T:ECAR.DocuSign.Models.DocumentModel">
+            <summary>
+            Data model for documents signed via ECAR.DocuSign.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.DocumentModel.SignerEmail">
+            <summary>
+            Email address for the recipient.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.DocumentModel.SignerName">
+            <summary>
+            Display name for the recipient.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.DocumentModel.SignerId">
+            <summary>
+            The recipient's ID value in the calling application (e.g. tracking number).
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.DocumentModel.DSRoleName">
+            <summary>
+            Name of the DocuSign recipient role.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.DocumentModel.DSTemplateName">
+            <summary>
+            Name of the DocuSign template to use.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.DocumentModel.DSEmailSubject">
+            <summary>
+            Subject line for the email sent from DocuSign.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.DocumentModel.DSEnvelopeId">
+            <summary>
+            Envelope ID returned from the DocuSign ceremony.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.DocumentModel.DSDocumentId">
+            <summary>
+            Document ID returned from the DocuSign ceremony.
+            </summary>
+        </member>
+        <member name="T:ECAR.DocuSign.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Properties.Resources.DSCONFIG_NOT_SET">
+            <summary>
+              Looks up a localized string similar to DocuSign configuration not set..
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Properties.Resources.EMPTY_DOCUMENT_ID">
+            <summary>
+              Looks up a localized string similar to DocuSign document ID cannot be null or blank..
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Properties.Resources.EMPTY_ENVELOPE_ID">
+            <summary>
+              Looks up a localized string similar to DocuSign envelope ID cannot be null or blank..
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Properties.Resources.EMPTY_TAB_LABEL">
+            <summary>
+              Looks up a localized string similar to DocuSign tab label cannot be null or blank..
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Properties.Resources.FIELD_0_NOT_FOUND">
+            <summary>
+              Looks up a localized string similar to Named field {0} was not found in the DocuSign document..
+            </summary>
+        </member>
+        <member name="T:ECAR.DocuSign.Status">
+            <summary>
+            Access documents signed using ECAR.DocuSign.
+            </summary>
+        </member>
+        <member name="M:ECAR.DocuSign.Status.DSCheckStatus(System.String)">
+            <summary>
+            Check the status of the DocuSign signature ceremony.
+            </summary>
+            <param name="DSEnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
+            <returns>Status of the document (any, created, deleted, sent, delivered, signed, completed, declined, timedout, voided)</returns>
+        </member>
+        <member name="M:ECAR.DocuSign.Status.DSGetDocInfo(System.String)">
+            <summary>
+            Retrieve info about the document contained in a DocuSign envelope (only supports envelopes with single document).
+            </summary>
+            <param name="DSEnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
+            <returns></returns>
+        </member>
+        <member name="M:ECAR.DocuSign.Status.DSGetDocument(System.String,System.String)">
+            <summary>
+            Retrieve a document from DocuSign.
+            </summary>
+            <param name="DSEnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
+            <param name="DSDocumentID">ID of the document within the DocuSign envelope</param>
+            <returns>File stream of the document retrieved from DocuSign</returns>
+        </member>
+        <member name="M:ECAR.DocuSign.Status.DSGetDocumentCheckBoxField(System.String,System.String,System.String)">
+            <summary>
+            Retrieve the user selected value of a named check-box within a DocuSign document.
+            </summary>
+            <param name="DSTabLabel">Tab label of the check box in the DocuSign template</param>
+            <param name="DSEnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
+            <param name="DSDocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
+            <returns>Returns the check box's selected value as a string ("true" or "false")</returns>
+        </member>
+        <member name="M:ECAR.DocuSign.Status.DSGetDocumentTextField(System.String,System.String,System.String)">
+            <summary>
+            Retrieve the user provided value of a named text field within a DocuSign document.
+            </summary>
+            <param name="DSTabLabel">Tab label of the text field in the DocuSign template</param>
+            <param name="DSEnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
+            <param name="DSDocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
+            <returns>User entered text in the field</returns>
+        </member>
+        <member name="M:ECAR.DocuSign.Status.DSGetDocumentSsnField(System.String,System.String,System.String)">
+            <summary>
+            Retrieve the user provided value for a named SSN field within a DocuSign document.
+            </summary>
+            <param name="DSTabLabel">Tab label of the SSN field in the DocuSign template</param>
+            <param name="DSEnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
+            <param name="DSDocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
+            <returns>User entered SSN text in the field</returns>
+        </member>
+        <member name="M:ECAR.DocuSign.Status.DSGetDocumentDateSignedField(System.String,System.String,System.String)">
+            <summary>
+            Retrieve the value for a named date of signature field within a DocuSign document.
+            </summary>
+            <param name="DSTabLabel">Tab label of the date field in the DocuSign template</param>
+            <param name="DSEnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
+            <param name="DSDocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
+            <returns>Date signed as set in the named field</returns>
+        </member>
+        <member name="M:ECAR.DocuSign.Status.DSGetDocumentDateField(System.String,System.String,System.String)">
+            <summary>
+            Retrieve the user provided value for a named date field within a DocuSign document.
+            </summary>
+            <param name="DSTabLabel">Tab label of the date field in the DocuSign template</param>
+            <param name="DSEnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
+            <param name="DSDocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
+            <returns>User provided date value in the named field</returns>
+        </member>
+        <member name="M:ECAR.DocuSign.Status.DSGetDocumentFirstNameField(System.String,System.String,System.String)">
+            <summary>
+            Retrieve the user provided value for a named First Name field within a DocuSign document.
+            </summary>
+            <param name="DSTabLabel">Tab label of the date field in the DocuSign template</param>
+            <param name="DSEnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
+            <param name="DSDocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
+            <returns>User provided first name in the named field</returns>
+        </member>
+        <member name="M:ECAR.DocuSign.Status.DSGetDocumentLastNameField(System.String,System.String,System.String)">
+            <summary>
+            Retrieve the user provided value for a named Last Name field within a DocuSign document.
+            </summary>
+            <param name="DSTabLabel">Tab label of the date field in the DocuSign template</param>
+            <param name="DSEnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
+            <param name="DSDocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
+            <returns>User provided last name value in the named field</returns>
+        </member>
+        <member name="M:ECAR.DocuSign.Status.DSGetDocumentSignHereField(System.String,System.String,System.String)">
+            <summary>
+            Retrieve the user signature status for a named sign-here field within a DocuSign document.
+            </summary>
+            <param name="DSTabLabel">Tab label of the date field in the DocuSign template</param>
+            <param name="DSEnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
+            <param name="DSDocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
+            <returns>Returns one of: "active", "signed", "declined" or "na" (e.g. for optional signature fields)</returns>
+        </member>
+        <member name="T:ECAR.DocuSign.TemplateSign">
+            <summary>
+            ECAR.DocuSign embedded signing ceremony with a predefined document template.
+            </summary>
+        </member>
+        <member name="M:ECAR.DocuSign.TemplateSign.EmbeddedTemplateSign(System.String,ECAR.DocuSign.Models.DocumentModel@,System.Collections.Generic.List{ECAR.DocuSign.Models.DocPreset})">
+            <summary>
+            Initiate embedded signing ceremony with DocuSign.
+            </summary>
+            <param name="AppReturnUrl">Return URL that DocuSign should transfer control to after the embedded signing cermony is complete ('?envelopeId=[id]' will be appended)</param>
+            <param name="Doc">Document data (in: document &amp; signer info; out: DocuSign envelope &amp; document ID)</param>
+            <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
+            <returns>DocuSign URL for embedded signing</returns>
+        </member>
+    </members>
+</doc>

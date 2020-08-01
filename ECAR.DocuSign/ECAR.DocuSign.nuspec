@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>ECAR.DocuSign</id>
+    <version>$version$</version>
+    <authors>Epiq</authors>
+    <owners>Epiq</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Library to embed DocuSign signatures in a web application</description>
+    <copyright>Epiq Global</copyright>
+    <dependencies>
+      <group targetFramework=".NETFramework4.6">
+        <dependency id="DocuSign.eSign.dll" version="4.4.1" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="DocuSign.eSign.dll" version="4.4.1" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="C:\Users\jshankar\source\repos\ECAR.DocuSign\ECAR.DocuSign\bin\Debug\net46\ECAR.DocuSign.dll" target="lib\net46\ECAR.DocuSign.dll" />
+    <file src="C:\Users\jshankar\source\repos\ECAR.DocuSign\ECAR.DocuSign\bin\Debug\net46\ECAR.DocuSign.xml" target="lib\net46\ECAR.DocuSign.xml" />
+    <file src="C:\Users\jshankar\source\repos\ECAR.DocuSign\ECAR.DocuSign\bin\Debug\netstandard2.0\ECAR.DocuSign.dll" target="lib\netstandard2.0\ECAR.DocuSign.dll" />
+    <file src="C:\Users\jshankar\source\repos\ECAR.DocuSign\ECAR.DocuSign\bin\Debug\netstandard2.0\ECAR.DocuSign.xml" target="lib\netstandard2.0\ECAR.DocuSign.xml" />
+  </files>
+</package>
