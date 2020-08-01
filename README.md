@@ -8,8 +8,8 @@ This library also provides support for working with the DocuSign document and pe
 4. Pre-fill fields in the DocuSign document (and optionally lock) before presenting for signature
 
 # Getting Started
-Getting started with ECAR.DocuSign is as easy as 1..2..3
-1.	Add reference to ECAR.DocuSign in your project
+Getting started with **ECAR.DocuSign** is as easy as 1..2..3
+1.	Add reference to `ECAR.DocuSign` in your project
 2.	Configure DocuSign authentication parameters 
 3.	Call the method!
 
@@ -28,11 +28,11 @@ Getting started with ECAR.DocuSign is as easy as 1..2..3
     }
 ```
 
-## This is how you set up the document you need to send
+## This is how you set up the document to send
 ```csharp
     DocumentModel dsDoc = new DocumentModel
     {
-        DSEmailSubject = "«Email Subject» ",
+        DSEmailSubject = "«Email Subject»",
         DSRoleName = "«Signer role name»",
         DSTemplateName = "«DocuSign template name»",
         SignerEmail = "«Recipient email»",
@@ -44,50 +44,54 @@ Getting started with ECAR.DocuSign is as easy as 1..2..3
 ### This is how you prefill fields (if required)
 The field names must be defined in your DocuSign template
 - Pass the preset fields as a `List<DocPreset>` (even if passing a single preset)
+
 ```csharp
     DocPreset ssn = new DocPreset { Label = "MEMBER_SSN", Type= Presets.Ssn, Value= "123-45-6789", Locked = true };
     DocPreset dob = new DocPreset { Label = "MEMBER_DOB", Type = Presets.Date, Value = "1/1/1991", Locked = false };
     DocPreset check = new DocPreset { Label = "MEMBER_CONSENT_YES", Type = Presets.Checkbox, Value = "true" };
-    DocPreset text = new DocPreset { Label = "MEMBER_EXPLAINS_UNIVERSE", Type = Presets.Text, Value = "Yeah! We got it." };
+    DocPreset text = new DocPreset { Label = "MEMBER_EXPLAINS_UNIVERSE", Type = Presets.Text, Value = "Care to explain?" };
 
     List<DocPreset> tabs = new List<DocPreset> { ssn, dob, check, text };
 ```
 
 ## This is how you make the call to initiate the DocuSign ceremony
-First you set up the return URL where DocuSign should return to after the recipient finishes the signing ceremony.
-
-- The DocuSign envelope ID value for this document will be passed back by ECAR.DocuSign as a paramter to this action (automatically appends `?envelopeId={id}` to the URL) for you to use it if needed.
+First, you set up the return URL where DocuSign should return to after the recipient finishes the signing ceremony.
+- The DocuSign envelope ID value for this document will be passed back by **ECAR.DocuSign** as a parameter to this action for you to use it if needed (automatically appends `?envelopeId={id}` to the URL).
 
 ```csharp
     string returnUrl = "«Your application home page» " + "«Controller/Action to return to after DocuSign finishes»";
 ```
 
 Next, you call the `EmbeddedTemplateSign` method passing in the `DocumentModel` object by *reference*.
-- ECAR.DocuSign populates metadata about the DocuSign document in the returned object (e.g. envelope ID and document ID)
+- **ECAR.DocuSign** populates metadata about the DocuSign document in the returned object (e.g. envelope ID and document ID)
 - Your application may need to save this information to retrieve data from this document in the future
+- This call returns the URL for the DocuSign ceremony 
 
 ```csharp
     string docuSignUrl = ECAR.DocuSign.TemplateSign.EmbeddedTemplateSign(returnUrl, ref dsDoc, tabs);
 ```
 
-This call returns the DocuSign URL that you will redirect your users to.
+Finally, redirect your users to the DocuSign page to start the signing ceremony.
+
 ```csharp
     return Redirect(docuSignUrl);
 ```
 
+**ECAR.DocuSign** automatically redirects the user's browser to your application URL that was specified in the `returnUrl` argument.
+
 ## This is how you check the signature status of a DocuSign envelope
 ```csharp
     string status = ECAR.DocuSign.Status.DSCheckStatus(envelopeId);
-
 ```
+
 ## This is how you extract data from named fields in your document
 ```csharp
     // Get the DocumentModel from the envelope
     DocumentModel doc = ECAR.DocuSign.Status.DSGetDocInfo(envelopeId);
 
     // Get data from various control types
-    string FName = ECAR.DocuSign.Status.DSGetDocumentFirstNameField("MEMBER_FN", envelopeId, doc.DSDocumentId);
-    string LName = ECAR.DocuSign.Status.DSGetDocumentLastNameField("MEMBER_LN", envelopeId, doc.DSDocumentId);
+    string FirstName = ECAR.DocuSign.Status.DSGetDocumentFirstNameField("MEMBER_FIRST_NAME", envelopeId, doc.DSDocumentId);
+    string LastName = ECAR.DocuSign.Status.DSGetDocumentLastNameField("MEMBER_LAST_NAME", envelopeId, doc.DSDocumentId);
 
     string Consent = ECAR.DocuSign.Status.DSGetDocumentCheckBoxField("MEMBER_CONSENT_YES", envelopeId, doc.DSDocumentId);
 
@@ -118,5 +122,5 @@ This call returns the DocuSign URL that you will redirect your users to.
 - Prepare and present a custom document (passed in from the calling application) to the recipient
 
 # Contribute
-Please share your feedback/suggestions
+Share your feedback/suggestions/requests
 - [Jesus Shankar](mailto:jshankar@epiqglobal.com)
