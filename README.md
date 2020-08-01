@@ -20,9 +20,9 @@ Getting started with ECAR.DocuSign is as easy as 1..2..3
 ```csharp
     if (!ECAR.DocuSign.DocuSignConfig.Ready)
     {
-        ECAR.DocuSign.DocuSignConfig.AccountID = ""«Your DocuSign Account ID»";
-        ECAR.DocuSign.DocuSignConfig.ClientID = ""«Your DocuSign Client ID»";
-        ECAR.DocuSign.DocuSignConfig.UserGUID = ""«Your DocuSign User ID»";
+        ECAR.DocuSign.DocuSignConfig.AccountID = "«Your DocuSign Account ID»";
+        ECAR.DocuSign.DocuSignConfig.ClientID = "«Your DocuSign Client ID»";
+        ECAR.DocuSign.DocuSignConfig.UserGUID = "«Your DocuSign User ID»";
         ECAR.DocuSign.DocuSignConfig.AuthServer = "«Your DocuSign Authentication Server»";
         ECAR.DocuSign.DocuSignConfig.RSAKey = "«Content (NOT file name) of your DocuSign RSA KeyFile»";
     }
