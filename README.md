@@ -112,6 +112,9 @@ Finally, redirect your users to the DocuSign page to start the signing ceremony.
     return File(results, "application/pdf", "«Whatever you want the document name to be»");
 ```
 
+## Complete Sample
+[Sample Controller](Sample.md)
+
 # Limitations/Known issues
 - Supports only an embedded ceremony, performed live from the calling application
 - Supports only the use of a template uploaded to DocuSign
