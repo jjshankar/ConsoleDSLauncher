@@ -8,7 +8,7 @@ namespace MyWebApp.Controllers
     public class ECARDocuSignController : Controller
     {
         // The following information is from DocuSign developer portal
-        private const string DOCTEMPLATENAME = "NCAA HIPAA Consent Form";
+        private const string DOCTEMPLATENAME = "HIPAA Consent Form";
         private const string DSROLENAME = "Class Member";
 
         // Data for this method: DocModel object (from View)
@@ -22,6 +22,7 @@ namespace MyWebApp.Controllers
                 // Configure ECAR.DocuSign 
                 SetDSConfig();
 
+                // Create the document model to send
                 DocumentModel dsDoc = new DocumentModel
                 {
                     DSEmailSubject = "Please dSign this document.",
@@ -32,6 +33,7 @@ namespace MyWebApp.Controllers
                     SignerName = doc.SignerName
                 };
 
+                // Create preset fields
                 DocPreset ssn = new DocPreset { Label = "MEMBER_SSN", Type= Presets.Ssn, Value= "123-45-6789", Locked = true };
                 DocPreset dob = new DocPreset { Label = "MEMBER_DOB", Type = Presets.Date, Value = "1/1/1991"};
                 DocPreset checkY = new DocPreset { Label = "MEMBER_CONSENT_YES", Type = Presets.Checkbox, Value = "true"};
