@@ -15,6 +15,8 @@ Getting started with **ECAR.DocuSign** is as easy as 1..2..3
 
 
 # Sample Code
+## Complete Sample
+[Sample Controller](Sample.md)
 
 ## This is how you configure DocuSign authentication
 ```csharp
@@ -111,9 +113,6 @@ Finally, redirect your users to the DocuSign page to start the signing ceremony.
     // Return for download
     return File(results, "application/pdf", "«Whatever you want the document name to be»");
 ```
-
-## Complete Sample
-[Sample Controller](Sample.md)
 
 # Limitations/Known issues
 - Supports only an embedded ceremony, performed live from the calling application
