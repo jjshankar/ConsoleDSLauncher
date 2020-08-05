@@ -17,4 +17,3 @@ steps:
     buildName: $(Build.BuildNumber)
     artifactStagingDir: $(build.artifactStagingDirectory)
     feedName: 'ECAR/EC.ECAR.Packages'
-    buildConfiguration: Debug
