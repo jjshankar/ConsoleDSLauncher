@@ -18,9 +18,9 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="ECAR.DocuSign\bin\Release\net46\ECAR.DocuSign.dll" target="lib\net46\ECAR.DocuSign.dll" />
-    <file src="ECAR.DocuSign\bin\Release\net46\ECAR.DocuSign.xml" target="lib\net46\ECAR.DocuSign.xml" />
-    <file src="ECAR.DocuSign\bin\Release\netstandard2.0\ECAR.DocuSign.dll" target="lib\netstandard2.0\ECAR.DocuSign.dll" />
-    <file src="ECAR.DocuSign\bin\Release\netstandard2.0\ECAR.DocuSign.xml" target="lib\netstandard2.0\ECAR.DocuSign.xml" />
+    <file src="bin\Release\net46\ECAR.DocuSign.dll" target="lib\net46\ECAR.DocuSign.dll" />
+    <!--<file src="bin\Release\net46\ECAR.DocuSign.xml" target="lib\net46\ECAR.DocuSign.xml" />-->
+    <file src="bin\Release\netstandard2.0\ECAR.DocuSign.dll" target="lib\netstandard2.0\ECAR.DocuSign.dll" />
+    <!-- <file src="bin\Release\netstandard2.0\ECAR.DocuSign.xml" target="lib\netstandard2.0\ECAR.DocuSign.xml" /> -->
   </files>
 </package>
