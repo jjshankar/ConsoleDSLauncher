@@ -16,4 +16,4 @@ steps:
   parameters:
     buildName: $(Build.BuildNumber)
     artifactStagingDir: $(build.artifactStagingDirectory)
-    feedName: 'ECAR DevOps/EC.ECAR.DevOps.Packages'
+    feedName: 'ECAR/EC.ECAR.Packages'
