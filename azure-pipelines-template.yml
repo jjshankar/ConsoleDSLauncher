@@ -1,0 +1,19 @@
+name: $(BuildDefinitionName)-$(Rev:r)
+
+pool:
+  vmImage: ubuntu-latest
+
+trigger: none
+
+resources:
+  repositories:
+    - repository: BuildTemplates
+      type: git
+      name: 'ECAR DevOps/ECAR.DevOps.YamlTemplates'
+
+steps:
+- template: nuget-dotnet-package.yml@ECAR.DevOps.YamlTemplates
+  parameters:
+    buildName: $(Build.BuildNumber)
+    artifactStagingDir: $(build.artifactStagingDirectory)
+    feedName: 'ECAR/EC.ECAR.Packages'
