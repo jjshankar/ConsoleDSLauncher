@@ -9,10 +9,10 @@ resources:
   repositories:
     - repository: BuildTemplates
       type: git
-      name: 'ECAR DevOps/ECAR.DevOps.YamlTemplates'
+      name: 'ECAR DevOps/BuildTemplates'
 
 steps:
-- template: nuget-dotnet-package.yml@ECAR.DevOps.YamlTemplates
+- template: dotNET.Core.package.yml@BuildTemplates
   parameters:
     buildName: $(Build.BuildNumber)
     artifactStagingDir: $(build.artifactStagingDirectory)
