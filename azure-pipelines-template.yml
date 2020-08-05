@@ -1,7 +1,7 @@
 name: $(BuildDefinitionName)-$(Rev:r)
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: windows-latest
 
 trigger: none
 
@@ -12,8 +12,8 @@ resources:
       name: 'ECAR DevOps/BuildTemplates'
 
 steps:
-- template: dotNET.Core.package.yml@BuildTemplates
+- template: NuGet.NET.Framework.DocuSign.yml@BuildTemplates
   parameters:
     buildName: $(Build.BuildNumber)
     artifactStagingDir: $(build.artifactStagingDirectory)
-    feedName: 'ECAR/EC.ECAR.Packages'
+    feedName: 'ECAR DevOps/EC.ECAR.DevOps.Packages'
