@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net46;netcoreapp20</TargetFrameworks>
@@ -10,7 +10,11 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>C:\Users\jshankar\source\repos\ECAR.DocuSign\ECAR.DocuSign\ECAR.DocuSign.xml</DocumentationFile>
+    <DocumentationFile>bin\debug\ECAR.DocuSign.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
+    <DocumentationFile>bin\release\ECAR.DocuSign.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
