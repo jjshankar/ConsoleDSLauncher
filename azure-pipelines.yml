@@ -25,6 +25,5 @@ steps:
 - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/master') }}:
   - template: PackPushAndTag.NET_Framework_Lib.yml@YAMLTemplates
     parameters: 
-      whatToPack: '**/*.nupkg' 
       vstsFeedName: $(pushFeedName)
       tag: 'v$(GitVersion.SemVer)'
