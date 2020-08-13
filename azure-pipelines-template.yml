@@ -1,19 +1,29 @@
-name: $(BuildDefinitionName)-$(Rev:r)
+trigger:
+- master
 
 pool:
   vmImage: windows-latest
 
-trigger: none
+variables:
+  restoreFeedName: 'ECAR/EC.ECAR.Packages'
+  pushFeedName: 'ECAR/EC.Packages'
+  GitVersion.SemVer: ''
 
 resources:
   repositories:
-    - repository: BuildTemplates
+    - repository: YAMLTemplates
       type: git
-      name: 'ECAR DevOps/BuildTemplates'
+      name: 'ECAR DevOps/ECAR.DevOps.YamlTemplates'
 
 steps:
-- template: NuGet.NET.Framework.DocuSign.yml@BuildTemplates
+#Call .NET_Framework_Build_and_Restore template 
+- template: RestoreAndBuild.NET_Framework_Lib.yml@YAMLTemplates
   parameters:
-    buildName: $(Build.BuildNumber)
-    artifactStagingDir: $(build.artifactStagingDirectory)
-    feedName: 'ECAR/EC.ECAR.Packages'
+    vstsFeedName: $(restoreFeedName)
+
+#Call NuGet_Pack\Push_+_Tag_Git_Repo (SDK) template (only if triggered by master branch commit)
+- ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/master') }}:
+  - template: PackPushAndTag.NET_Framework_Lib.yml@YAMLTemplates
+    parameters:
+      vstsFeedName: $(pushFeedName)
+      tag: 'v$(GitVersion.SemVer)'
