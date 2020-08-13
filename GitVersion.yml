@@ -1,0 +1,22 @@
+assembly-file-versioning-format: '{Major}.{Minor}.{Patch}'
+assembly-versioning-format: '{Major}.{Minor}.{Patch}'
+commits-since-version-source-padding: 2
+build-metadata-padding: 2
+mode: Mainline
+branches:
+ pull-request:
+  regex: ^(pull|pull\-requests|pr)[/-]
+  tag: PR
+  increment: Inherit
+  prevent-increment-of-merged-branch-version: false
+  tag-number-pattern: '[/-]d+[-/]'
+  track-merge-target: false
+  tracks-release-branches: false
+  is-release-branch: false 
+ master:
+  regex: master$
+  tag: ''
+  increment: Patch
+ignore:
+  sha: []
+merge-message-formats: {}
