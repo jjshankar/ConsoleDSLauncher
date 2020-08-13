@@ -6,7 +6,7 @@ pool:
 
 variables:
   restoreFeedName: 'ECAR/EC.ECAR.Packages'
-  pushFeedName: 'ECAR/EC.Packages'
+  pushFeedName: 'EC.Packages'
   GitVersion.SemVer: ''
 
 resources:
