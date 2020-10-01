@@ -219,7 +219,7 @@ namespace ECAR.DocuSign
                     {
                         Checkbox consent = tabs.CheckboxTabs.Find(x => x.TabLabel == DSTabLabel);
                         if (consent == null)
-                            throw new Exception(string.Format(Resources.FIELD_0_NOT_FOUND, DSTabLabel));
+                            throw new Exception(string.Format(Resources.FIELD_x_NOT_FOUND, DSTabLabel));
 
                         retVal = string.IsNullOrEmpty(consent.Selected) ? "false" : consent.Selected;
                     }
@@ -285,7 +285,7 @@ namespace ECAR.DocuSign
                     {
                         Text textTab = tabs.TextTabs.Find(x => x.TabLabel == DSTabLabel);
                         if (textTab == null)
-                            throw new Exception(string.Format(Resources.FIELD_0_NOT_FOUND, DSTabLabel));
+                            throw new Exception(string.Format(Resources.FIELD_x_NOT_FOUND, DSTabLabel));
 
                         retVal = textTab.Value;
                     }
@@ -351,7 +351,7 @@ namespace ECAR.DocuSign
                     {
                         Ssn ssnTab = tabs.SsnTabs.Find(x => x.TabLabel == DSTabLabel);
                         if (ssnTab == null)
-                            throw new Exception(string.Format(Resources.FIELD_0_NOT_FOUND, DSTabLabel));
+                            throw new Exception(string.Format(Resources.FIELD_x_NOT_FOUND, DSTabLabel));
 
                         retVal = ssnTab.Value;
                     }
@@ -418,7 +418,7 @@ namespace ECAR.DocuSign
                     {
                         DateSigned dtSignedTab = tabs.DateSignedTabs.Find(x => x.TabLabel == DSTabLabel);
                         if (dtSignedTab == null)
-                            throw new Exception(string.Format(Resources.FIELD_0_NOT_FOUND, DSTabLabel));
+                            throw new Exception(string.Format(Resources.FIELD_x_NOT_FOUND, DSTabLabel));
 
                         retVal = dtSignedTab.Value;
                     }
@@ -484,7 +484,7 @@ namespace ECAR.DocuSign
                     {
                         Date dtTab = tabs.DateTabs.Find(x => x.TabLabel == DSTabLabel);
                         if (dtTab == null)
-                            throw new Exception(string.Format(Resources.FIELD_0_NOT_FOUND, DSTabLabel));
+                            throw new Exception(string.Format(Resources.FIELD_x_NOT_FOUND, DSTabLabel));
 
                         retVal = dtTab.Value;
                     }
@@ -551,7 +551,7 @@ namespace ECAR.DocuSign
                     {
                         FirstName fnTab = tabs.FirstNameTabs.Find(x => x.TabLabel == DSTabLabel);
                         if (fnTab == null)
-                            throw new Exception(string.Format(Resources.FIELD_0_NOT_FOUND, DSTabLabel));
+                            throw new Exception(string.Format(Resources.FIELD_x_NOT_FOUND, DSTabLabel));
 
                         retVal = fnTab.Value;
                     }
@@ -617,7 +617,7 @@ namespace ECAR.DocuSign
                     {
                         LastName lnTab = tabs.LastNameTabs.Find(x => x.TabLabel == DSTabLabel);
                         if (lnTab == null)
-                            throw new Exception(string.Format(Resources.FIELD_0_NOT_FOUND, DSTabLabel));
+                            throw new Exception(string.Format(Resources.FIELD_x_NOT_FOUND, DSTabLabel));
 
                         retVal = lnTab.Value;
                     }
@@ -683,7 +683,7 @@ namespace ECAR.DocuSign
                     {
                         SignHere signTab = tabs.SignHereTabs.Find(x => x.TabLabel == DSTabLabel);
                         if (signTab == null)
-                            throw new Exception(string.Format(Resources.FIELD_0_NOT_FOUND, DSTabLabel));
+                            throw new Exception(string.Format(Resources.FIELD_x_NOT_FOUND, DSTabLabel));
 
                         retVal = signTab.Status;
                     }

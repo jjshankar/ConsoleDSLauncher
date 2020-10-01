@@ -99,9 +99,18 @@ namespace ECAR.DocuSign.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Named field {0} was not found in the DocuSign document..
         /// </summary>
-        internal static string FIELD_0_NOT_FOUND {
+        internal static string FIELD_x_NOT_FOUND {
             get {
-                return ResourceManager.GetString("FIELD_0_NOT_FOUND", resourceCulture);
+                return ResourceManager.GetString("FIELD_x_NOT_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DocuSign template not found: {1}..
+        /// </summary>
+        internal static string TEMPLATE_NOT_FOUND_x {
+            get {
+                return ResourceManager.GetString("TEMPLATE_NOT_FOUND_x", resourceCulture);
             }
         }
     }
