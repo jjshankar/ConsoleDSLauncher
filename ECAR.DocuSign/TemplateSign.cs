@@ -184,7 +184,11 @@ namespace ECAR.DocuSign
 
                 // Steps 1 & 2 are performed in the private method
                 EnvelopeSummary results = ExecuteDocuSign(ref Doc, Presets);
+
+                // Populate EnvelopeId and DocumentId for return
+                //  DocumentId is always 1 for template sign
                 Doc.DSEnvelopeId = results.EnvelopeId;
+                Doc.DSDocumentId = "1";     
 
                 // 3. Create Envelope Recipient View request obj
                 RecipientViewRequest viewRequest = new RecipientViewRequest
@@ -246,9 +250,13 @@ namespace ECAR.DocuSign
                 // Steps 1 & 2 are performed in the private method
                 EnvelopeSummary results = ExecuteDocuSign(ref Doc, Presets);
 
-                // RESTORE outgoing Doc object with the envelopeId and original signerId sent
-                Doc.DSEnvelopeId = results.EnvelopeId;
+                // RESTORE outgoing Doc object with the original signerId sent
                 Doc.SignerId = origSignerId;
+
+                // Populate EnvelopeId and DocumentId for return
+                //  DocumentId is always 1 for template sign
+                Doc.DSEnvelopeId = results.EnvelopeId;
+                Doc.DSDocumentId = "1";
 
                 // Return the envelope result
                 return results.Status;
