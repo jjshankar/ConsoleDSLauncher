@@ -193,9 +193,14 @@
               Looks up a localized string similar to DocuSign tab label cannot be null or blank..
             </summary>
         </member>
-        <member name="P:ECAR.DocuSign.Properties.Resources.FIELD_0_NOT_FOUND">
+        <member name="P:ECAR.DocuSign.Properties.Resources.FIELD_x_NOT_FOUND">
             <summary>
               Looks up a localized string similar to Named field {0} was not found in the DocuSign document..
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Properties.Resources.TEMPLATE_NOT_FOUND_x">
+            <summary>
+              Looks up a localized string similar to DocuSign template not found: {1}..
             </summary>
         </member>
         <member name="T:ECAR.DocuSign.Status">
@@ -302,6 +307,14 @@
             ECAR.DocuSign embedded signing ceremony with a predefined document template.
             </summary>
         </member>
+        <member name="M:ECAR.DocuSign.TemplateSign.ExecuteDocuSign(ECAR.DocuSign.Models.DocumentModel@,System.Collections.Generic.List{ECAR.DocuSign.Models.DocPreset})">
+            <summary>
+            Internal private method to call DocuSign for both embedded and asynchronous (email) signing
+            </summary>
+            <param name="Doc">Document data (in: document &amp; signer info; out: DocuSign envelope &amp; document ID)</param>
+            <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
+            <returns>EnvelopeSummary object with result from DocuSign call</returns>
+        </member>
         <member name="M:ECAR.DocuSign.TemplateSign.EmbeddedTemplateSign(System.String,ECAR.DocuSign.Models.DocumentModel@,System.Collections.Generic.List{ECAR.DocuSign.Models.DocPreset})">
             <summary>
             Initiate embedded signing ceremony with DocuSign.
@@ -310,6 +323,14 @@
             <param name="Doc">Document data (in: document &amp; signer info; out: DocuSign envelope &amp; document ID)</param>
             <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
             <returns>DocuSign URL for embedded signing</returns>
+        </member>
+        <member name="M:ECAR.DocuSign.TemplateSign.EmailedTemplateSign(ECAR.DocuSign.Models.DocumentModel@,System.Collections.Generic.List{ECAR.DocuSign.Models.DocPreset})">
+            <summary>
+            Send a DocuSign for asynchronous signing via email.
+            </summary>
+            <param name="Doc">Document data (in: document &amp; signer info; out: DocuSign envelope &amp; document ID)</param>
+            <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
+            <returns>DocuSign envelope status</returns>
         </member>
     </members>
 </doc>
