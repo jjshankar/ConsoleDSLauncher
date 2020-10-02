@@ -5,9 +5,8 @@ pool:
   vmImage: windows-latest
 
 variables:
-  restoreFeedName: 'ECAR/EC.ECAR.Packages'
-  pushFeedName: 'EC.Packages'
-  GitVersion.SemVer: ''
+- group: ECAR Variable Group
+- name: GitVersion.SemVer
 
 resources:
   repositories:
@@ -19,11 +18,11 @@ steps:
 #Call .NET_Framework_Build_and_Restore template 
 - template: RestoreAndBuild.NET_Framework_Lib.yml@YAMLTemplates
   parameters:
-    vstsFeedName: $(restoreFeedName)
+    vstsFeedName: $(ECARPackageFeed)
 
 #Call NuGet_Pack\Push_+_Tag_Git_Repo (SDK) template (only if triggered by master branch commit)
 - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/master') }}:
   - template: PackPushAndTag.NET_SDK_Lib.yml@YAMLTemplates
-    parameters: 
-      vstsFeedName: $(pushFeedName)
+    parameters:
+      vstsFeedName: $(ECARPackageFeed)
       tag: 'v$(GitVersion.SemVer)'
