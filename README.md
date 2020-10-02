@@ -1,4 +1,6 @@
 # ECAR.DocuSign
+### (Last release on: Oct 1, 2020)
+
 A library to easily connect to DocuSign services and embed signing within your web application.  
 
 This library also provides support for working with the DocuSign document and perform the following:
@@ -43,7 +45,7 @@ Getting started with **ECAR.DocuSign** is as easy as 1..2..3
     };
 ```
 
-### This is how you prefill fields (if required)
+## This is how you prefill fields (if required)
 The field names must be defined in your DocuSign template
 - Pass the preset fields as a `List<DocPreset>` (even if passing a single preset)
 
@@ -53,7 +55,7 @@ The field names must be defined in your DocuSign template
     DocPreset check = new DocPreset { Label = "MEMBER_CONSENT_YES", Type = Presets.Checkbox, Value = "true" };
     DocPreset text = new DocPreset { Label = "MEMBER_EXPLAINS_UNIVERSE", Type = Presets.Text, Value = "Care to explain?" };
 
-    List<DocPreset> tabs = new List<DocPreset> { ssn, dob, check, text };
+    List<DocPreset> tabPresets = new List<DocPreset> { ssn, dob, check, text };
 ```
 
 ## This is how you make the call to initiate the DocuSign ceremony
@@ -70,7 +72,7 @@ Next, you call the `EmbeddedTemplateSign` method passing in the `DocumentModel` 
 - This call returns the URL for the DocuSign ceremony 
 
 ```csharp
-    string docuSignUrl = ECAR.DocuSign.TemplateSign.EmbeddedTemplateSign(returnUrl, ref dsDoc, tabs);
+    string docuSignUrl = ECAR.DocuSign.TemplateSign.EmbeddedTemplateSign(returnUrl, ref dsDoc, tabPresets);
 ```
 
 Finally, redirect your users to the DocuSign page to start the signing ceremony.
@@ -80,6 +82,17 @@ Finally, redirect your users to the DocuSign page to start the signing ceremony.
 ```
 
 **ECAR.DocuSign** automatically redirects the user's browser to your application URL that was specified in the `returnUrl` argument.
+
+
+## This is how you make the call to send an email from DocuSign for asynchronous signing
+Simply call the `EmailedTemplateSign` method passing in the `DocumentModel` object by *reference* (optionally pass the preset fields).
+- **ECAR.DocuSign** populates metadata about the DocuSign document in the returned object (e.g. envelope ID and document ID)
+- Your application must save this information to poll the signature status for this document in the future
+- The DocuSign status for the envelope is returned from this method 
+
+```csharp
+    string docuSignUrl = ECAR.DocuSign.TemplateSign.EmailedTemplateSign(ref dsDoc, tabPresets);
+```
 
 ## This is how you check the signature status of a DocuSign envelope
 ```csharp
@@ -114,14 +127,13 @@ Finally, redirect your users to the DocuSign page to start the signing ceremony.
     return File(results, "application/pdf", "«Whatever you want the document name to be»");
 ```
 
-# Limitations/Known issues
-- Supports only an embedded ceremony, performed live from the calling application
+# Limitations/known issues
 - Supports only the use of a template uploaded to DocuSign
 - Supports only one document per DocuSign envelope
 
 # Future enhancements
-- Email document for signing asynchronously 
-- Prepare and present a custom document (passed in from the calling application) to the recipient
+- [x] ~~Email document for signing asynchronously~~ *Avaialable with 10/1/2020 release (>1.0.5)*
+- [ ] Prepare and present a custom document (passed in from the calling application) to the recipient
 
 # Contribute
 Share your feedback/suggestions/requests

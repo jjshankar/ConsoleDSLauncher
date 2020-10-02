@@ -7,12 +7,12 @@ namespace MyWebApp.Controllers
 {
     public class ECARDocuSignController : Controller
     {
-        // The following information is from DocuSign developer portal
+        // The following information is set up in the DocuSign developer portal
         private const string DOCTEMPLATENAME = "HIPAA Consent Form";
         private const string DSROLENAME = "Class Member";
 
-        // Data for this method: DocModel object (from View)
-        public ActionResult EmbeddedTemplateSign(DocModel doc)
+        // Data for this method: MyDocModel object (from View)
+        public ActionResult EmbeddedTemplateSign(MyDocModel doc)
         {
             if (!ModelState.IsValid)
                 return RedirectToAction("ECARDocuSign", "Home");
@@ -39,18 +39,31 @@ namespace MyWebApp.Controllers
                 DocPreset checkY = new DocPreset { Label = "MEMBER_CONSENT_YES", Type = Presets.Checkbox, Value = "true"};
                 DocPreset text = new DocPreset { Label = "fake field", Type = Presets.Text, Value = "Field requested does not exist in doc; fails silently." };
 
-                List<DocPreset> tabs = new List<DocPreset> { ssn, dob, check, checkY, text };
+                List<DocPreset> tabPresets = new List<DocPreset> { ssn, dob, check, checkY, text };
 
-                // Construct return URL to an action (argument envelopeId will be automatically passed in by ECAR.DocuSign)
-                string returnUrl = MyAppConfig.GetConfiguration("AppHomeUrl") + "/ECARDocuSign/CheckStatus";
+                // Determine if DocuSign ceremony is embedded or asynchronous
+                if(doc.SendByEmail)
+                {
+                    // Call method to send email from DocuSign 
+                    //  - the returned dsDoc object will have the envelope ID and document ID
+                    string status = ECAR.DocuSign.TemplateSign.EmailedTemplateSign(ref dsDoc, tabPresets);
 
-                // Call library to initiate DocuSign; after signing, DocuSign will return to CheckStatus action.
-                //  - envelopeId parameter will be passed back by ECAR.DocuSign to the CheckStatus action
-                //  - the returned dsDoc object will also have the envelope ID and document ID
-                string viewUrl = ECAR.DocuSign.TemplateSign.EmbeddedTemplateSign(returnUrl, ref dsDoc, tabs);
+                    // Redirect to CheckStatus and pass the envelope ID
+                    return RedirectToAction("CheckStatus", "Home", new { envelopeId = dsDoc.DSEnvelopeId });
+                }
+                else
+                {
+                    // Construct return URL to an action (argument envelopeId will be automatically passed in by ECAR.DocuSign)
+                    string returnUrl = MyAppConfig.GetConfiguration("AppHomeUrl") + "/ECARDocuSign/CheckStatus";
 
-                // Redirect to DocuSign URL
-                return Redirect(viewUrl);
+                    // Call library to initiate DocuSign; after signing, DocuSign will return to CheckStatus action.
+                    //  - envelopeId parameter will be passed back by ECAR.DocuSign to the CheckStatus action
+                    //  - the returned dsDoc object will also have the envelope ID and document ID
+                    string viewUrl = ECAR.DocuSign.TemplateSign.EmbeddedTemplateSign(returnUrl, ref dsDoc, tabPresets);
+
+                    // Redirect to DocuSign URL
+                    return Redirect(viewUrl);
+                }
             }
             catch (Exception ex)
             {
