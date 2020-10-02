@@ -5,7 +5,7 @@ pool:
   vmImage: windows-latest
 
 variables:
-  restoreFeedName: 'ECAR/EC.ECAR.Packages'
+  restoreFeedName: 'ECAR/EC.Packages'
   pushFeedName: 'EC.Packages'
   GitVersion.SemVer: ''
 
