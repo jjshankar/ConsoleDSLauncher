@@ -91,7 +91,18 @@ Simply call the `EmailedTemplateSign` method passing in the `DocumentModel` obje
 - The DocuSign status for the envelope is returned from this method 
 
 ```csharp
-    string docuSignUrl = ECAR.DocuSign.TemplateSign.EmailedTemplateSign(ref dsDoc, tabPresets);
+    string result = ECAR.DocuSign.TemplateSign.EmailedTemplateSign(ref dsDoc, tabPresets);
+```
+
+## This is how you retrieve a list of DocuSign envelopes from a given date
+```csharp
+    // Past x days (30 days in this example)
+    DateTime startDate = DateTime.Now.AddDays(-30);
+
+    // ...or set up custom date
+    startDate = new DateTime(«year», «month», «date»);
+
+    List<string> envelopeIds = ECAR.DocuSign.Status.DSGetAllEnvelopes(startDate);
 ```
 
 ## This is how you check the signature status of a DocuSign envelope
@@ -131,8 +142,11 @@ Simply call the `EmailedTemplateSign` method passing in the `DocumentModel` obje
 - Supports only the use of a template uploaded to DocuSign
 - Supports only one document per DocuSign envelope
 
-# Future enhancements
+# Completed enhancements
 - [x] ~~Email document for signing asynchronously~~ *Avaialable with 10/1/2020 release (>1.0.5)*
+- [x] ~~Retrieve a list of DocuSign envelopes~~ *Avaialable with 10/9/2020 release (>1.0.7)*
+
+# Future enhancements
 - [ ] Prepare and present a custom document (passed in from the calling application) to the recipient
 
 # Contribute

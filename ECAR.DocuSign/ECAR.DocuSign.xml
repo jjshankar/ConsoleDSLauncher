@@ -188,6 +188,11 @@
               Looks up a localized string similar to DocuSign envelope ID cannot be null or blank..
             </summary>
         </member>
+        <member name="P:ECAR.DocuSign.Properties.Resources.EMPTY_STARTDATE_VALUE">
+            <summary>
+              Looks up a localized string similar to Start date cannot be null..
+            </summary>
+        </member>
         <member name="P:ECAR.DocuSign.Properties.Resources.EMPTY_TAB_LABEL">
             <summary>
               Looks up a localized string similar to DocuSign tab label cannot be null or blank..
@@ -207,6 +212,13 @@
             <summary>
             Access documents signed using ECAR.DocuSign.
             </summary>
+        </member>
+        <member name="M:ECAR.DocuSign.Status.DSGetAllEnvelopes(System.DateTime)">
+            <summary>
+            Get a list of all DocuSign envelope IDs starting from a given date.
+            </summary>
+            <param name="DSStartDate">The date to start querying from</param>
+            <returns></returns>
         </member>
         <member name="M:ECAR.DocuSign.Status.DSCheckStatus(System.String)">
             <summary>

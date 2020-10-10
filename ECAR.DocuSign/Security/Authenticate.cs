@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ECAR.DocuSign.Models;
+using DocuSign.eSign.Api;
 using DocuSign.eSign.Client;
 using DocuSign.eSign.Client.Auth;
 using static DocuSign.eSign.Client.Auth.OAuth.UserInfo;
@@ -58,5 +56,30 @@ namespace ECAR.DocuSign.Security
             // Return refreshed/existing token
             return accessToken;
         }
+
+        public static EnvelopesApi CreateEnvelopesApiClient()
+        {
+            // Get access token
+            string accessToken = GetToken();
+
+            // Create new ApiClient and set config
+            ApiClient apiClient = new ApiClient(DocuSignConfig.BasePath + DocuSignConfig.APISuffix);
+            apiClient.Configuration.AddDefaultHeader("Authorization", "Bearer " + accessToken);
+
+            return new EnvelopesApi(apiClient);
+        }
+
+        public static TemplatesApi CreateTemplateApiClient()
+        {
+            // Get access token
+            string accessToken = GetToken();
+
+            // Create new ApiClient and set config
+            ApiClient apiClient = new ApiClient(DocuSignConfig.BasePath + DocuSignConfig.APISuffix);
+            apiClient.Configuration.AddDefaultHeader("Authorization", "Bearer " + accessToken);
+
+            return new TemplatesApi(apiClient);
+        }
+
     }
 }

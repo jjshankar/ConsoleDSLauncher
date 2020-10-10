@@ -88,6 +88,15 @@ namespace ECAR.DocuSign.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Start date cannot be null..
+        /// </summary>
+        internal static string EMPTY_STARTDATE_VALUE {
+            get {
+                return ResourceManager.GetString("EMPTY_STARTDATE_VALUE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to DocuSign tab label cannot be null or blank..
         /// </summary>
         internal static string EMPTY_TAB_LABEL {
