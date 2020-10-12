@@ -1,5 +1,5 @@
 # ECAR.DocuSign
-### (Last release on: Oct 1, 2020)
+### (Last release on: Oct 12, 2020)
 
 A library to easily connect to DocuSign services and embed signing within your web application.  
 
@@ -24,11 +24,11 @@ Getting started with **ECAR.DocuSign** is as easy as 1..2..3
 ```csharp
     if (!ECAR.DocuSign.DocuSignConfig.Ready)
     {
-        ECAR.DocuSign.DocuSignConfig.AccountID = "«Your DocuSign Account ID»";
-        ECAR.DocuSign.DocuSignConfig.ClientID = "«Your DocuSign Client ID»";
-        ECAR.DocuSign.DocuSignConfig.UserGUID = "«Your DocuSign User ID»";
-        ECAR.DocuSign.DocuSignConfig.AuthServer = "«Your DocuSign Authentication Server»";
-        ECAR.DocuSign.DocuSignConfig.RSAKey = "«Content (NOT file name) of your DocuSign RSA KeyFile»";
+        ECAR.DocuSign.DocuSignConfig.AccountID = "Â«Your DocuSign Account IDÂ»";
+        ECAR.DocuSign.DocuSignConfig.ClientID = "Â«Your DocuSign Client IDÂ»";
+        ECAR.DocuSign.DocuSignConfig.UserGUID = "Â«Your DocuSign User IDÂ»";
+        ECAR.DocuSign.DocuSignConfig.AuthServer = "Â«Your DocuSign Authentication ServerÂ»";
+        ECAR.DocuSign.DocuSignConfig.RSAKey = "Â«Content (NOT file name) of your DocuSign RSA KeyFileÂ»";
     }
 ```
 
@@ -36,12 +36,12 @@ Getting started with **ECAR.DocuSign** is as easy as 1..2..3
 ```csharp
     DocumentModel dsDoc = new DocumentModel
     {
-        DSEmailSubject = "«Email Subject»",
-        DSRoleName = "«Signer role name»",
-        DSTemplateName = "«DocuSign template name»",
-        SignerEmail = "«Recipient email»",
-        SignerName = "«Recipient's name»",
-        SignerId = "«Your application's tracking ID for this recipient»"       // DocuSign does not use this field, but keeps it linked to the doc
+        DSEmailSubject = "Â«Email SubjectÂ»",
+        DSRoleName = "Â«Signer role nameÂ»",
+        DSTemplateName = "Â«DocuSign template nameÂ»",
+        SignerEmail = "Â«Recipient emailÂ»",
+        SignerName = "Â«Recipient's nameÂ»",
+        SignerId = "Â«Your application's tracking ID for this recipientÂ»"       // DocuSign does not use this field, but keeps it linked to the doc
     };
 ```
 
@@ -63,7 +63,7 @@ First, you set up the return URL where DocuSign should return to after the recip
 - The DocuSign envelope ID value for this document will be passed back by **ECAR.DocuSign** as a parameter to this action for you to use it if needed (automatically appends `?envelopeId={id}` to the URL).
 
 ```csharp
-    string returnUrl = "«Your application home page» " + "«Controller/Action to return to after DocuSign finishes»";
+    string returnUrl = "Â«Your application home pageÂ» " + "Â«Controller/Action to return to after DocuSign finishesÂ»";
 ```
 
 Next, you call the `EmbeddedTemplateSign` method passing in the `DocumentModel` object by *reference*.
@@ -100,7 +100,7 @@ Simply call the `EmailedTemplateSign` method passing in the `DocumentModel` obje
     DateTime startDate = DateTime.Now.AddDays(-30);
 
     // ...or set up custom date
-    startDate = new DateTime(«year», «month», «date»);
+    startDate = new DateTime(Â«yearÂ», Â«monthÂ», Â«dateÂ»);
 
     List<string> envelopeIds = ECAR.DocuSign.Status.DSGetAllEnvelopes(startDate);
 ```
@@ -135,7 +135,7 @@ Simply call the `EmailedTemplateSign` method passing in the `DocumentModel` obje
     Stream results = ECAR.DocuSign.Status.DSGetDocument(envelopeId, documentId);
 
     // Return for download
-    return File(results, "application/pdf", "«Whatever you want the document name to be»");
+    return File(results, "application/pdf", "Â«Whatever you want the document name to beÂ»");
 ```
 
 # Limitations/known issues
