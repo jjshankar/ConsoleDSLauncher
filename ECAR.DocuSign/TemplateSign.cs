@@ -30,19 +30,11 @@ namespace ECAR.DocuSign
             // 2. Use the SDK to create and send the envelope with a Template document in DocuSign
 
             // 1. Create envelope request object
-            // Get access token
-            string accessToken = Authenticate.GetToken();
-
             // Read config values
-            string basePath = DocuSignConfig.BasePath;
-            string apiSuffix = DocuSignConfig.APISuffix;
             string accountId = DocuSignConfig.AccountID;
 
-            ApiClient apiClient = new ApiClient(basePath + apiSuffix);
-            apiClient.Configuration.AddDefaultHeader("Authorization", "Bearer " + accessToken);
-
             // Get the template ID by calling the Templates API
-            TemplatesApi templatesApi = new TemplatesApi(apiClient.Configuration);
+            TemplatesApi templatesApi = Authenticate.CreateTemplateApiClient();
             TemplatesApi.ListTemplatesOptions options = new TemplatesApi.ListTemplatesOptions { searchText = Doc.DSTemplateName };
             EnvelopeTemplateResults searchResults = templatesApi.ListTemplates(accountId, options);
 
@@ -155,7 +147,7 @@ namespace ECAR.DocuSign
             };
 
             // 2. Use the SDK to create and send the envelope
-            EnvelopesApi envelopesApi = new EnvelopesApi(apiClient.Configuration);
+            EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
             EnvelopeSummary results = envelopesApi.CreateEnvelope(accountId, envelopeDefinition);
 
             // return EnvelopeSummary back to caller
@@ -201,18 +193,11 @@ namespace ECAR.DocuSign
                 };
 
                 // 4. Use the SDK to obtain a Recipient View URL
-                // Get access token
-                string accessToken = Authenticate.GetToken();
-
-                // Read config values
-                string basePath = DocuSignConfig.BasePath;
-                string apiSuffix = DocuSignConfig.APISuffix;
+                // Read account ID from config
                 string accountId = DocuSignConfig.AccountID;
 
-                ApiClient apiClient = new ApiClient(basePath + apiSuffix);
-                apiClient.Configuration.AddDefaultHeader("Authorization", "Bearer " + accessToken);
-
-                EnvelopesApi envelopesApi = new EnvelopesApi(apiClient.Configuration);
+                // Create API Client and call it
+                EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
                 ViewUrl viewUrl = envelopesApi.CreateRecipientView(accountId, results.EnvelopeId, viewRequest);
 
                 // 5. Redirect the user's browser to the URL

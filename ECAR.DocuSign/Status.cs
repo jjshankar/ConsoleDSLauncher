@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.NetworkInformation;
 using System.Text;
 using DocuSign.eSign.Api;
 using DocuSign.eSign.Client;
@@ -16,6 +17,52 @@ namespace ECAR.DocuSign
     /// </summary>
     public static class Status
     {
+        /// <summary>
+        /// Get a list of all DocuSign envelope IDs starting from a given date.
+        /// </summary>
+        /// <param name="DSStartDate">The date to start querying from</param>
+        /// <returns></returns>
+        public static List<string> DSGetAllEnvelopes(DateTime DSStartDate)
+        {
+            try
+            {
+                // Validate input
+                if (DSStartDate == null)
+                    throw new Exception(Resources.EMPTY_STARTDATE_VALUE);
+
+                // Check config
+                if (!DocuSignConfig.Ready)
+                    throw new Exception(Resources.DSCONFIG_NOT_SET);
+
+                // Read account ID from config
+                string accountId = DocuSignConfig.AccountID;
+
+                // Create API Client and call it
+                EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
+                EnvelopesApi.ListStatusChangesOptions options = new EnvelopesApi.ListStatusChangesOptions
+                {
+                    fromDate = DSStartDate.ToString("MM/dd/yyyy")
+                };
+
+                EnvelopesInformation envInfo = envelopesApi.ListStatusChanges(accountId, options);
+                List<string> allEnvelopes = new List<string>();
+                foreach (Envelope env in envInfo.Envelopes)
+                {
+                    allEnvelopes.Add(env.EnvelopeId);
+                }
+
+                return allEnvelopes;
+            }
+            catch (ApiException ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         /// <summary>
         /// Check the status of the DocuSign signature ceremony.
         /// </summary>
@@ -33,18 +80,11 @@ namespace ECAR.DocuSign
                 if (!DocuSignConfig.Ready)
                     throw new Exception(Resources.DSCONFIG_NOT_SET);
 
-                // Get access token
-                string accessToken = Authenticate.GetToken();
-
-                // Read config values
-                string basePath = DocuSignConfig.BasePath;
-                string apiSuffix = DocuSignConfig.APISuffix;
+                // Read account ID from config
                 string accountId = DocuSignConfig.AccountID;
 
-                var config = new Configuration(new ApiClient(basePath + apiSuffix));
-                config.AddDefaultHeader("Authorization", "Bearer " + accessToken);
-                EnvelopesApi envelopesApi = new EnvelopesApi(config);
-
+                // Create API Client and call it
+                EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
                 Envelope results = envelopesApi.GetEnvelope(accountId, DSEnvelopeID);
                 return results.Status;
             }
@@ -75,25 +115,18 @@ namespace ECAR.DocuSign
                 if (!DocuSignConfig.Ready)
                     throw new Exception(Resources.DSCONFIG_NOT_SET);
 
-                DocumentModel retDoc= null;
+                DocumentModel retDoc = null;
 
-                // Get access token
-                string accessToken = Authenticate.GetToken();
-
-                // Read config values
-                string basePath = DocuSignConfig.BasePath;
-                string apiSuffix = DocuSignConfig.APISuffix;
+                // Read account ID from config
                 string accountId = DocuSignConfig.AccountID;
 
-                var config = new Configuration(new ApiClient(basePath + apiSuffix));
-                config.AddDefaultHeader("Authorization", "Bearer " + accessToken);
-                EnvelopesApi envelopesApi = new EnvelopesApi(config);
-
+                // Create API Client and call it
+                EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
                 TemplateInformation templates = envelopesApi.ListTemplates(accountId, DSEnvelopeID);
                 Envelope results = envelopesApi.GetEnvelope(accountId, DSEnvelopeID);
                 EnvelopeDocumentsResult docList = envelopesApi.ListDocuments(accountId, DSEnvelopeID);
                 Recipients signer = envelopesApi.ListRecipients(accountId, DSEnvelopeID);
-                
+
                 if (docList.EnvelopeDocuments.Count > 0)
                 {
                     retDoc = new DocumentModel
@@ -142,19 +175,11 @@ namespace ECAR.DocuSign
                 if (!DocuSignConfig.Ready)
                     throw new Exception(Resources.DSCONFIG_NOT_SET);
 
-                // Get access token
-                string accessToken = Authenticate.GetToken();
-
-                // Read config values
-                string basePath = DocuSignConfig.BasePath;
-                string apiSuffix = DocuSignConfig.APISuffix;
+                // Read account ID from config
                 string accountId = DocuSignConfig.AccountID;
 
-                var config = new Configuration(new ApiClient(basePath + apiSuffix));
-                config.AddDefaultHeader("Authorization", "Bearer " + accessToken);
-                EnvelopesApi envelopesApi = new EnvelopesApi(config);
-
-                // Get Doc
+                // Create API Client and call it
+                EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
                 Stream results = envelopesApi.GetDocument(accountId, DSEnvelopeID, DSDocumentID);
 
                 // Return for download
@@ -197,23 +222,17 @@ namespace ECAR.DocuSign
 
                 string retVal = "";
 
-                // Get access token
-                string accessToken = Authenticate.GetToken();
-
-                // Read config values
-                string basePath = DocuSignConfig.BasePath;
-                string apiSuffix = DocuSignConfig.APISuffix;
+                // Read account ID from config
                 string accountId = DocuSignConfig.AccountID;
 
-                var config = new Configuration(new ApiClient(basePath + apiSuffix));
-                config.AddDefaultHeader("Authorization", "Bearer " + accessToken);
-                EnvelopesApi envelopesApi = new EnvelopesApi(config);
+                // Create API Client and call it
+                EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
                 EnvelopeDocumentsResult docList = envelopesApi.ListDocuments(accountId, DSEnvelopeID);
 
                 if (docList.EnvelopeDocuments.Count > 0)
                 {
                     // Get checkbox selection
-                    Tabs tabs = envelopesApi.GetDocumentTabs(accountId, DSEnvelopeID, 
+                    Tabs tabs = envelopesApi.GetDocumentTabs(accountId, DSEnvelopeID,
                         (DSDocumentID == "0") ? docList.EnvelopeDocuments[0].DocumentId : DSDocumentID);
                     if (tabs.CheckboxTabs.Count > 0)
                     {
@@ -263,17 +282,11 @@ namespace ECAR.DocuSign
 
                 string retVal = "";
 
-                // Get access token
-                string accessToken = Authenticate.GetToken();
-
-                // Read config values
-                string basePath = DocuSignConfig.BasePath;
-                string apiSuffix = DocuSignConfig.APISuffix;
+                // Read account ID from config
                 string accountId = DocuSignConfig.AccountID;
 
-                var config = new Configuration(new ApiClient(basePath + apiSuffix));
-                config.AddDefaultHeader("Authorization", "Bearer " + accessToken);
-                EnvelopesApi envelopesApi = new EnvelopesApi(config);
+                // Create API Client and call it
+                EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
                 EnvelopeDocumentsResult docList = envelopesApi.ListDocuments(accountId, DSEnvelopeID);
 
                 if (docList.EnvelopeDocuments.Count > 0)
@@ -329,17 +342,11 @@ namespace ECAR.DocuSign
 
                 string retVal = "";
 
-                // Get access token
-                string accessToken = Authenticate.GetToken();
-
-                // Read config values
-                string basePath = DocuSignConfig.BasePath;
-                string apiSuffix = DocuSignConfig.APISuffix;
+                // Read account ID from config
                 string accountId = DocuSignConfig.AccountID;
 
-                var config = new Configuration(new ApiClient(basePath + apiSuffix));
-                config.AddDefaultHeader("Authorization", "Bearer " + accessToken);
-                EnvelopesApi envelopesApi = new EnvelopesApi(config);
+                // Create API Client and call it
+                EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
                 EnvelopeDocumentsResult docList = envelopesApi.ListDocuments(accountId, DSEnvelopeID);
 
                 if (docList.EnvelopeDocuments.Count > 0)
@@ -396,17 +403,11 @@ namespace ECAR.DocuSign
 
                 string retVal = "";
 
-                // Get access token
-                string accessToken = Authenticate.GetToken();
-
-                // Read config values
-                string basePath = DocuSignConfig.BasePath;
-                string apiSuffix = DocuSignConfig.APISuffix;
+                // Read account ID from config
                 string accountId = DocuSignConfig.AccountID;
 
-                var config = new Configuration(new ApiClient(basePath + apiSuffix));
-                config.AddDefaultHeader("Authorization", "Bearer " + accessToken);
-                EnvelopesApi envelopesApi = new EnvelopesApi(config);
+                // Create API Client and call it
+                EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
                 EnvelopeDocumentsResult docList = envelopesApi.ListDocuments(accountId, DSEnvelopeID);
 
                 if (docList.EnvelopeDocuments.Count > 0)
@@ -462,17 +463,11 @@ namespace ECAR.DocuSign
 
                 string retVal = "";
 
-                // Get access token
-                string accessToken = Authenticate.GetToken();
-
-                // Read config values
-                string basePath = DocuSignConfig.BasePath;
-                string apiSuffix = DocuSignConfig.APISuffix;
+                // Read account ID from config
                 string accountId = DocuSignConfig.AccountID;
 
-                var config = new Configuration(new ApiClient(basePath + apiSuffix));
-                config.AddDefaultHeader("Authorization", "Bearer " + accessToken);
-                EnvelopesApi envelopesApi = new EnvelopesApi(config);
+                // Create API Client and call it
+                EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
                 EnvelopeDocumentsResult docList = envelopesApi.ListDocuments(accountId, DSEnvelopeID);
 
                 if (docList.EnvelopeDocuments.Count > 0)
@@ -529,17 +524,11 @@ namespace ECAR.DocuSign
 
                 string retVal = "";
 
-                // Get access token
-                string accessToken = Authenticate.GetToken();
-
-                // Read config values
-                string basePath = DocuSignConfig.BasePath;
-                string apiSuffix = DocuSignConfig.APISuffix;
+                // Read account ID from config
                 string accountId = DocuSignConfig.AccountID;
 
-                var config = new Configuration(new ApiClient(basePath + apiSuffix));
-                config.AddDefaultHeader("Authorization", "Bearer " + accessToken);
-                EnvelopesApi envelopesApi = new EnvelopesApi(config);
+                // Create API Client and call it
+                EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
                 EnvelopeDocumentsResult docList = envelopesApi.ListDocuments(accountId, DSEnvelopeID);
 
                 if (docList.EnvelopeDocuments.Count > 0)
@@ -595,17 +584,11 @@ namespace ECAR.DocuSign
 
                 string retVal = "";
 
-                // Get access token
-                string accessToken = Authenticate.GetToken();
-
-                // Read config values
-                string basePath = DocuSignConfig.BasePath;
-                string apiSuffix = DocuSignConfig.APISuffix;
+                // Read account ID from config
                 string accountId = DocuSignConfig.AccountID;
 
-                var config = new Configuration(new ApiClient(basePath + apiSuffix));
-                config.AddDefaultHeader("Authorization", "Bearer " + accessToken);
-                EnvelopesApi envelopesApi = new EnvelopesApi(config);
+                // Create API Client and call it
+                EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
                 EnvelopeDocumentsResult docList = envelopesApi.ListDocuments(accountId, DSEnvelopeID);
 
                 if (docList.EnvelopeDocuments.Count > 0)
@@ -646,7 +629,7 @@ namespace ECAR.DocuSign
             try
             {
                 // Validate inputs
-                if(string.IsNullOrEmpty(DSTabLabel))
+                if (string.IsNullOrEmpty(DSTabLabel))
                     throw new Exception(Resources.EMPTY_TAB_LABEL);
 
                 if (string.IsNullOrEmpty(DSEnvelopeID))
@@ -661,17 +644,11 @@ namespace ECAR.DocuSign
 
                 string retVal = "";
 
-                // Get access token
-                string accessToken = Authenticate.GetToken();
-
-                // Read config values
-                string basePath = DocuSignConfig.BasePath;
-                string apiSuffix = DocuSignConfig.APISuffix;
+                // Read account ID from config
                 string accountId = DocuSignConfig.AccountID;
 
-                var config = new Configuration(new ApiClient(basePath + apiSuffix));
-                config.AddDefaultHeader("Authorization", "Bearer " + accessToken);
-                EnvelopesApi envelopesApi = new EnvelopesApi(config);
+                // Create API Client and call it
+                EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
                 EnvelopeDocumentsResult docList = envelopesApi.ListDocuments(accountId, DSEnvelopeID);
 
                 if (docList.EnvelopeDocuments.Count > 0)
