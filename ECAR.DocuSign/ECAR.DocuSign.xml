@@ -114,7 +114,7 @@
         </member>
         <member name="T:ECAR.DocuSign.Models.DocumentModel">
             <summary>
-            Data model for documents signed via ECAR.DocuSign.
+            Data model for documents sent for signature via ECAR.DocuSign.
             </summary>
         </member>
         <member name="P:ECAR.DocuSign.Models.DocumentModel.SignerEmail">
@@ -129,7 +129,7 @@
         </member>
         <member name="P:ECAR.DocuSign.Models.DocumentModel.SignerId">
             <summary>
-            The recipient's ID value in the calling application (e.g. tracking number).
+            The recipient's identifier in the calling application (e.g. tracking number).
             </summary>
         </member>
         <member name="P:ECAR.DocuSign.Models.DocumentModel.DSRoleName">
@@ -155,6 +155,191 @@
         <member name="P:ECAR.DocuSign.Models.DocumentModel.DSDocumentId">
             <summary>
             Document ID returned from the DocuSign ceremony.
+            </summary>
+        </member>
+        <member name="T:ECAR.DocuSign.Models.EnvelopeDocumentModel">
+            <summary>
+            Data model for documents retrieved from DocuSign.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeDocumentModel.EnvelopeId">
+            <summary>
+            Envelope ID returned from the DocuSign ceremony.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeDocumentModel.DocumentId">
+            <summary>
+            Document ID from DocuSign (integer ID for actual documents, 'certificate' for certificates).
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeDocumentModel.DSDocumentGUID">
+            <summary>
+            Document GUID used by DocuSign.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeDocumentModel.Order">
+            <summary>
+            Signature sequence order of the document (999 for certificates).
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeDocumentModel.Name">
+            <summary>
+            Name of the document.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeDocumentModel.Type">
+            <summary>
+            Type of the document ('content' for documents, 'summary' for certificates).
+            </summary>
+        </member>
+        <member name="T:ECAR.DocuSign.Models.EnvelopeModel">
+            <summary>
+            Data model for envelopes retrieved from DocuSign.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeModel.LastModifiedDateTime">
+            <summary>
+            The date and time the item was last modified (UTC/ISO).
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeModel.ExpireEnabled">
+            <summary>
+            If the envelope is set to expire
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeModel.ExpireDateTime">
+            <summary>
+            The expiration DateTime, if exists (UTC/ISO).
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeModel.ExpireAfter">
+            <summary>
+            Expiration ticks in minutes.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeModel.VoidedDateTime">
+            <summary>
+            The date and time the envelope or template was voided, if exists (UTC/ISO).
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeModel.StatusChangedDateTime">
+            <summary>
+            The date and time the status changed (UTC/ISO)..
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeModel.Status">
+             <summary>
+             Indicates the envelope's current status. 
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeModel.SentDateTime">
+            <summary>
+            The date and time the envelope was sent (UTC/ISO).
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeModel.EnvelopeId">
+            <summary>
+            The GUID identifier for the envelope.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeModel.VoidedReason">
+            <summary>
+            The reason the envelope or template was voided, if exists.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeModel.CompletedDateTime">
+            <summary>
+            Specifies the date and time this item was completed, if exists (UTC/ISO).
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeModel.CreatedDateTime">
+            <summary>
+            Indicates the date and time the item was created (UTC/ISO).
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeModel.EmailSubject">
+            <summary>
+            Specifies the subject of the email that is sent to all recipients, if exists. 
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeModel.EmailBlurb">
+            <summary>
+            Text that is included in email body for all envelope recipients, if exists.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeModel.DeclinedDateTime">
+            <summary>
+            The date and time the recipient declined the document, if exists (UTC/ISO).
+            </summary>
+        </member>
+        <member name="T:ECAR.DocuSign.Models.EnvelopeRecipientModel">
+            <summary>
+            Data model for document recipients retrieved from DocuSign.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeRecipientModel.RecipientId">
+            <summary>
+            Recipient ID (friendly) returned from DocuSign.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeRecipientModel.ClientUserId">
+            <summary>
+            Client specific Id for the recipient (empty for emailed DocuSign documents).
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeRecipientModel.DeclinedDateTime">
+            <summary>
+            Date the recipient declined to sign (if available).
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeRecipientModel.DeclinedReason">
+            <summary>
+            Reason the recipient declined to sign (if available).
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeRecipientModel.DeliveredDateTime">
+            <summary>
+            Date the envelope was delivered to this recipient.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeRecipientModel.Email">
+            <summary>
+            Email address for the recipient.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeRecipientModel.Name">
+            <summary>
+            Name of the recipient.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeRecipientModel.Status">
+            <summary>
+            Status of the DocuSign envelope for this recipient.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeRecipientModel.RecipientType">
+            <summary>
+            The recipient type for this recipient (signer/witness etc.).
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeRecipientModel.RoleName">
+            <summary>
+            The role name for this recipient.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeRecipientModel.SignatureName">
+            <summary>
+            Name provided by the recipient to DocuSign at signature ceremony.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeRecipientModel.SignedDateTime">
+            <summary>
+            Date and time the recipient completed the DocuSign ceremony (if available).
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeRecipientModel.DSUserGUID">
+            <summary>
+            Recipient GUID used by DocuSign.
             </summary>
         </member>
         <member name="T:ECAR.DocuSign.Properties.Resources">
@@ -217,28 +402,35 @@
             <summary>
             Get a list of all DocuSign envelope IDs starting from a given date.
             </summary>
-            <param name="DSStartDate">The date to start querying from</param>
-            <returns></returns>
+            <param name="StartDate">The date to start querying from</param>
+            <returns>List of all envelopes from the given date as EnvelopeModel objects</returns>
+        </member>
+        <member name="M:ECAR.DocuSign.Status.DSGetAllRecipients(System.String)">
+            <summary>
+            Get a list of all DocuSign envelope recipients for a given envelope ID.
+            </summary>
+            <param name="EnvelopeID">The envelope ID to query</param>
+            <returns>List of all recipients for the envelope as a list of RecipientModel objects</returns>
         </member>
         <member name="M:ECAR.DocuSign.Status.DSCheckStatus(System.String)">
             <summary>
             Check the status of the DocuSign signature ceremony.
             </summary>
-            <param name="DSEnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
+            <param name="EnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
             <returns>Status of the document (any, created, deleted, sent, delivered, signed, completed, declined, timedout, voided)</returns>
         </member>
-        <member name="M:ECAR.DocuSign.Status.DSGetDocInfo(System.String)">
+        <member name="M:ECAR.DocuSign.Status.DSGetAllDocuments(System.String)">
             <summary>
-            Retrieve info about the document contained in a DocuSign envelope (only supports envelopes with single document).
+            Retrieve info about the documents contained in a DocuSign envelope.
             </summary>
-            <param name="DSEnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
-            <returns></returns>
+            <param name="EnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
+            <returns>List of all documents in the requested envelope as EnvelopeDocumentModel objects</returns>
         </member>
         <member name="M:ECAR.DocuSign.Status.DSGetDocument(System.String,System.String)">
             <summary>
             Retrieve a document from DocuSign.
             </summary>
-            <param name="DSEnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
+            <param name="EnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
             <param name="DSDocumentID">ID of the document within the DocuSign envelope</param>
             <returns>File stream of the document retrieved from DocuSign</returns>
         </member>
@@ -246,72 +438,72 @@
             <summary>
             Retrieve the user selected value of a named check-box within a DocuSign document.
             </summary>
-            <param name="DSTabLabel">Tab label of the check box in the DocuSign template</param>
-            <param name="DSEnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
-            <param name="DSDocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
+            <param name="TabLabel">Tab label of the check box in the DocuSign template</param>
+            <param name="EnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
+            <param name="DocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
             <returns>Returns the check box's selected value as a string ("true" or "false")</returns>
         </member>
         <member name="M:ECAR.DocuSign.Status.DSGetDocumentTextField(System.String,System.String,System.String)">
             <summary>
             Retrieve the user provided value of a named text field within a DocuSign document.
             </summary>
-            <param name="DSTabLabel">Tab label of the text field in the DocuSign template</param>
-            <param name="DSEnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
-            <param name="DSDocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
+            <param name="TabLabel">Tab label of the text field in the DocuSign template</param>
+            <param name="EnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
+            <param name="DocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
             <returns>User entered text in the field</returns>
         </member>
         <member name="M:ECAR.DocuSign.Status.DSGetDocumentSsnField(System.String,System.String,System.String)">
             <summary>
             Retrieve the user provided value for a named SSN field within a DocuSign document.
             </summary>
-            <param name="DSTabLabel">Tab label of the SSN field in the DocuSign template</param>
-            <param name="DSEnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
-            <param name="DSDocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
+            <param name="TabLabel">Tab label of the SSN field in the DocuSign template</param>
+            <param name="EnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
+            <param name="DocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
             <returns>User entered SSN text in the field</returns>
         </member>
         <member name="M:ECAR.DocuSign.Status.DSGetDocumentDateSignedField(System.String,System.String,System.String)">
             <summary>
             Retrieve the value for a named date of signature field within a DocuSign document.
             </summary>
-            <param name="DSTabLabel">Tab label of the date field in the DocuSign template</param>
-            <param name="DSEnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
-            <param name="DSDocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
+            <param name="TabLabel">Tab label of the date field in the DocuSign template</param>
+            <param name="EnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
+            <param name="DocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
             <returns>Date signed as set in the named field</returns>
         </member>
         <member name="M:ECAR.DocuSign.Status.DSGetDocumentDateField(System.String,System.String,System.String)">
             <summary>
             Retrieve the user provided value for a named date field within a DocuSign document.
             </summary>
-            <param name="DSTabLabel">Tab label of the date field in the DocuSign template</param>
-            <param name="DSEnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
-            <param name="DSDocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
+            <param name="TabLabel">Tab label of the date field in the DocuSign template</param>
+            <param name="EnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
+            <param name="DocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
             <returns>User provided date value in the named field</returns>
         </member>
         <member name="M:ECAR.DocuSign.Status.DSGetDocumentFirstNameField(System.String,System.String,System.String)">
             <summary>
             Retrieve the user provided value for a named First Name field within a DocuSign document.
             </summary>
-            <param name="DSTabLabel">Tab label of the date field in the DocuSign template</param>
-            <param name="DSEnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
-            <param name="DSDocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
+            <param name="TabLabel">Tab label of the date field in the DocuSign template</param>
+            <param name="EnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
+            <param name="DocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
             <returns>User provided first name in the named field</returns>
         </member>
         <member name="M:ECAR.DocuSign.Status.DSGetDocumentLastNameField(System.String,System.String,System.String)">
             <summary>
             Retrieve the user provided value for a named Last Name field within a DocuSign document.
             </summary>
-            <param name="DSTabLabel">Tab label of the date field in the DocuSign template</param>
-            <param name="DSEnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
-            <param name="DSDocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
+            <param name="TabLabel">Tab label of the date field in the DocuSign template</param>
+            <param name="EnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
+            <param name="DocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
             <returns>User provided last name value in the named field</returns>
         </member>
         <member name="M:ECAR.DocuSign.Status.DSGetDocumentSignHereField(System.String,System.String,System.String)">
             <summary>
             Retrieve the user signature status for a named sign-here field within a DocuSign document.
             </summary>
-            <param name="DSTabLabel">Tab label of the date field in the DocuSign template</param>
-            <param name="DSEnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
-            <param name="DSDocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
+            <param name="TabLabel">Tab label of the date field in the DocuSign template</param>
+            <param name="EnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
+            <param name="DocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
             <returns>Returns one of: "active", "signed", "declined" or "na" (e.g. for optional signature fields)</returns>
         </member>
         <member name="T:ECAR.DocuSign.TemplateSign">
