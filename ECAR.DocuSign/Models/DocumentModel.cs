@@ -5,7 +5,7 @@ using System.Text;
 namespace ECAR.DocuSign.Models
 {
     /// <summary>
-    /// Data model for documents signed via ECAR.DocuSign.
+    /// Data model for documents sent for signature via ECAR.DocuSign.
     /// </summary>
     public class DocumentModel
     {
@@ -13,14 +13,14 @@ namespace ECAR.DocuSign.Models
         /// Email address for the recipient.
         /// </summary>
         public string SignerEmail { get; set; }
-        
+
         /// <summary>
         /// Display name for the recipient.
         /// </summary>
         public string SignerName { get; set; }
-        
+
         /// <summary>
-        /// The recipient's ID value in the calling application (e.g. tracking number).
+        /// The recipient's identifier in the calling application (e.g. tracking number).
         /// </summary>
         public string SignerId { get; set; }
 
@@ -28,12 +28,12 @@ namespace ECAR.DocuSign.Models
         /// Name of the DocuSign recipient role.
         /// </summary>
         public string DSRoleName { get; set; }
-        
+
         /// <summary>
         /// Name of the DocuSign template to use.
         /// </summary>
         public string DSTemplateName { get; set; }
-        
+
         /// <summary>
         /// Subject line for the email sent from DocuSign.
         /// </summary>
@@ -49,4 +49,5 @@ namespace ECAR.DocuSign.Models
         /// </summary>
         public string DSDocumentId { get; internal set; }
     }
+
 }
