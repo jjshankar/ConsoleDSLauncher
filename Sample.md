@@ -92,7 +92,13 @@ namespace MyWebApp.Controllers
                 ViewBag.Result = status;
 
                 // Get document data
-                DocumentModel doc = ECAR.DocuSign.Status.DSGetDocInfo(envelopeId);                
+                List<EnvelopeDocumentModel> docList = ECAR.DocuSign.Status.DSGetDocInfo(envelopeId);
+
+                // Get the first and only document in this list
+                Debug.Assert(docList.Count == 1);
+                EnvelopeDocumentModel doc = docList[0];
+
+                // Extract document fields
                 ViewBag.Consent = ECAR.DocuSign.Status.DSGetDocumentCheckBoxField("MEMBER_CONSENT_YES", envelopeId, doc.DSDocumentId);
                 ViewBag.FName = ECAR.DocuSign.Status.DSGetDocumentFirstNameField("MEMBER_FN", envelopeId, doc.DSDocumentId);
                 ViewBag.MName = ECAR.DocuSign.Status.DSGetDocumentTextField("MEMBER_MI", envelopeId, doc.DSDocumentId);

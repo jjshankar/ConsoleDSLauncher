@@ -1,5 +1,5 @@
 # ECAR.DocuSign
-### (Last release on: Oct 12, 2020)
+### Last release: Oct 20, 2020
 
 A library to easily connect to DocuSign services and embed signing within your web application.  
 
@@ -9,6 +9,8 @@ This library also provides support for working with the DocuSign document and pe
 3. Extract user entered data from specific (named) data fields in the DocuSign document 
 4. Pre-fill fields in the DocuSign document (and optionally lock) before presenting for signature
 
+### [Link to current version on Azure DevOps Artifacts](https://dev.azure.com/epiqsystems/ECAR/_packaging?_a=package&feed=EC.Packages&view=versions&package=ECAR.DocuSign&protocolType=NuGet)
+
 # Getting Started
 Getting started with **ECAR.DocuSign** is as easy as 1..2..3
 1.	Add reference to `ECAR.DocuSign` in your project
@@ -17,9 +19,9 @@ Getting started with **ECAR.DocuSign** is as easy as 1..2..3
 
 
 # Sample Code
-## Complete Sample
 [Sample Controller](Sample.md)
 
+# Setup and Signing (using a DocuSign template)
 ## This is how you configure DocuSign authentication
 ```csharp
     if (!ECAR.DocuSign.DocuSignConfig.Ready)
@@ -94,6 +96,7 @@ Simply call the `EmailedTemplateSign` method passing in the `DocumentModel` obje
     string result = ECAR.DocuSign.TemplateSign.EmailedTemplateSign(ref dsDoc, tabPresets);
 ```
 
+# Status and Retrieval
 ## This is how you retrieve a list of DocuSign envelopes from a given date
 ```csharp
     // Past x days (30 days in this example)
@@ -102,7 +105,28 @@ Simply call the `EmailedTemplateSign` method passing in the `DocumentModel` obje
     // ...or set up custom date
     startDate = new DateTime(«year», «month», «date»);
 
-    List<string> envelopeIds = ECAR.DocuSign.Status.DSGetAllEnvelopes(startDate);
+    // Retreive the envelopes
+    List<EnvelopeModel> envModelList = ECAR.DocuSign.Status.DSGetAllEnvelopes((DateTime)startDate);
+
+    // Iterate and list ALL properties
+    foreach (EnvelopeModel env in envModelList)
+    {
+        Console.WriteLine("=======  Envelope ID: {0}  =======", env.EnvelopeId);
+        Console.WriteLine("\tStatus: {0}", env.Status);
+        Console.WriteLine("\tCompletedDateTime: {0}", env.CompletedDateTime);
+        Console.WriteLine("\tCreatedDateTime: {0}", env.CreatedDateTime);
+        Console.WriteLine("\tDeclinedDateTime: {0}", env.DeclinedDateTime);
+        Console.WriteLine("\tEmailBlurb: {0}", env.EmailBlurb);
+        Console.WriteLine("\tEmailSubject: {0}", env.EmailSubject);
+        Console.WriteLine("\tExpireAfter: {0}", env.ExpireAfter);
+        Console.WriteLine("\tExpireDateTime: {0}", env.ExpireDateTime);
+        Console.WriteLine("\tExpireEnabled: {0}", env.ExpireEnabled);
+        Console.WriteLine("\tLastModifiedDateTime: {0}", env.LastModifiedDateTime);
+        Console.WriteLine("\tSentDateTime: {0}", env.SentDateTime);
+        Console.WriteLine("\tStatusChangedDateTime: {0}", env.StatusChangedDateTime);
+        Console.WriteLine("\tVoidedDateTime: {0}", env.VoidedDateTime);
+        Console.WriteLine("\tVoidedReason: {0}", env.VoidedReason);
+    }
 ```
 
 ## This is how you check the signature status of a DocuSign envelope
@@ -110,24 +134,55 @@ Simply call the `EmailedTemplateSign` method passing in the `DocumentModel` obje
     string status = ECAR.DocuSign.Status.DSCheckStatus(envelopeId);
 ```
 
+## This is how you retrieve a list of ALL recipients for an envelope
+```csharp
+    // Retrieve ALL recipients for an envelope
+    List<EnvelopeRecipientModel> allRecipients = ECAR.DocuSign.Status.DSGetAllRecipients(envelopeId);
+    
+    // Iterate and list properties for the recipients
+    foreach (EnvelopeRecipientModel recipient in allRecipients)
+    {
+        Console.WriteLine("\t------- Recipient ID: {0} ------------", recipient.RecipientId);
+        Console.WriteLine("\t\tClientUserId: {0}", recipient.ClientUserId);
+        Console.WriteLine("\t\tDeclinedDateTime: {0}", recipient.DeclinedDateTime);
+        Console.WriteLine("\t\tDeclinedReason: {0}", recipient.DeclinedReason);
+        Console.WriteLine("\t\tDeliveredDateTime: {0}", recipient.DeliveredDateTime);
+        Console.WriteLine("\t\tEmail: {0}", recipient.Email);
+        Console.WriteLine("\t\tName: {0}", recipient.Name);
+        Console.WriteLine("\t\tRecipientType: {0}", recipient.RecipientType);
+        Console.WriteLine("\t\tRoleName: {0}", recipient.RoleName);
+        Console.WriteLine("\t\tSignatureName: {0}", recipient.SignatureName);
+        Console.WriteLine("\t\tSignedDateTime: {0}", recipient.SignedDateTime);
+        Console.WriteLine("\t\tStatus: {0}", recipient.Status);
+        Console.WriteLine("\t\tDSUserGUID: {0}", recipient.DSUserGUID);
+    }
+```
+
+## This is how you extract the list of documents included in an envelope
+```csharp
+    // Get all documents in the envelope 
+    List<EnvelopeDocumentModel> docList = ECAR.DocuSign.Status.DSGetAllDocuments(envelopeId);
+    
+    // Get the first item in the list (or iterate if more than one document is available)
+    //  NOTE: If the envelope is signed, the DocuSign certificate is attached as the last item in this list
+    EnvelopeDocumentModel doc = docList[0];
+```
+
 ## This is how you extract data from named fields in your document
 ```csharp
-    // Get the DocumentModel from the envelope
-    DocumentModel doc = ECAR.DocuSign.Status.DSGetDocInfo(envelopeId);
-
     // Get data from various control types
-    string FirstName = ECAR.DocuSign.Status.DSGetDocumentFirstNameField("MEMBER_FIRST_NAME", envelopeId, doc.DSDocumentId);
-    string LastName = ECAR.DocuSign.Status.DSGetDocumentLastNameField("MEMBER_LAST_NAME", envelopeId, doc.DSDocumentId);
+    string FirstName = ECAR.DocuSign.Status.DSGetDocumentFirstNameField("MEMBER_FIRST_NAME", envelopeId, doc.DocumentId);
+    string LastName = ECAR.DocuSign.Status.DSGetDocumentLastNameField("MEMBER_LAST_NAME", envelopeId, doc.DocumentId);
 
-    string Consent = ECAR.DocuSign.Status.DSGetDocumentCheckBoxField("MEMBER_CONSENT_YES", envelopeId, doc.DSDocumentId);
+    string Consent = ECAR.DocuSign.Status.DSGetDocumentCheckBoxField("MEMBER_CONSENT_YES", envelopeId, doc.DocumentId);
 
-    string SSN = ECAR.DocuSign.Status.DSGetDocumentSsnField("MEMBER_SSN", envelopeId, doc.DSDocumentId);
-    string DOB = ECAR.DocuSign.Status.DSGetDocumentDateField("MEMBER_DOB", envelopeId, doc.DSDocumentId);
+    string SSN = ECAR.DocuSign.Status.DSGetDocumentSsnField("MEMBER_SSN", envelopeId, doc.DocumentId);
+    string DOB = ECAR.DocuSign.Status.DSGetDocumentDateField("MEMBER_DOB", envelopeId, doc.DocumentId);
 
-    string Explanation = ECAR.DocuSign.Status.DSGetDocumentTextField("MEMBER_EXPLAINS_UNIVERSE", envelopeId, doc.DSDocumentId);
+    string Explanation = ECAR.DocuSign.Status.DSGetDocumentTextField("MEMBER_EXPLAINS_UNIVERSE", envelopeId, doc.DocumentId);
 
-    string SignStatus = ECAR.DocuSign.Status.DSGetDocumentSignHereField("MEMBER_SIGNATURE", envelopeId, doc.DSDocumentId);
-    string SignDate = ECAR.DocuSign.Status.DSGetDocumentDateSignedField("MEMBER_SIGNATURE_DATE", envelopeId, doc.DSDocumentId);
+    string SignStatus = ECAR.DocuSign.Status.DSGetDocumentSignHereField("MEMBER_SIGNATURE", envelopeId, doc.DocumentId);
+    string SignDate = ECAR.DocuSign.Status.DSGetDocumentDateSignedField("MEMBER_SIGNATURE_DATE", envelopeId, doc.DocumentId);
 ```
 
 ## This is how you download a document from DocuSign
@@ -140,11 +195,13 @@ Simply call the `EmailedTemplateSign` method passing in the `DocumentModel` obje
 
 # Limitations/known issues
 - Supports only the use of a template uploaded to DocuSign
-- Supports only one document per DocuSign envelope
+- ~~Supports only one document per DocuSign envelope~~
 
 # Completed enhancements
 - [x] ~~Email document for signing asynchronously~~ *Avaialable with 10/1/2020 release (>1.0.5)*
 - [x] ~~Retrieve a list of DocuSign envelopes~~ *Avaialable with 10/9/2020 release (>1.0.7)*
+- [x] ~~Retrieve a list of envelope recipients~~ *Avaialable with 10/20/2020 release (>1.0.8)*
+- [x] ~~Retrieve a list of envelope documents~~ *Avaialable with 10/20/2020 release (>1.0.8)*
 
 # Future enhancements
 - [ ] Prepare and present a custom document (passed in from the calling application) to the recipient
