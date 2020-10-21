@@ -94,8 +94,7 @@ namespace MyWebApp.Controllers
                 // Get document data
                 List<EnvelopeDocumentModel> docList = ECAR.DocuSign.Status.DSGetDocInfo(envelopeId);
 
-                // Get the first and only document in this list
-                Debug.Assert(docList.Count == 1);
+                // Get the first document in this list (or iterate the list)
                 EnvelopeDocumentModel doc = docList[0];
 
                 // Extract document fields
