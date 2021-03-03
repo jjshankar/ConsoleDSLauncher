@@ -1,5 +1,5 @@
 # ECAR.DocuSign
-### Last release: Oct 20, 2020
+### Last release: Mar 2, 2021 (ver. 1.0.10)
 
 A library to easily connect to DocuSign services and embed signing within your web application.  
 
@@ -205,6 +205,10 @@ Simply call the `EmailedTemplateSign` method passing in the `DocumentModel` obje
 
 # Future enhancements
 - [ ] Prepare and present a custom document (passed in from the calling application) to the recipient
+
+# Maintenance releases
+- [x] ~~Updated to use DocuSign.eSign.DLL v5.2~~ *Avaialable with 03/02/2021 release (>1.0.10)*
+- [x] ~~Updated to support .NETCore3.1~~ *Avaialable with 03/02/2021 release (>1.0.10)*
 
 # Contribute
 Share your feedback/suggestions/requests
