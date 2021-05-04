@@ -404,6 +404,7 @@
             </summary>
             <param name="StartDate">The date to start querying from</param>
             <returns>List of all envelopes from the given date as EnvelopeModel objects</returns>
+            <exception cref="T:System.Exception"></exception>
         </member>
         <member name="M:ECAR.DocuSign.Status.DSGetAllRecipients(System.String)">
             <summary>
@@ -411,6 +412,7 @@
             </summary>
             <param name="EnvelopeID">The envelope ID to query</param>
             <returns>List of all recipients for the envelope as a list of RecipientModel objects</returns>
+            <exception cref="T:System.Exception"></exception>
         </member>
         <member name="M:ECAR.DocuSign.Status.DSCheckStatus(System.String)">
             <summary>
@@ -418,13 +420,16 @@
             </summary>
             <param name="EnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
             <returns>Status of the document (any, created, deleted, sent, delivered, signed, completed, declined, timedout, voided)</returns>
+            <exception cref="T:System.Exception"></exception>
         </member>
         <member name="M:ECAR.DocuSign.Status.DSGetAllDocuments(System.String)">
             <summary>
             Retrieve info about the documents contained in a DocuSign envelope.
+            If envelope was signed, the signer's DocuSign certificate is appended to this list.
             </summary>
             <param name="EnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
-            <returns>List of all documents in the requested envelope as EnvelopeDocumentModel objects</returns>
+            <returns>List of all documents in the requested envelope as EnvelopeDocumentModel objects.</returns>
+            <exception cref="T:System.Exception"></exception>
         </member>
         <member name="M:ECAR.DocuSign.Status.DSGetDocument(System.String,System.String)">
             <summary>
@@ -433,6 +438,7 @@
             <param name="EnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
             <param name="DSDocumentID">ID of the document within the DocuSign envelope</param>
             <returns>File stream of the document retrieved from DocuSign</returns>
+            <exception cref="T:System.Exception"></exception>
         </member>
         <member name="M:ECAR.DocuSign.Status.DSGetDocumentCheckBoxField(System.String,System.String,System.String)">
             <summary>
@@ -442,6 +448,7 @@
             <param name="EnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
             <param name="DocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
             <returns>Returns the check box's selected value as a string ("true" or "false")</returns>
+            <exception cref="T:System.Exception"></exception>
         </member>
         <member name="M:ECAR.DocuSign.Status.DSGetDocumentTextField(System.String,System.String,System.String)">
             <summary>
@@ -451,6 +458,7 @@
             <param name="EnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
             <param name="DocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
             <returns>User entered text in the field</returns>
+            <exception cref="T:System.Exception"></exception>
         </member>
         <member name="M:ECAR.DocuSign.Status.DSGetDocumentSsnField(System.String,System.String,System.String)">
             <summary>
@@ -460,6 +468,7 @@
             <param name="EnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
             <param name="DocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
             <returns>User entered SSN text in the field</returns>
+            <exception cref="T:System.Exception"></exception>
         </member>
         <member name="M:ECAR.DocuSign.Status.DSGetDocumentDateSignedField(System.String,System.String,System.String)">
             <summary>
@@ -469,6 +478,7 @@
             <param name="EnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
             <param name="DocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
             <returns>Date signed as set in the named field</returns>
+            <exception cref="T:System.Exception"></exception>
         </member>
         <member name="M:ECAR.DocuSign.Status.DSGetDocumentDateField(System.String,System.String,System.String)">
             <summary>
@@ -478,6 +488,7 @@
             <param name="EnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
             <param name="DocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
             <returns>User provided date value in the named field</returns>
+            <exception cref="T:System.Exception"></exception>
         </member>
         <member name="M:ECAR.DocuSign.Status.DSGetDocumentFirstNameField(System.String,System.String,System.String)">
             <summary>
@@ -487,6 +498,7 @@
             <param name="EnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
             <param name="DocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
             <returns>User provided first name in the named field</returns>
+            <exception cref="T:System.Exception"></exception>
         </member>
         <member name="M:ECAR.DocuSign.Status.DSGetDocumentLastNameField(System.String,System.String,System.String)">
             <summary>
@@ -496,6 +508,7 @@
             <param name="EnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
             <param name="DocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
             <returns>User provided last name value in the named field</returns>
+            <exception cref="T:System.Exception"></exception>
         </member>
         <member name="M:ECAR.DocuSign.Status.DSGetDocumentSignHereField(System.String,System.String,System.String)">
             <summary>
@@ -505,6 +518,7 @@
             <param name="EnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
             <param name="DocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
             <returns>Returns one of: "active", "signed", "declined" or "na" (e.g. for optional signature fields)</returns>
+            <exception cref="T:System.Exception"></exception>
         </member>
         <member name="T:ECAR.DocuSign.TemplateSign">
             <summary>

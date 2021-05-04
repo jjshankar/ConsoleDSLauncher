@@ -1,12 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net46;netcoreapp20</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net46;netcoreapp3.1</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Epiq</Authors>
     <Company>Epiq Global</Company>
     <Copyright>(c) Epiq Global</Copyright>
     <Description>Library to embed DocuSign signatures in a web application</Description>
+    <Version>1.0.10</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -18,7 +19,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DocuSign.eSign.dll" Version="5.1.0" />
+    <PackageReference Include="DocuSign.eSign.dll" Version="5.2.0" />
   </ItemGroup>
 
   <ItemGroup>
