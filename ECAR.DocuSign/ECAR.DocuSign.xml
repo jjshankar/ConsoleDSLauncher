@@ -342,6 +342,46 @@
             Recipient GUID used by DocuSign.
             </summary>
         </member>
+        <member name="T:ECAR.DocuSign.Models.ExpirationModel">
+            <summary>
+            Data model for expiration settings for documents sent via ECAR.DocuSign.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.ExpirationModel.ExpirationEnabled">
+            <summary>
+            Indicates whether expiration is enabled.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.ExpirationModel.ExpireAfterDays">
+            <summary>
+            Envelope will expire after this many days.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.ExpirationModel.ExpireWarnDays">
+            <summary>
+            Expiration warning will be sent this many days before.
+            </summary>
+        </member>
+        <member name="T:ECAR.DocuSign.Models.ReminderModel">
+            <summary>
+            Data model for reminder notifications for documents sent via ECAR.DocuSign.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.ReminderModel.ReminderEnabled">
+            <summary>
+            Indicates whether a reminder is enabled
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.ReminderModel.ReminderDelayDays">
+            <summary>
+            First reminder to be sent after this many days
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.ReminderModel.ReminderFrequencyDays">
+            <summary>
+            Frequency of reminder emails after the first (in days).
+            </summary>
+        </member>
         <member name="T:ECAR.DocuSign.Properties.Resources">
             <summary>
               A strongly-typed resource class, for looking up localized strings, etc.
@@ -525,11 +565,13 @@
             ECAR.DocuSign embedded signing ceremony with a predefined document template.
             </summary>
         </member>
-        <member name="M:ECAR.DocuSign.TemplateSign.ExecuteDocuSign(ECAR.DocuSign.Models.DocumentModel@,System.Collections.Generic.List{ECAR.DocuSign.Models.DocPreset})">
+        <member name="M:ECAR.DocuSign.TemplateSign.ExecuteDocuSign(ECAR.DocuSign.Models.DocumentModel@,ECAR.DocuSign.Models.ReminderModel,ECAR.DocuSign.Models.ExpirationModel,System.Collections.Generic.List{ECAR.DocuSign.Models.DocPreset})">
             <summary>
             Internal private method to call DocuSign for both embedded and asynchronous (email) signing
             </summary>
             <param name="Doc">Document data (in: document &amp; signer info; out: DocuSign envelope &amp; document ID)</param>
+            <param name="Rem">Reminder data</param>
+            <param name="Exp">Expiration Data</param>
             <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
             <returns>EnvelopeSummary object with result from DocuSign call</returns>
         </member>
@@ -542,11 +584,32 @@
             <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
             <returns>DocuSign URL for embedded signing</returns>
         </member>
+        <member name="M:ECAR.DocuSign.TemplateSign.EmbeddedTemplateSign(System.String,ECAR.DocuSign.Models.DocumentModel@,ECAR.DocuSign.Models.ReminderModel,ECAR.DocuSign.Models.ExpirationModel,System.Collections.Generic.List{ECAR.DocuSign.Models.DocPreset})">
+            <summary>
+            Initiate embedded signing ceremony with DocuSign (with reminder and expiration settings).
+            </summary>
+            <param name="AppReturnUrl">Return URL that DocuSign should transfer control to after the embedded signing cermony is complete ('?envelopeId=[id]' will be appended)</param>
+            <param name="Doc">Document data (in: document &amp; signer info; out: DocuSign envelope &amp; document ID)</param>
+            <param name="Rem">Reminder details if required for DocuSign envelope</param>
+            <param name="Exp">Expiration details if required for the DocuSign envelope</param>
+            <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
+            <returns>DocuSign URL for embedded signing</returns>
+        </member>
         <member name="M:ECAR.DocuSign.TemplateSign.EmailedTemplateSign(ECAR.DocuSign.Models.DocumentModel@,System.Collections.Generic.List{ECAR.DocuSign.Models.DocPreset})">
             <summary>
             Send a DocuSign for asynchronous signing via email.
             </summary>
             <param name="Doc">Document data (in: document &amp; signer info; out: DocuSign envelope &amp; document ID)</param>
+            <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
+            <returns>DocuSign envelope status</returns>
+        </member>
+        <member name="M:ECAR.DocuSign.TemplateSign.EmailedTemplateSign(ECAR.DocuSign.Models.DocumentModel@,ECAR.DocuSign.Models.ReminderModel,ECAR.DocuSign.Models.ExpirationModel,System.Collections.Generic.List{ECAR.DocuSign.Models.DocPreset})">
+            <summary>
+            Send a DocuSign for asynchronous signing via email (with reminder and expiration settings).
+            </summary>
+            <param name="Doc">Document data (in: document &amp; signer info; out: DocuSign envelope &amp; document ID)</param>
+            <param name="Rem">Reminder details if required for DocuSign envelope</param>
+            <param name="Exp">Expiration details if required for the DocuSign envelope</param>
             <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
             <returns>DocuSign envelope status</returns>
         </member>

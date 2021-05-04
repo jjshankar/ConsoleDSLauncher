@@ -38,7 +38,7 @@ namespace DocuSignTester
                 Console.Write("Enter recipient email address: ");
                 signerEmail = Console.ReadLine();
 
-                Console.Write("Enter recipient ID (any): ");
+                Console.Write("Enter recipient ID (any value; leave blank for email workflow): ");
                 signerId = Console.ReadLine();
             }
 
@@ -88,19 +88,34 @@ namespace DocuSignTester
 
                 List<ECAR.DocuSign.Models.DocPreset> tabs = new List<ECAR.DocuSign.Models.DocPreset> { ssn, tin, dob };
 
+                ReminderModel rem = new ReminderModel
+                {
+                    ReminderEnabled = true,
+                    ReminderDelayDays = 1,
+                    ReminderFrequencyDays = 1
+                };
 
                 string returnUrl = "https://www.epiqglobal.com";
 
-                // Call library to initiate DocuSign; after signing, DocuSign will redirect to the page specified as returnUrl.
-                //  - envelopeId parameter will be passed back by ECAR.DocuSign to the CheckStatus action
-                //  - the returned dsDoc object will also have the envelope ID and document ID
-                string viewUrl = ECAR.DocuSign.TemplateSign.EmbeddedTemplateSign(returnUrl, ref dsDoc, tabs);
+                if (!string.IsNullOrEmpty(signerId))
+                {
+                    // Call library to initiate DocuSign; after signing, DocuSign will redirect to the page specified as returnUrl.
+                    //  - envelopeId parameter will be passed back by ECAR.DocuSign to the CheckStatus action
+                    //  - the returned dsDoc object will also have the envelope ID and document ID
+                    string viewUrl = ECAR.DocuSign.TemplateSign.EmbeddedTemplateSign(returnUrl, ref dsDoc, rem, null, tabs);
 
-                // Redirect to DocuSign URL
-                ShowPage(viewUrl);
+                    // Redirect to DocuSign URL
+                    ShowPage(viewUrl);
 
-                Console.WriteLine("DocuSign open in a new browser window.  Complete the signature ceremony.");
-                Console.WriteLine(string.Format("Envelope ID: {0}; status: {1}", dsDoc.DSEnvelopeId, Status.DSCheckStatus(dsDoc.DSEnvelopeId)));
+                    Console.WriteLine("DocuSign open in a new browser window.  Complete the signature ceremony.");
+                    Console.WriteLine(string.Format("Envelope ID: {0}; status: {1}", dsDoc.DSEnvelopeId, Status.DSCheckStatus(dsDoc.DSEnvelopeId)));
+                }
+                else
+                {
+                    // Call library to initiate DocuSign via email
+                    string status = ECAR.DocuSign.TemplateSign.EmailedTemplateSign(ref dsDoc, rem, null, tabs);
+                    Console.WriteLine("DocuSign email workflow complete.  Status {0}.", status);
+                }
 
             }
             catch (Exception ex)
