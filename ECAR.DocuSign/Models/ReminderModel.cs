@@ -15,7 +15,7 @@ namespace ECAR.DocuSign.Models
         public bool ReminderEnabled { get; set; }
 
         /// <summary>
-        /// First reminder to be sent after this many days.
+        /// First reminder will be sent after this many days.
         /// </summary>
         public int ReminderDelayDays { get; set; }
 

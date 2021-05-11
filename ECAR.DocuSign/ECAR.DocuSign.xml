@@ -369,12 +369,12 @@
         </member>
         <member name="P:ECAR.DocuSign.Models.ReminderModel.ReminderEnabled">
             <summary>
-            Indicates whether a reminder is enabled
+            Indicates whether a reminder is enabled.
             </summary>
         </member>
         <member name="P:ECAR.DocuSign.Models.ReminderModel.ReminderDelayDays">
             <summary>
-            First reminder to be sent after this many days
+            First reminder will be sent after this many days.
             </summary>
         </member>
         <member name="P:ECAR.DocuSign.Models.ReminderModel.ReminderFrequencyDays">

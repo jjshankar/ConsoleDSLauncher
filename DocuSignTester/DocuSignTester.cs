@@ -95,6 +95,13 @@ namespace DocuSignTester
                     ReminderFrequencyDays = 1
                 };
 
+                ExpirationModel exp = new ExpirationModel
+                {
+                    ExpirationEnabled = true,
+                    ExpireAfterDays = 3,
+                    ExpireWarnDays = 1
+                };
+
                 string returnUrl = "https://www.epiqglobal.com";
 
                 if (!string.IsNullOrEmpty(signerId))
@@ -102,7 +109,7 @@ namespace DocuSignTester
                     // Call library to initiate DocuSign; after signing, DocuSign will redirect to the page specified as returnUrl.
                     //  - envelopeId parameter will be passed back by ECAR.DocuSign to the CheckStatus action
                     //  - the returned dsDoc object will also have the envelope ID and document ID
-                    string viewUrl = ECAR.DocuSign.TemplateSign.EmbeddedTemplateSign(returnUrl, ref dsDoc, rem, null, tabs);
+                    string viewUrl = ECAR.DocuSign.TemplateSign.EmbeddedTemplateSign(returnUrl, ref dsDoc, rem, exp, tabs);
 
                     // Redirect to DocuSign URL
                     ShowPage(viewUrl);
@@ -113,7 +120,7 @@ namespace DocuSignTester
                 else
                 {
                     // Call library to initiate DocuSign via email
-                    string status = ECAR.DocuSign.TemplateSign.EmailedTemplateSign(ref dsDoc, rem, null, tabs);
+                    string status = ECAR.DocuSign.TemplateSign.EmailedTemplateSign(ref dsDoc, rem, exp, tabs);
                     Console.WriteLine("DocuSign email workflow complete.  Status {0}.", status);
                 }
 
