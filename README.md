@@ -1,5 +1,5 @@
 # ECAR.DocuSign
-### Last release: Mar 2, 2021 (ver. 1.0.10)
+### Last release: May 13, 2021 (ver. 1.0.11)
 
 A library to easily connect to DocuSign services and embed signing within your web application.  
 
