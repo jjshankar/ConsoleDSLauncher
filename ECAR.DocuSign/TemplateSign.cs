@@ -18,9 +18,11 @@ namespace ECAR.DocuSign
         /// Internal private method to call DocuSign for both embedded and asynchronous (email) signing
         /// </summary>
         /// <param name="Doc">Document data (in: document &amp; signer info; out: DocuSign envelope &amp; document ID)</param>
+        /// <param name="Rem">Reminder data</param>
+        /// <param name="Exp">Expiration Data</param>
         /// <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
         /// <returns>EnvelopeSummary object with result from DocuSign call</returns>
-        private static EnvelopeSummary ExecuteDocuSign(ref DocumentModel Doc, List<DocPreset> Presets = null)
+        private static EnvelopeSummary ExecuteDocuSign(ref DocumentModel Doc, ReminderModel Rem = null, ExpirationModel Exp = null, List < DocPreset> Presets = null)
         {
             if (!DocuSignConfig.Ready)
                 throw new Exception(Resources.DSCONFIG_NOT_SET);
@@ -138,12 +140,43 @@ namespace ECAR.DocuSign
 
             compTemplate.InlineTemplates = new List<InlineTemplate> { inlineTemplate };
 
+            // Set up reminders and expirations if available
+            Notification notification = null;
+            if (Rem != null || Exp != null)
+            {
+                notification = new Notification
+                {
+                    UseAccountDefaults = "false"
+                };
+
+                if(Rem != null)
+                {
+                    notification.Reminders = new Reminders
+                    {
+                        ReminderEnabled = Rem.ReminderEnabled.ToString(),
+                        ReminderDelay = Rem.ReminderDelayDays.ToString(),
+                        ReminderFrequency = Rem.ReminderFrequencyDays.ToString()
+                    };
+                }
+
+                if(Exp != null)
+                {
+                    notification.Expirations = new Expirations
+                    {
+                        ExpireEnabled = Exp.ExpirationEnabled.ToString(),
+                        ExpireAfter = Exp.ExpireAfterDays.ToString(),
+                        ExpireWarn = Exp.ExpireWarnDays.ToString()
+                    };
+                }
+            }
+
             // Bring the objects together in the EnvelopeDefinition
             EnvelopeDefinition envelopeDefinition = new EnvelopeDefinition
             {
                 EmailSubject = Doc.DSEmailSubject,
                 Status = "sent",
-                CompositeTemplates = new List<CompositeTemplate> { compTemplate }
+                CompositeTemplates = new List<CompositeTemplate> { compTemplate },
+                Notification = notification ?? null
             };
 
             // 2. Use the SDK to create and send the envelope
@@ -154,7 +187,7 @@ namespace ECAR.DocuSign
             return results;
         }
 
-
+        #region PUBLIC_METHODS
         /// <summary>
         /// Initiate embedded signing ceremony with DocuSign.
         /// </summary>
@@ -175,7 +208,7 @@ namespace ECAR.DocuSign
                 //    - After signing, DocuSign will redirect to the URL specified in the AppReturnUrl argument
 
                 // Steps 1 & 2 are performed in the private method
-                EnvelopeSummary results = ExecuteDocuSign(ref Doc, Presets);
+                EnvelopeSummary results = ExecuteDocuSign(ref Doc, null, null, Presets);
 
                 // Populate EnvelopeId and DocumentId for return
                 //  DocumentId is always 1 for template sign
@@ -213,6 +246,65 @@ namespace ECAR.DocuSign
             }
         }
 
+        /// <summary>
+        /// Initiate embedded signing ceremony with DocuSign (with reminder and expiration settings).
+        /// </summary>
+        /// <param name="AppReturnUrl">Return URL that DocuSign should transfer control to after the embedded signing cermony is complete ('?envelopeId=[id]' will be appended)</param>
+        /// <param name="Doc">Document data (in: document &amp; signer info; out: DocuSign envelope &amp; document ID)</param>
+        /// <param name="Rem">Reminder details if required for DocuSign envelope</param>
+        /// <param name="Exp">Expiration details if required for the DocuSign envelope</param>
+        /// <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
+        /// <returns>DocuSign URL for embedded signing</returns>
+        public static string EmbeddedTemplateSign(string AppReturnUrl, ref DocumentModel Doc, ReminderModel Rem, ExpirationModel Exp, List<DocPreset> Presets = null)
+        {
+            try
+            {
+                // Embedded Signing Ceremony with a template
+                // 1. Create envelope request obj with template ID (get ID from DocuSign based on template name)
+                // 2. Use the SDK to create and send the envelope with a Template document in DocuSign
+                // 3. Create Envelope Recipient View request obj
+                // 4. Use the SDK to obtain a Recipient View URL
+                // 5. Return the Recipient View URL to the caller (takes user to DocuSign)
+                //    - After signing, DocuSign will redirect to the URL specified in the AppReturnUrl argument
+
+                // Steps 1 & 2 are performed in the private method
+                EnvelopeSummary results = ExecuteDocuSign(ref Doc, Rem, Exp, Presets);
+
+                // Populate EnvelopeId and DocumentId for return
+                //  DocumentId is always 1 for template sign
+                Doc.DSEnvelopeId = results.EnvelopeId;
+                Doc.DSDocumentId = "1";
+
+                // 3. Create Envelope Recipient View request obj
+                RecipientViewRequest viewRequest = new RecipientViewRequest
+                {
+                    ReturnUrl = AppReturnUrl + String.Format("?envelopeId={0}", results.EnvelopeId),
+                    ClientUserId = Doc.SignerId,
+                    AuthenticationMethod = "none",
+                    UserName = Doc.SignerName,
+                    Email = Doc.SignerEmail
+                };
+
+                // 4. Use the SDK to obtain a Recipient View URL
+                // Read account ID from config
+                string accountId = DocuSignConfig.AccountID;
+
+                // Create API Client and call it
+                EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
+                ViewUrl viewUrl = envelopesApi.CreateRecipientView(accountId, results.EnvelopeId, viewRequest);
+
+                // 5. Redirect the user's browser to the URL
+                return viewUrl.Url;
+            }
+            catch (ApiException ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
 
         /// <summary>
         /// Send a DocuSign for asynchronous signing via email.
@@ -233,7 +325,7 @@ namespace ECAR.DocuSign
                 Doc.SignerId = null;
 
                 // Steps 1 & 2 are performed in the private method
-                EnvelopeSummary results = ExecuteDocuSign(ref Doc, Presets);
+                EnvelopeSummary results = ExecuteDocuSign(ref Doc, null, null, Presets);
 
                 // RESTORE outgoing Doc object with the original signerId sent
                 Doc.SignerId = origSignerId;
@@ -255,5 +347,50 @@ namespace ECAR.DocuSign
                 throw ex;
             }
         }
+
+        /// <summary>
+        /// Send a DocuSign for asynchronous signing via email (with reminder and expiration settings).
+        /// </summary>
+        /// <param name="Doc">Document data (in: document &amp; signer info; out: DocuSign envelope &amp; document ID)</param>
+        /// <param name="Rem">Reminder details if required for DocuSign envelope</param>
+        /// <param name="Exp">Expiration details if required for the DocuSign envelope</param>
+        /// <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
+        /// <returns>DocuSign envelope status</returns>
+        public static string EmailedTemplateSign(ref DocumentModel Doc, ReminderModel Rem, ExpirationModel Exp, List<DocPreset> Presets = null)
+        {
+            try
+            {
+                // Email Signing Ceremony with a template
+                // 1. Create envelope request obj with template ID (get ID from DocuSign based on template name)
+                // 2. Use the SDK to create and send the envelope with a Template document in DocuSign
+
+                // REMOVING SignerId value from the DocumentModel indicates signature via email
+                string origSignerId = Doc.SignerId;
+                Doc.SignerId = null;
+
+                // Steps 1 & 2 are performed in the private method
+                EnvelopeSummary results = ExecuteDocuSign(ref Doc, Rem, Exp, Presets);
+
+                // RESTORE outgoing Doc object with the original signerId sent
+                Doc.SignerId = origSignerId;
+
+                // Populate EnvelopeId and DocumentId for return
+                //  DocumentId is always 1 for template sign
+                Doc.DSEnvelopeId = results.EnvelopeId;
+                Doc.DSDocumentId = "1";
+
+                // Return the envelope result
+                return results.Status;
+            }
+            catch (ApiException ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        #endregion
     }
 }

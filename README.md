@@ -1,5 +1,5 @@
 # ECAR.DocuSign
-### Last release: Mar 2, 2021 (ver. 1.0.10)
+### Last release: May 13, 2021 (ver. 1.0.11)
 
 A library to easily connect to DocuSign services and embed signing within your web application.  
 
@@ -11,6 +11,7 @@ This library also provides support for working with the DocuSign document and pe
 
 ### [Link to current version on Azure DevOps Artifacts](https://dev.azure.com/epiqsystems/ECAR/_packaging?_a=package&feed=EC.Packages&view=versions&package=ECAR.DocuSign&protocolType=NuGet)
 
+
 # Getting Started
 Getting started with **ECAR.DocuSign** is as easy as 1..2..3
 1.	Add reference to `ECAR.DocuSign` in your project
@@ -20,6 +21,7 @@ Getting started with **ECAR.DocuSign** is as easy as 1..2..3
 
 # Sample Code
 [Sample Controller](Sample.md)
+
 
 # Setup and Signing (using a DocuSign template)
 ## This is how you configure DocuSign authentication
@@ -85,7 +87,6 @@ Finally, redirect your users to the DocuSign page to start the signing ceremony.
 
 **ECAR.DocuSign** automatically redirects the user's browser to your application URL that was specified in the `returnUrl` argument.
 
-
 ## This is how you make the call to send an email from DocuSign for asynchronous signing
 Simply call the `EmailedTemplateSign` method passing in the `DocumentModel` object by *reference* (optionally pass the preset fields).
 - **ECAR.DocuSign** populates metadata about the DocuSign document in the returned object (e.g. envelope ID and document ID)
@@ -95,6 +96,39 @@ Simply call the `EmailedTemplateSign` method passing in the `DocumentModel` obje
 ```csharp
     string result = ECAR.DocuSign.TemplateSign.EmailedTemplateSign(ref dsDoc, tabPresets);
 ```
+
+
+# Reminders and Expirations
+## This is how you set up DocuSign to send reminders and expiration notices 
+Use the corresponding models for reminders (`ReminderModel`) or expiration (`ExpirationModel`) to set up the parameters and call the overloaded methods for signing.
+
+```csharp
+    ReminderModel rem = new ReminderModel
+    {
+        ReminderEnabled = true,
+        ReminderDelayDays = 1,
+        ReminderFrequencyDays = 1
+    };
+```
+```csharp
+    ExpirationModel exp = new ExpirationModel
+    {
+        ExpirationEnabled = true,
+        ExpireAfterDays = 3,
+        ExpireWarnDays = 1
+    };
+```
+
+Overloaded versions of signing methods are available that accept the reminder and expiration objects.  *Note: You may pass empty (`null`) objects for either argument.*
+```csharp
+    // Embedded signing 
+    string viewUrl = ECAR.DocuSign.TemplateSign.EmbeddedTemplateSign(returnUrl, ref dsDoc, rem, exp, tabs);
+```
+```csharp
+    // Email signing
+    string status = ECAR.DocuSign.TemplateSign.EmailedTemplateSign(ref dsDoc, rem, exp, tabs);
+```
+
 
 # Status and Retrieval
 ## This is how you retrieve a list of DocuSign envelopes from a given date
@@ -194,14 +228,15 @@ Simply call the `EmailedTemplateSign` method passing in the `DocumentModel` obje
 ```
 
 # Limitations/known issues
-- Supports only the use of a template uploaded to DocuSign
-- ~~Supports only one document per DocuSign envelope~~
+- Supports only the use of a template created in DocuSign (template must exist in DocuSign)
+- Does not support deferred sending (create now, send later) for DocuSign envelopes
 
 # Completed enhancements
 - [x] ~~Email document for signing asynchronously~~ *Avaialable with 10/1/2020 release (>1.0.5)*
 - [x] ~~Retrieve a list of DocuSign envelopes~~ *Avaialable with 10/9/2020 release (>1.0.7)*
 - [x] ~~Retrieve a list of envelope recipients~~ *Avaialable with 10/20/2020 release (>1.0.8)*
 - [x] ~~Retrieve a list of envelope documents~~ *Avaialable with 10/20/2020 release (>1.0.8)*
+- [x] ~~Support for reminders and expirations~~ *Avaialable with 5/11/2020 release (>1.0.11)*
 
 # Future enhancements
 - [ ] Prepare and present a custom document (passed in from the calling application) to the recipient
