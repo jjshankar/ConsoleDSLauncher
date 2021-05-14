@@ -24,6 +24,6 @@ steps:
 - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/master') }}:
   - template: PackPushAndTag.NET_Framework_Lib.yml@YAMLTemplates
     parameters:
-      whatToPack: '../ECAR.DocuSign/ECAR.DocuSign.nuspec'
+      whatToPack: 'ECAR.DocuSign/ECAR.DocuSign.nuspec'
       vstsFeedName: $(ECARPackageFeed)
       tag: 'v$(GitVersion.SemVer)'
