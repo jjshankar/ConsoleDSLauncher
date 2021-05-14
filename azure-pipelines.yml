@@ -22,7 +22,7 @@ steps:
 
 #Call NuGet_Pack\Push_+_Tag_Git_Repo (SDK) template (only if triggered by master branch commit)
 - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/master') }}:
-  - template: PackPushAndTag.NET_SDK_Lib.yml@YAMLTemplates
+  - template: PackPushAndTag.NET_Framework_Lib.yml@YAMLTemplates
     parameters:
       vstsFeedName: $(ECARPackageFeed)
       tag: 'v$(GitVersion.SemVer)'
