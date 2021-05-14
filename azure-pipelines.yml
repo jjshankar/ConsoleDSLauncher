@@ -6,6 +6,7 @@ pool:
 
 variables:
 - group: ECAR Variable Group
+- group: ECAR.DocuSign
 - name: GitVersion.SemVer
 
 resources:
@@ -24,6 +25,6 @@ steps:
 - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/master') }}:
   - template: PackPushAndTag.NET_Framework_Lib.yml@YAMLTemplates
     parameters:
-      whatToPack: 'ECAR.DocuSign/ECAR.DocuSign.nuspec'
+      whatToPack: $(whatToPack)
       vstsFeedName: $(ECARPackageFeed)
       tag: 'v$(GitVersion.SemVer)'
