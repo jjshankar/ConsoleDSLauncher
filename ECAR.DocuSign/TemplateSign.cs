@@ -20,9 +20,15 @@ namespace ECAR.DocuSign
         /// <param name="Doc">Document data (in: document &amp; signer info; out: DocuSign envelope &amp; document ID)</param>
         /// <param name="Rem">Reminder data</param>
         /// <param name="Exp">Expiration Data</param>
+        /// <param name="Hook">Notification callback webhook Data</param>
         /// <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
         /// <returns>EnvelopeSummary object with result from DocuSign call</returns>
-        private static EnvelopeSummary ExecuteDocuSign(ref DocumentModel Doc, ReminderModel Rem = null, ExpirationModel Exp = null, List < DocPreset> Presets = null)
+        private static EnvelopeSummary ExecuteDocuSign(
+            ref DocumentModel Doc, 
+            ReminderModel Rem = null, 
+            ExpirationModel Exp = null, 
+            NotificationCallBackModel Hook = null,
+            List < DocPreset> Presets = null)
         {
             if (!DocuSignConfig.Ready)
                 throw new Exception(Resources.DSCONFIG_NOT_SET);
@@ -170,13 +176,47 @@ namespace ECAR.DocuSign
                 }
             }
 
+            // Custom webhook notification
+            EventNotification eventNotification = null;
+
+            if (Hook != null)
+            {
+                // Get Envelope event codes
+                List<EnvelopeEvent> envelopeEvents = new List<EnvelopeEvent>();
+                foreach (string envEvent in Hook.EnvelopeEvents)
+                    envelopeEvents.Add(new EnvelopeEvent { EnvelopeEventStatusCode = envEvent });
+
+                // Set up EventNotification object
+                eventNotification = new EventNotification
+                {
+                    EnvelopeEvents = envelopeEvents,
+                    EventData = new ConnectEventData { Format = "json", Version = "restv2.1" },
+                    IncludeCertificateOfCompletion = "false",
+                    IncludeCertificateWithSoap = "false",
+                    IncludeDocumentFields = "false",
+                    IncludeDocuments = "false",
+                    IncludeEnvelopeVoidReason = "true",
+                    IncludeHMAC = "true",
+                    IncludeSenderAccountAsCustomField = "true",
+                    IncludeTimeZone = "true",
+                    LoggingEnabled = "true",
+                    RecipientEvents = null,
+                    RequireAcknowledgment = "true",
+                    SignMessageWithX509Cert = "true",
+                    SoapNameSpace = null,
+                    Url = Hook.WebHookUrl,
+                    UseSoapInterface = "false"
+                };
+            }
+
             // Bring the objects together in the EnvelopeDefinition
             EnvelopeDefinition envelopeDefinition = new EnvelopeDefinition
             {
                 EmailSubject = Doc.DSEmailSubject,
                 Status = "sent",
                 CompositeTemplates = new List<CompositeTemplate> { compTemplate },
-                Notification = notification ?? null
+                Notification = notification ?? null,
+                EventNotification = eventNotification ?? null
             };
 
             // 2. Use the SDK to create and send the envelope
@@ -208,7 +248,7 @@ namespace ECAR.DocuSign
                 //    - After signing, DocuSign will redirect to the URL specified in the AppReturnUrl argument
 
                 // Steps 1 & 2 are performed in the private method
-                EnvelopeSummary results = ExecuteDocuSign(ref Doc, null, null, Presets);
+                EnvelopeSummary results = ExecuteDocuSign(ref Doc, null, null, null, Presets);
 
                 // Populate EnvelopeId and DocumentId for return
                 //  DocumentId is always 1 for template sign
@@ -268,7 +308,7 @@ namespace ECAR.DocuSign
                 //    - After signing, DocuSign will redirect to the URL specified in the AppReturnUrl argument
 
                 // Steps 1 & 2 are performed in the private method
-                EnvelopeSummary results = ExecuteDocuSign(ref Doc, Rem, Exp, Presets);
+                EnvelopeSummary results = ExecuteDocuSign(ref Doc, Rem, Exp, null, Presets);
 
                 // Populate EnvelopeId and DocumentId for return
                 //  DocumentId is always 1 for template sign
@@ -325,7 +365,7 @@ namespace ECAR.DocuSign
                 Doc.SignerId = null;
 
                 // Steps 1 & 2 are performed in the private method
-                EnvelopeSummary results = ExecuteDocuSign(ref Doc, null, null, Presets);
+                EnvelopeSummary results = ExecuteDocuSign(ref Doc, null, null, null, Presets);
 
                 // RESTORE outgoing Doc object with the original signerId sent
                 Doc.SignerId = origSignerId;
@@ -369,7 +409,57 @@ namespace ECAR.DocuSign
                 Doc.SignerId = null;
 
                 // Steps 1 & 2 are performed in the private method
-                EnvelopeSummary results = ExecuteDocuSign(ref Doc, Rem, Exp, Presets);
+                EnvelopeSummary results = ExecuteDocuSign(ref Doc, Rem, Exp, null, Presets);
+
+                // RESTORE outgoing Doc object with the original signerId sent
+                Doc.SignerId = origSignerId;
+
+                // Populate EnvelopeId and DocumentId for return
+                //  DocumentId is always 1 for template sign
+                Doc.DSEnvelopeId = results.EnvelopeId;
+                Doc.DSDocumentId = "1";
+
+                // Return the envelope result
+                return results.Status;
+            }
+            catch (ApiException ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// Send a DocuSign for asynchronous signing via email (with reminder and expiration settings).
+        /// </summary>
+        /// <param name="Doc">Document data (in: document &amp; signer info; out: DocuSign envelope &amp; document ID)</param>
+        /// <param name="Rem">Reminder details if required for DocuSign envelope</param>
+        /// <param name="Exp">Expiration details if required for the DocuSign envelope</param>
+        /// <param name="Hook">Notification callback webhook details</param>
+        /// <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
+        /// <returns>DocuSign envelope status</returns>
+        public static string EmailedTemplateSignWithCallBack(
+            ref DocumentModel Doc, 
+            ReminderModel Rem, 
+            ExpirationModel Exp, 
+            NotificationCallBackModel Hook,
+            List<DocPreset> Presets = null)
+        {
+            try
+            {
+                // Email Signing Ceremony with a template
+                // 1. Create envelope request obj with template ID (get ID from DocuSign based on template name)
+                // 2. Use the SDK to create and send the envelope with a Template document in DocuSign
+
+                // REMOVING SignerId value from the DocumentModel - indicates signature via email
+                string origSignerId = Doc.SignerId;
+                Doc.SignerId = null;
+
+                // Steps 1 & 2 are performed in the private method
+                EnvelopeSummary results = ExecuteDocuSign(ref Doc, Rem, Exp, Hook, Presets);
 
                 // RESTORE outgoing Doc object with the original signerId sent
                 Doc.SignerId = origSignerId;

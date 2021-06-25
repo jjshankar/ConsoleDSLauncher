@@ -53,6 +53,7 @@ namespace ECAR.DocuSign
                         CompletedDateTime = env.CompletedDateTime,
                         CreatedDateTime = env.CreatedDateTime,
                         DeclinedDateTime = env.DeclinedDateTime,    
+                        DeliveredDateTime = env.DeliveredDateTime,
                         EmailBlurb = env.EmailBlurb,
                         EmailSubject = env.EmailSubject,
                         ExpireAfter = int.Parse(env.ExpireAfter),

@@ -83,5 +83,10 @@ namespace ECAR.DocuSign.Models
         /// The date and time the recipient declined the document, if exists (UTC/ISO).
         /// </summary>
         public string DeclinedDateTime { get; internal set; }
+
+        /// <summary>
+        /// The date and time the envelope was delivered (UTC/ISO).
+        /// </summary>
+        public string DeliveredDateTime { get; internal set; }
     }
 }

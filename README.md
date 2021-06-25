@@ -45,7 +45,9 @@ Getting started with **ECAR.DocuSign** is as easy as 1..2..3
         DSTemplateName = "«DocuSign template name»",
         SignerEmail = "«Recipient email»",
         SignerName = "«Recipient's name»",
-        SignerId = "«Your application's tracking ID for this recipient»"       // DocuSign does not use this field, but keeps it linked to the doc
+
+        // DocuSign does not use the following attribute, but keeps it linked to the doc
+        SignerId = "«Your application's tracking ID for this recipient»"       
     };
 ```
 
@@ -127,6 +129,53 @@ Overloaded versions of signing methods are available that accept the reminder an
 ```csharp
     // Email signing
     string status = ECAR.DocuSign.TemplateSign.EmailedTemplateSign(ref dsDoc, rem, exp, tabs);
+```
+
+
+# Using Webhooks
+## This is how you set up a callback webhook method for asynchronous (email) signing
+For email signing, DocuSign offers a method to receive envelope data as soon as its status changes. Utilizing a publicly accessible callback method (webhook), the calling application can receive notifications from DocuSign for specific changes to the envelope's status.
+
+Set up the URL (must be `https://`) of the controller/action in a `NotificationCallBackModel` object and specify the envelope actions that trigger the callback.
+```csharp
+    // Create call back object
+    NotificationCallBackModel notificationCallBack = new NotificationCallBackModel {
+        // Set up events to monitor - full list shown here
+        EnvelopeEvents = new List<string> {"Sent", "Completed", "Declined", "Delivered", "Voided"},
+
+        // Webhook URL must be SSL (https://) 
+        WebHookUrl = "«Your application/callback service home page» " + "«Controller/Action to call»"
+    };
+```
+
+Call the overloaded signing method and pass the `NotificationCallBackModel` object.
+```csharp
+    // Call email signing method with callback
+    string status = ECAR.DocuSign.TemplateSign.EmailedTemplateSignWithCallBack(ref dsDoc, rem, exp, 
+        notificationCallBack, tabs);
+```
+
+DocuSign will automatically `POST` to the webhook action whenever the envelope status changes to one of the values passed in the event list.  You can process the event data (JSON) either directly, or by calling the `Process` method.
+```csharp
+    // in your webhook Controller/Action (HTTPPOST)
+    {
+        ...
+
+        // Read Request body
+        long bufLen = Request.InputStream.Length;
+        byte[] buffer = new byte[bufLen];
+        long readCount = Request.InputStream.Read(buffer, 0, (int)bufLen);
+
+        // Convert byte[] to string
+        string json = System.Text.Encoding.Default.GetString(buffer);
+
+        // Call ECAR.DocuSign method to process the JSON and return an EnvelopeModel object
+        ECAR.DocuSign.Models.EnvelopeModel env = ECAR.DocuSign.CallBack.Process(json);
+
+        // Use the data in the EnvelopeModel object as you need
+        
+        ...
+    }
 ```
 
 
