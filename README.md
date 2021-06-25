@@ -1,5 +1,5 @@
 # ECAR.DocuSign
-### Last release: May 13, 2021 (ver. 1.0.11)
+### Last release: June 25, 2021 (ver. 1.0.18)
 
 A library to easily connect to DocuSign services and embed signing within your web application.  
 
@@ -173,6 +173,7 @@ DocuSign will automatically `POST` to the webhook action whenever the envelope s
         ECAR.DocuSign.Models.EnvelopeModel env = ECAR.DocuSign.CallBack.Process(json);
 
         // Use the data in the EnvelopeModel object as you need
+        System.Diagnostics.Trace.TraceInformation("DocuSign envelope id: {0} was set to status: {1} on {2}", env.EnvelopeId, env.Status, env.StatusChangedDateTime);
         
         ...
     }
@@ -285,7 +286,9 @@ DocuSign will automatically `POST` to the webhook action whenever the envelope s
 - [x] ~~Retrieve a list of DocuSign envelopes~~ *Avaialable with 10/9/2020 release (>1.0.7)*
 - [x] ~~Retrieve a list of envelope recipients~~ *Avaialable with 10/20/2020 release (>1.0.8)*
 - [x] ~~Retrieve a list of envelope documents~~ *Avaialable with 10/20/2020 release (>1.0.8)*
-- [x] ~~Support for reminders and expirations~~ *Avaialable with 5/11/2020 release (>1.0.11)*
+- [x] ~~Support for reminders and expirations~~ *Avaialable with 5/11/2021 release (>1.0.11)*
+- [x] ~~Added support for emailing DocuSign envelopes (async signing)~~ *Avaialable with 5/11/2021 release (>1.0.11)*
+- [x] ~~Added support for webhook callback from DocuSign for status change events for emailed envelopes~~ *Avaialable with 6/25/2021 release (>1.0.18)*
 
 # Future enhancements
 - [ ] Prepare and present a custom document (passed in from the calling application) to the recipient
