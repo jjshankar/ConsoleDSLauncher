@@ -4,6 +4,18 @@
         <name>ECAR.DocuSign</name>
     </assembly>
     <members>
+        <member name="T:ECAR.DocuSign.CallBack">
+            <summary>
+            Process event notifications received by the webhook method
+            </summary>
+        </member>
+        <member name="M:ECAR.DocuSign.CallBack.Process(System.String)">
+            <summary>
+            Process event notifications received from DocuSign
+            </summary>
+            <param name="jsonPayload">JSON event payload received from DocuSign</param>
+            <returns>EnvelopeModel object populated with data from DocuSign</returns>
+        </member>
         <member name="T:ECAR.DocuSign.DocuSignConfig">
             <summary>
             Configuration for ECAR.DocuSign access.
@@ -272,6 +284,11 @@
             The date and time the recipient declined the document, if exists (UTC/ISO).
             </summary>
         </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeModel.DeliveredDateTime">
+            <summary>
+            The date and time the envelope was delivered (UTC/ISO).
+            </summary>
+        </member>
         <member name="T:ECAR.DocuSign.Models.EnvelopeRecipientModel">
             <summary>
             Data model for document recipients retrieved from DocuSign.
@@ -360,6 +377,22 @@
         <member name="P:ECAR.DocuSign.Models.ExpirationModel.ExpireWarnDays">
             <summary>
             Expiration warning will be sent this many days before.
+            </summary>
+        </member>
+        <member name="T:ECAR.DocuSign.Models.NotificationCallBackModel">
+            <summary>
+            Data model for setting up DocuSign notification to a callback/webhook method.
+            </summary>
+        </member>
+        <member name="F:ECAR.DocuSign.Models.NotificationCallBackModel.EnvelopeEvents">
+            <summary>
+            List of envelope event codes to get notifications for.  
+            Valid values are: "Sent", "Completed", "Declined", "Delivered", "Voided".
+            </summary>
+        </member>
+        <member name="F:ECAR.DocuSign.Models.NotificationCallBackModel.WebHookUrl">
+            <summary>
+            SSL URL of the public endpoint to which notifications are sent as JSON.
             </summary>
         </member>
         <member name="T:ECAR.DocuSign.Models.ReminderModel">
@@ -565,13 +598,14 @@
             ECAR.DocuSign embedded signing ceremony with a predefined document template.
             </summary>
         </member>
-        <member name="M:ECAR.DocuSign.TemplateSign.ExecuteDocuSign(ECAR.DocuSign.Models.DocumentModel@,ECAR.DocuSign.Models.ReminderModel,ECAR.DocuSign.Models.ExpirationModel,System.Collections.Generic.List{ECAR.DocuSign.Models.DocPreset})">
+        <member name="M:ECAR.DocuSign.TemplateSign.ExecuteDocuSign(ECAR.DocuSign.Models.DocumentModel@,ECAR.DocuSign.Models.ReminderModel,ECAR.DocuSign.Models.ExpirationModel,ECAR.DocuSign.Models.NotificationCallBackModel,System.Collections.Generic.List{ECAR.DocuSign.Models.DocPreset})">
             <summary>
             Internal private method to call DocuSign for both embedded and asynchronous (email) signing
             </summary>
             <param name="Doc">Document data (in: document &amp; signer info; out: DocuSign envelope &amp; document ID)</param>
             <param name="Rem">Reminder data</param>
             <param name="Exp">Expiration Data</param>
+            <param name="Hook">Notification callback webhook Data</param>
             <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
             <returns>EnvelopeSummary object with result from DocuSign call</returns>
         </member>
@@ -610,6 +644,17 @@
             <param name="Doc">Document data (in: document &amp; signer info; out: DocuSign envelope &amp; document ID)</param>
             <param name="Rem">Reminder details if required for DocuSign envelope</param>
             <param name="Exp">Expiration details if required for the DocuSign envelope</param>
+            <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
+            <returns>DocuSign envelope status</returns>
+        </member>
+        <member name="M:ECAR.DocuSign.TemplateSign.EmailedTemplateSignWithCallBack(ECAR.DocuSign.Models.DocumentModel@,ECAR.DocuSign.Models.ReminderModel,ECAR.DocuSign.Models.ExpirationModel,ECAR.DocuSign.Models.NotificationCallBackModel,System.Collections.Generic.List{ECAR.DocuSign.Models.DocPreset})">
+            <summary>
+            Send a DocuSign for asynchronous signing via email (with reminder and expiration settings).
+            </summary>
+            <param name="Doc">Document data (in: document &amp; signer info; out: DocuSign envelope &amp; document ID)</param>
+            <param name="Rem">Reminder details if required for DocuSign envelope</param>
+            <param name="Exp">Expiration details if required for the DocuSign envelope</param>
+            <param name="Hook">Notification callback webhook details</param>
             <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
             <returns>DocuSign envelope status</returns>
         </member>
