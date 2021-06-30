@@ -48,6 +48,11 @@ namespace ECAR.DocuSign.Models
         /// Document ID returned from the DocuSign ceremony.
         /// </summary>
         public string DSDocumentId { get; internal set; }
+
+        /// <summary>
+        /// Envelope Preview URL returned from the DocuSign.
+        /// </summary>
+        public string DSPreviewUrl { get; internal set; }
     }
 
 }

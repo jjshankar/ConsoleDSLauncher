@@ -169,6 +169,11 @@
             Document ID returned from the DocuSign ceremony.
             </summary>
         </member>
+        <member name="P:ECAR.DocuSign.Models.DocumentModel.DSPreviewUrl">
+            <summary>
+            Envelope Preview URL returned from the DocuSign.
+            </summary>
+        </member>
         <member name="T:ECAR.DocuSign.Models.EnvelopeDocumentModel">
             <summary>
             Data model for documents retrieved from DocuSign.
@@ -598,9 +603,29 @@
             ECAR.DocuSign embedded signing ceremony with a predefined document template.
             </summary>
         </member>
+        <member name="M:ECAR.DocuSign.TemplateSign.CreateDocuSignPreview(ECAR.DocuSign.Models.DocumentModel@,System.Collections.Generic.List{ECAR.DocuSign.Models.DocPreset})">
+            <summary>
+            Internal private method to call DocuSign to create (not send) an envelope for preview 
+            </summary>
+            <param name="Doc">Document data (in: document &amp; signer info; out: DocuSign envelope &amp; document ID)</param>
+            <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
+            <returns>EnvelopeSummary object with result from DocuSign call</returns>
+        </member>
+        <member name="M:ECAR.DocuSign.TemplateSign.SendDocuSignEnvelope(ECAR.DocuSign.Models.DocumentModel@,ECAR.DocuSign.Models.ReminderModel,ECAR.DocuSign.Models.ExpirationModel,ECAR.DocuSign.Models.NotificationCallBackModel,System.Collections.Generic.List{ECAR.DocuSign.Models.DocPreset})">
+            <summary>
+            Internal private method to send a previously created DocuSign envelope for signature
+            </summary>
+            <param name="Doc">Document data (in: document &amp; signer info; out: DocuSign envelope &amp; document ID)</param>
+            <param name="Rem">Reminder data</param>
+            <param name="Exp">Expiration Data</param>
+            <param name="Hook">Notification callback webhook Data</param>
+            <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
+            <returns>EnvelopeSummary object with result from DocuSign call</returns>
+        </member>
         <member name="M:ECAR.DocuSign.TemplateSign.ExecuteDocuSign(ECAR.DocuSign.Models.DocumentModel@,ECAR.DocuSign.Models.ReminderModel,ECAR.DocuSign.Models.ExpirationModel,ECAR.DocuSign.Models.NotificationCallBackModel,System.Collections.Generic.List{ECAR.DocuSign.Models.DocPreset})">
             <summary>
             Internal private method to call DocuSign for both embedded and asynchronous (email) signing
+            Calls the CreateDocuSignPreview and SendDocuSignEnvelope methods to create and send the envelope 
             </summary>
             <param name="Doc">Document data (in: document &amp; signer info; out: DocuSign envelope &amp; document ID)</param>
             <param name="Rem">Reminder data</param>
@@ -657,6 +682,15 @@
             <param name="Hook">Notification callback webhook details</param>
             <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
             <returns>DocuSign envelope status</returns>
+        </member>
+        <member name="M:ECAR.DocuSign.TemplateSign.CreatePreviewURL(ECAR.DocuSign.Models.DocumentModel@,System.Collections.Generic.List{ECAR.DocuSign.Models.DocPreset},System.String)">
+            <summary>
+            Create a Preview URL for QC that the recipients will see
+            </summary>
+            <param name="Doc">Document data (in: document &amp; signer info; out: DocuSign envelope &amp; document ID)</param>
+            <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
+            <param name="AppReturnUrl">(Optional) Return URL that DocuSign should transfer control when the preview is closed</param>
+            <returns>DocuSign URL for recipient preview</returns>
         </member>
     </members>
 </doc>
