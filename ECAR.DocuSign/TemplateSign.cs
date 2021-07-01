@@ -568,10 +568,10 @@ namespace ECAR.DocuSign
         /// Create a Preview URL for QC that the recipients will see
         /// </summary>
         /// <param name="Doc">Document data (in: document &amp; signer info; out: DocuSign envelope &amp; document ID)</param>
+        /// <param name="AppReturnUrl">Return URL that DocuSign should transfer control when the preview is closed</param>
         /// <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
-        /// <param name="AppReturnUrl">(Optional) Return URL that DocuSign should transfer control when the preview is closed</param>
         /// <returns>DocuSign URL for recipient preview</returns>
-        public static string CreatePreviewURL(ref DocumentModel Doc, List<DocPreset> Presets = null, string AppReturnUrl = null)
+        public static string CreatePreviewURL(ref DocumentModel Doc, string AppReturnUrl, List<DocPreset> Presets = null)
         {
             try
             {
@@ -594,16 +594,12 @@ namespace ECAR.DocuSign
                 // Read account ID from config
                 string accountId = DocuSignConfig.AccountID;
 
-                // Set up RecipientPreviewRequest object only when a return URL is specified
-                RecipientPreviewRequest previewRequest = null;
-                if(!string.IsNullOrEmpty(AppReturnUrl))
+                // Set up RecipientPreviewRequest object 
+                RecipientPreviewRequest previewRequest = new RecipientPreviewRequest
                 {
-                    previewRequest = new RecipientPreviewRequest
-                    {
-                        ReturnUrl = AppReturnUrl,
-                        RecipientId = Doc.SignerId
-                    };
-                }
+                    ReturnUrl = AppReturnUrl,
+                    RecipientId = "1"
+                };
 
                 // Create API Client and call it
                 EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
