@@ -106,6 +106,15 @@ namespace ECAR.DocuSign.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Voided reason cannot be null or blank..
+        /// </summary>
+        internal static string EMPTY_VOIDED_REASON {
+            get {
+                return ResourceManager.GetString("EMPTY_VOIDED_REASON", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Named field {0} was not found in the DocuSign document..
         /// </summary>
         internal static string FIELD_x_NOT_FOUND {

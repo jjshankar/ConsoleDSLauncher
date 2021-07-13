@@ -174,6 +174,17 @@
             Envelope Preview URL returned from the DocuSign.
             </summary>
         </member>
+        <member name="M:ECAR.DocuSign.Models.DocumentModel.#ctor">
+            <summary>
+            Default constructor. 
+            </summary>
+        </member>
+        <member name="M:ECAR.DocuSign.Models.DocumentModel.#ctor(System.String)">
+            <summary>
+            Special object constructor that accepts a DocuSign EnvelopeId.
+            </summary>
+            <param name="envelopeId">DocuSign Envelope ID</param>
+        </member>
         <member name="T:ECAR.DocuSign.Models.EnvelopeDocumentModel">
             <summary>
             Data model for documents retrieved from DocuSign.
@@ -207,6 +218,61 @@
         <member name="P:ECAR.DocuSign.Models.EnvelopeDocumentModel.Type">
             <summary>
             Type of the document ('content' for documents, 'summary' for certificates).
+            </summary>
+        </member>
+        <member name="T:ECAR.DocuSign.Models.EnvelopeStatus">
+            <summary>
+            Envelope Status retrieved from DocuSign.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeStatus.STATUS_SENT">
+            <summary>
+            EnvelopeStatus = "sent"
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeStatus.STATUS_CREATED">
+            <summary>
+            EnvelopeStatus = "created"
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeStatus.STATUS_DECLINED">
+            <summary>
+            EnvelopeStatus = "declined"
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeStatus.STATUS_DELIVERED">
+            <summary>
+            EnvelopeStatus = "delivered"
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeStatus.STATUS_VOIDED">
+            <summary>
+            EnvelopeStatus = "voided"
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeStatus.STATUS_ANY">
+            <summary>
+            EnvelopeStatus = "any"
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeStatus.STATUS_DELETED">
+            <summary>
+            EnvelopeStatus = "deleted"
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeStatus.STATUS_SIGNED">
+            <summary>
+            EnvelopeStatus = "signed"
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeStatus.STATUS_COMPLETED">
+            <summary>
+            EnvelopeStatus = "completed"
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeStatus.STATUS_TIMEDOUT">
+            <summary>
+            EnvelopeStatus = "timedout"
             </summary>
         </member>
         <member name="T:ECAR.DocuSign.Models.EnvelopeModel">
@@ -461,6 +527,11 @@
               Looks up a localized string similar to DocuSign tab label cannot be null or blank..
             </summary>
         </member>
+        <member name="P:ECAR.DocuSign.Properties.Resources.EMPTY_VOIDED_REASON">
+            <summary>
+              Looks up a localized string similar to Voided reason cannot be null or blank..
+            </summary>
+        </member>
         <member name="P:ECAR.DocuSign.Properties.Resources.FIELD_x_NOT_FOUND">
             <summary>
               Looks up a localized string similar to Named field {0} was not found in the DocuSign document..
@@ -498,6 +569,24 @@
             </summary>
             <param name="EnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
             <returns>Status of the document (any, created, deleted, sent, delivered, signed, completed, declined, timedout, voided)</returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:ECAR.DocuSign.Status.DSVoidEnvelope(System.String,System.String)">
+            <summary>
+            Void, or cancel, an envelope that was sent to a recipient. *** THIS ACTION IS IRREVERSIBLE! ***
+            Note: You cannot void draft or completed envelopes.
+            </summary>
+            <param name="EnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
+            <param name="VoidedReason">Reason for voiding the envelope</param>
+            <returns>boolean</returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:ECAR.DocuSign.Status.DSResendEnvelope(System.String)">
+            <summary>
+            Resend a previously sent DocuSign envelope (in 'created', 'sent' or 'delivered' states).
+            </summary>
+            <param name="EnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
+            <returns>Boolean result from DocuSign call</returns>
             <exception cref="T:System.Exception"></exception>
         </member>
         <member name="M:ECAR.DocuSign.Status.DSGetAllDocuments(System.String)">
@@ -603,17 +692,9 @@
             ECAR.DocuSign embedded signing ceremony with a predefined document template.
             </summary>
         </member>
-        <member name="M:ECAR.DocuSign.TemplateSign.CreateDocuSignPreview(ECAR.DocuSign.Models.DocumentModel@,System.Collections.Generic.List{ECAR.DocuSign.Models.DocPreset})">
+        <member name="M:ECAR.DocuSign.TemplateSign.CreateDocuSignPreview(ECAR.DocuSign.Models.DocumentModel@,ECAR.DocuSign.Models.ReminderModel,ECAR.DocuSign.Models.ExpirationModel,ECAR.DocuSign.Models.NotificationCallBackModel,System.Collections.Generic.List{ECAR.DocuSign.Models.DocPreset})">
             <summary>
             Internal private method to call DocuSign to create (not send) an envelope for preview 
-            </summary>
-            <param name="Doc">Document data (in: document &amp; signer info; out: DocuSign envelope &amp; document ID)</param>
-            <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
-            <returns>EnvelopeSummary object with result from DocuSign call</returns>
-        </member>
-        <member name="M:ECAR.DocuSign.TemplateSign.SendDocuSignEnvelope(ECAR.DocuSign.Models.DocumentModel@,ECAR.DocuSign.Models.ReminderModel,ECAR.DocuSign.Models.ExpirationModel,ECAR.DocuSign.Models.NotificationCallBackModel,System.Collections.Generic.List{ECAR.DocuSign.Models.DocPreset})">
-            <summary>
-            Internal private method to send a previously created DocuSign envelope for signature
             </summary>
             <param name="Doc">Document data (in: document &amp; signer info; out: DocuSign envelope &amp; document ID)</param>
             <param name="Rem">Reminder data</param>
@@ -625,7 +706,6 @@
         <member name="M:ECAR.DocuSign.TemplateSign.ExecuteDocuSign(ECAR.DocuSign.Models.DocumentModel@,ECAR.DocuSign.Models.ReminderModel,ECAR.DocuSign.Models.ExpirationModel,ECAR.DocuSign.Models.NotificationCallBackModel,System.Collections.Generic.List{ECAR.DocuSign.Models.DocPreset})">
             <summary>
             Internal private method to call DocuSign for both embedded and asynchronous (email) signing
-            Calls the CreateDocuSignPreview and SendDocuSignEnvelope methods to create and send the envelope 
             </summary>
             <param name="Doc">Document data (in: document &amp; signer info; out: DocuSign envelope &amp; document ID)</param>
             <param name="Rem">Reminder data</param>
@@ -642,6 +722,7 @@
             <param name="Doc">Document data (in: document &amp; signer info; out: DocuSign envelope &amp; document ID)</param>
             <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
             <returns>DocuSign URL for embedded signing</returns>
+            <exception cref="T:System.Exception"></exception>
         </member>
         <member name="M:ECAR.DocuSign.TemplateSign.EmbeddedTemplateSign(System.String,ECAR.DocuSign.Models.DocumentModel@,ECAR.DocuSign.Models.ReminderModel,ECAR.DocuSign.Models.ExpirationModel,System.Collections.Generic.List{ECAR.DocuSign.Models.DocPreset})">
             <summary>
@@ -653,6 +734,7 @@
             <param name="Exp">Expiration details if required for the DocuSign envelope</param>
             <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
             <returns>DocuSign URL for embedded signing</returns>
+            <exception cref="T:System.Exception"></exception>
         </member>
         <member name="M:ECAR.DocuSign.TemplateSign.EmailedTemplateSign(ECAR.DocuSign.Models.DocumentModel@,System.Collections.Generic.List{ECAR.DocuSign.Models.DocPreset})">
             <summary>
@@ -661,6 +743,7 @@
             <param name="Doc">Document data (in: document &amp; signer info; out: DocuSign envelope &amp; document ID)</param>
             <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
             <returns>DocuSign envelope status</returns>
+            <exception cref="T:System.Exception"></exception>
         </member>
         <member name="M:ECAR.DocuSign.TemplateSign.EmailedTemplateSign(ECAR.DocuSign.Models.DocumentModel@,ECAR.DocuSign.Models.ReminderModel,ECAR.DocuSign.Models.ExpirationModel,System.Collections.Generic.List{ECAR.DocuSign.Models.DocPreset})">
             <summary>
@@ -671,6 +754,7 @@
             <param name="Exp">Expiration details if required for the DocuSign envelope</param>
             <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
             <returns>DocuSign envelope status</returns>
+            <exception cref="T:System.Exception"></exception>
         </member>
         <member name="M:ECAR.DocuSign.TemplateSign.EmailedTemplateSignWithCallBack(ECAR.DocuSign.Models.DocumentModel@,ECAR.DocuSign.Models.ReminderModel,ECAR.DocuSign.Models.ExpirationModel,ECAR.DocuSign.Models.NotificationCallBackModel,System.Collections.Generic.List{ECAR.DocuSign.Models.DocPreset})">
             <summary>
@@ -682,15 +766,29 @@
             <param name="Hook">Notification callback webhook details</param>
             <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
             <returns>DocuSign envelope status</returns>
+            <exception cref="T:System.Exception"></exception>
         </member>
-        <member name="M:ECAR.DocuSign.TemplateSign.CreatePreviewURL(ECAR.DocuSign.Models.DocumentModel@,System.Collections.Generic.List{ECAR.DocuSign.Models.DocPreset},System.String)">
+        <member name="M:ECAR.DocuSign.TemplateSign.CreatePreviewURL(ECAR.DocuSign.Models.DocumentModel@,System.String,System.Boolean,ECAR.DocuSign.Models.ReminderModel,ECAR.DocuSign.Models.ExpirationModel,ECAR.DocuSign.Models.NotificationCallBackModel,System.Collections.Generic.List{ECAR.DocuSign.Models.DocPreset})">
             <summary>
-            Create a Preview URL for QC that the recipients will see
+            Create a preview URL for the DocuSign document to review that the recipients will see.
             </summary>
             <param name="Doc">Document data (in: document &amp; signer info; out: DocuSign envelope &amp; document ID)</param>
+            <param name="AppReturnUrl">Return URL that DocuSign should transfer control when the preview is closed</param>
+            <param name="SendByMail">Indicates whether the DocuSign envelope will be sent by mail or in an embedded ceremony</param>
+            <param name="Rem">Reminder details if required for DocuSign envelope</param>
+            <param name="Exp">Expiration details if required for the DocuSign envelope</param>
+            <param name="Hook">Notification callback webhook details</param>
             <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
-            <param name="AppReturnUrl">(Optional) Return URL that DocuSign should transfer control when the preview is closed</param>
             <returns>DocuSign URL for recipient preview</returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:ECAR.DocuSign.TemplateSign.SendPreviewedEnvelope(ECAR.DocuSign.Models.DocumentModel)">
+            <summary>
+            Send a previously created DocuSign envelope for signature.
+            </summary>
+            <param name="Doc">Document data populated with the DocuSign envelope ID of the preview</param>
+            <returns>Boolean result from DocuSign call</returns>
+            <exception cref="T:System.Exception"></exception>
         </member>
     </members>
 </doc>

@@ -132,6 +132,9 @@
   <data name="EMPTY_TAB_LABEL" xml:space="preserve">
     <value>DocuSign tab label cannot be null or blank.</value>
   </data>
+  <data name="EMPTY_VOIDED_REASON" xml:space="preserve">
+    <value>Voided reason cannot be null or blank.</value>
+  </data>
   <data name="FIELD_x_NOT_FOUND" xml:space="preserve">
     <value>Named field {0} was not found in the DocuSign document.</value>
   </data>
