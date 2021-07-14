@@ -1,5 +1,5 @@
 # ECAR.DocuSign
-### Last release: June 25, 2021 (ver. 1.0.18)
+### Last release: July 14, 2021 (ver. 1.0.19)
 
 A library to easily connect to DocuSign services and embed signing within your web application.  
 
@@ -129,6 +129,27 @@ Overloaded versions of signing methods are available that accept the reminder an
 ```csharp
     // Email signing
     string status = ECAR.DocuSign.TemplateSign.EmailedTemplateSign(ref dsDoc, rem, exp, tabs);
+```
+
+
+# Previews, Resends and Voids
+## This is how you create a preview of the DocuSign view the recipient would see
+Simply call the `CreatePreviewURL` method passing in the `DocumentModel` object by *reference* and other objects.  You will need to supply a boolean value indicating if this would be sent by mail.  The `AppReturnUrl` agrument is ignored by DocuSign, but required.
+- This method returns the preview URL that you can show in an `<iframe>`.
+- **ECAR.DocuSign** populates metadata about the DocuSign document in the returned object (e.g. envelope ID, document ID and preview URL)
+- Your application must save this information to send this document after preview
+
+```csharp
+    string previewUrl = ECAR.DocuSign.TemplateSign.CreatePreviewURL(ref dsDoc, appReturnUrl, sendByMail, rem, exp, hook, tabs);
+```
+
+## This is how you send the previewed DocuSign envelope to the recipient 
+To send the document that you previewed (after approval), call the `SendPreviewedEnvelope` method, and pass in a `DocumentModel` object containing the envelope ID of the preview.  A special constructor exists for the `DocumentModel` object that takes just an envelope ID argument.
+- This method returns true when successful, or an exception in case of errors.
+
+```csharp
+    DocumentModel doc = new DocumentModel(previewEnvelopeId);
+    bool bResult = SendPreviewedEnvelope(doc);
 ```
 
 
@@ -277,25 +298,43 @@ DocuSign will automatically `POST` to the webhook action whenever the envelope s
     return File(results, "application/pdf", "«Whatever you want the document name to be»");
 ```
 
+## This is how you resend a previously sent envelope
+Call the `DSResendEnvelope` method and pass in the ID of the envelope to resend.  The envelope must be in one of `created`, `sent` or `delivered` states.
+- This method returns true when successful, or an exception if the envelope is in an invalid state or in case of errors.
+
+```csharp
+    bool bResult = ECAR.DocuSign.Status.DSResendEnvelope(createdEnvelopeId);
+```
+
+## This is how you void a previously sent envelope
+Call the `DSVoidEnvelope` method pass in the ID of the envelope to cancel/void.  The method also requires a non-empty string specifying the reason for voiding.  The envelope must *not* be in a `draft` or `completed` states.
+- This method returns true when successful, or an exception if the envelope is in an invalid state or in case of errors.
+
+```csharp
+    bool bResult = ECAR.DocuSign.Status.DSVoidEnvelope(createdEnvelopeID, voidedReason)
+```
+
+
 # Limitations/known issues
 - Supports only the use of a template created in DocuSign (template must exist in DocuSign)
-- Does not support deferred sending (create now, send later) for DocuSign envelopes
+- ~~Does not support deferred sending (create now, send later) for DocuSign envelopes~~ *Available with 7/14/2021 release (>1.0.19)*
 
 # Completed enhancements
-- [x] ~~Email document for signing asynchronously~~ *Avaialable with 10/1/2020 release (>1.0.5)*
-- [x] ~~Retrieve a list of DocuSign envelopes~~ *Avaialable with 10/9/2020 release (>1.0.7)*
-- [x] ~~Retrieve a list of envelope recipients~~ *Avaialable with 10/20/2020 release (>1.0.8)*
-- [x] ~~Retrieve a list of envelope documents~~ *Avaialable with 10/20/2020 release (>1.0.8)*
-- [x] ~~Support for reminders and expirations~~ *Avaialable with 5/11/2021 release (>1.0.11)*
-- [x] ~~Added support for emailing DocuSign envelopes (async signing)~~ *Avaialable with 5/11/2021 release (>1.0.11)*
-- [x] ~~Added support for webhook callback from DocuSign for status change events for emailed envelopes~~ *Avaialable with 6/25/2021 release (>1.0.18)*
+- [x] Email document for signing asynchronously. *Available with 10/1/2020 release (>1.0.5)*
+- [x] Retrieve a list of DocuSign envelopes. *Available with 10/9/2020 release (>1.0.7)*
+- [x] Retrieve a list of envelope recipients. *Available with 10/20/2020 release (>1.0.8)*
+- [x] Retrieve a list of envelope documents. *Available with 10/20/2020 release (>1.0.8)*
+- [x] Support for reminders and expirations. *Available with 5/11/2021 release (>1.0.11)*
+- [x] Added support for emailing DocuSign envelopes (async signing). *Available with 5/11/2021 release (>1.0.11)*
+- [x] Added support for webhook callback from DocuSign for status change events for emailed envelopes. *Available with 6/25/2021 release (>1.0.18)*
+- [x] Added support for DocuSign preview and voiding. *Available with 7/14/2021 release (>1.0.19)*
 
 # Future enhancements
 - [ ] Prepare and present a custom document (passed in from the calling application) to the recipient
 
 # Maintenance releases
-- [x] ~~Updated to use DocuSign.eSign.DLL v5.2~~ *Avaialable with 03/02/2021 release (>1.0.10)*
-- [x] ~~Updated to support .NETCore3.1~~ *Avaialable with 03/02/2021 release (>1.0.10)*
+- [x] Updated to use DocuSign.eSign.DLL v5.2. *Available with 03/02/2021 release (>1.0.10)*
+- [x] Updated to support .NETCore3.1. *Available with 03/02/2021 release (>1.0.10)*
 
 # Contribute
 Share your feedback/suggestions/requests

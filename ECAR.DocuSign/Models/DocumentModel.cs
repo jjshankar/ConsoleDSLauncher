@@ -48,6 +48,27 @@ namespace ECAR.DocuSign.Models
         /// Document ID returned from the DocuSign ceremony.
         /// </summary>
         public string DSDocumentId { get; internal set; }
+
+        /// <summary>
+        /// Envelope Preview URL returned from the DocuSign.
+        /// </summary>
+        public string DSPreviewUrl { get; internal set; }
+
+        /// <summary>
+        /// Default constructor. 
+        /// </summary>
+        public DocumentModel()
+        {            
+        }
+
+        /// <summary>
+        /// Special object constructor that accepts a DocuSign EnvelopeId.
+        /// </summary>
+        /// <param name="envelopeId">DocuSign Envelope ID</param>
+        public DocumentModel(string envelopeId)
+        {
+            DSEnvelopeId = envelopeId;
+        }
     }
 
 }

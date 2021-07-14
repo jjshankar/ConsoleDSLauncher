@@ -56,9 +56,9 @@ namespace ECAR.DocuSign
                         DeliveredDateTime = env.DeliveredDateTime,
                         EmailBlurb = env.EmailBlurb,
                         EmailSubject = env.EmailSubject,
-                        ExpireAfter = int.Parse(env.ExpireAfter),
+                        ExpireAfter = int.Parse(env.ExpireAfter ?? "0"),
                         ExpireDateTime = env.ExpireDateTime,
-                        ExpireEnabled = bool.Parse(env.ExpireEnabled),
+                        ExpireEnabled = bool.Parse(env.ExpireEnabled ?? "false"),
                         LastModifiedDateTime = env.LastModifiedDateTime,
                         SentDateTime = env.SentDateTime,
                         StatusChangedDateTime = env.StatusChangedDateTime,
@@ -171,6 +171,98 @@ namespace ECAR.DocuSign
             {
                 throw ex;
             }
+        }
+
+        /// <summary>
+        /// Void, or cancel, an envelope that was sent to a recipient. *** THIS ACTION IS IRREVERSIBLE! ***
+        /// Note: You cannot void draft or completed envelopes.
+        /// </summary>
+        /// <param name="EnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
+        /// <param name="VoidedReason">Reason for voiding the envelope</param>
+        /// <returns>boolean</returns>
+        /// <exception cref="System.Exception"></exception>
+        public static bool DSVoidEnvelope(string EnvelopeID, string VoidedReason)
+        {
+            try
+            {
+                // Validate input
+                if (string.IsNullOrEmpty(EnvelopeID))
+                    throw new Exception(Resources.EMPTY_ENVELOPE_ID);
+
+                if (string.IsNullOrEmpty(VoidedReason))
+                    throw new Exception(Resources.EMPTY_VOIDED_REASON);
+
+                // Check config
+                if (!DocuSignConfig.Ready)
+                    throw new Exception(Resources.DSCONFIG_NOT_SET);
+
+                // Read account ID from config
+                string accountId = DocuSignConfig.AccountID;
+
+                // Create API Client and call it
+                EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
+                Envelope envelope = new Envelope
+                {
+                    Status = "voided",
+                    VoidedReason = VoidedReason,
+                };
+
+                envelopesApi.Update(accountId, EnvelopeID, envelope);
+                return true;
+            }
+            catch (ApiException ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// Resend a previously sent DocuSign envelope (in 'created', 'sent' or 'delivered' states).
+        /// </summary>
+        /// <param name="EnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
+        /// <returns>Boolean result from DocuSign call</returns>
+        /// <exception cref="System.Exception"></exception>
+        public static bool DSResendEnvelope(string EnvelopeID)
+        {
+            // Return error if EnvelopeId is empty
+            if (string.IsNullOrEmpty(EnvelopeID))
+                throw new Exception(Resources.EMPTY_ENVELOPE_ID);
+
+            // Check config
+            if (!DocuSignConfig.Ready)
+                throw new Exception(Resources.DSCONFIG_NOT_SET);
+
+            // 1. Create envelope request object
+            // Read config values
+            string accountId = DocuSignConfig.AccountID;
+
+            Envelope envelope = new Envelope
+            {
+                Status = EnvelopeStatus.STATUS_SENT
+            };
+
+            EnvelopesApi.UpdateOptions updateOptions = new EnvelopesApi.UpdateOptions
+            {
+                resendEnvelope = "true"
+            };
+
+            // 2. Use the SDK to 'resend' the envelope by calling the update method
+            // Create API Client and call it
+            EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
+            EnvelopeUpdateSummary updateSummary = envelopesApi.Update(accountId, EnvelopeID, envelope, updateOptions);
+
+            // If error details is not null, then error occurred  
+            if (updateSummary.ErrorDetails != null)
+            {
+                throw new Exception(updateSummary.ErrorDetails.Message);
+            }
+
+            // return EnvelopeSummary back to caller
+            return true;
         }
 
         /// <summary>

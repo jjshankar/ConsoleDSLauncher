@@ -4,6 +4,63 @@ using System.Text;
 
 namespace ECAR.DocuSign.Models
 {
+
+    /// <summary>
+    /// Envelope Status retrieved from DocuSign.
+    /// </summary>
+    public class EnvelopeStatus
+    {
+        /// <summary>
+        /// EnvelopeStatus = "sent"
+        /// </summary>
+        public static string STATUS_SENT { get { return "sent"; } }
+
+        /// <summary>
+        /// EnvelopeStatus = "created"
+        /// </summary>
+        public static string STATUS_CREATED { get { return "created"; } }
+
+        /// <summary>
+        /// EnvelopeStatus = "declined"
+        /// </summary>
+        public static string STATUS_DECLINED { get { return "declined"; } }
+
+        /// <summary>
+        /// EnvelopeStatus = "delivered"
+        /// </summary>
+        public static string STATUS_DELIVERED { get { return "delivered"; } }
+
+        /// <summary>
+        /// EnvelopeStatus = "voided"
+        /// </summary>
+        public static string STATUS_VOIDED { get { return "voided"; } }
+
+        /// <summary>
+        /// EnvelopeStatus = "any"
+        /// </summary>
+        public static string STATUS_ANY { get { return "any"; } }
+
+        /// <summary>
+        /// EnvelopeStatus = "deleted"
+        /// </summary>
+        public static string STATUS_DELETED { get { return "deleted"; } }
+
+        /// <summary>
+        /// EnvelopeStatus = "signed"
+        /// </summary>
+        public static string STATUS_SIGNED { get { return "signed"; } }
+
+        /// <summary>
+        /// EnvelopeStatus = "completed"
+        /// </summary>
+        public static string STATUS_COMPLETED { get { return "completed"; } }
+
+        /// <summary>
+        /// EnvelopeStatus = "timedout"
+        /// </summary>
+        public static string STATUS_TIMEDOUT { get { return "timedout"; } }
+    }
+
     /// <summary>
     /// Data model for envelopes retrieved from DocuSign.
     /// </summary>
@@ -33,12 +90,12 @@ namespace ECAR.DocuSign.Models
         /// The date and time the envelope or template was voided, if exists (UTC/ISO).
         /// </summary>
         public string VoidedDateTime { get; internal set; }
-        
+
         /// <summary>
         /// The date and time the status changed (UTC/ISO)..
         /// </summary>
         public string StatusChangedDateTime { get; internal set; }
-        
+
         /// <summary>
         /// Indicates the envelope's current status. 
         ///</summary>
@@ -48,12 +105,12 @@ namespace ECAR.DocuSign.Models
         /// The date and time the envelope was sent (UTC/ISO).
         /// </summary>
         public string SentDateTime { get; internal set; }
-        
+
         /// <summary>
         /// The GUID identifier for the envelope.
         /// </summary>
         public string EnvelopeId { get; internal set; }
-        
+
         /// <summary>
         /// The reason the envelope or template was voided, if exists.
         /// </summary>

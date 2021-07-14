@@ -14,48 +14,56 @@ namespace ECAR.DocuSign
     /// </summary>
     public static class TemplateSign
     {
-        /// <summary>
-        /// Internal private method to call DocuSign for both embedded and asynchronous (email) signing
-        /// </summary>
-        /// <param name="Doc">Document data (in: document &amp; signer info; out: DocuSign envelope &amp; document ID)</param>
-        /// <param name="Rem">Reminder data</param>
-        /// <param name="Exp">Expiration Data</param>
-        /// <param name="Hook">Notification callback webhook Data</param>
-        /// <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
-        /// <returns>EnvelopeSummary object with result from DocuSign call</returns>
-        private static EnvelopeSummary ExecuteDocuSign(
-            ref DocumentModel Doc, 
-            ReminderModel Rem = null, 
-            ExpirationModel Exp = null, 
-            NotificationCallBackModel Hook = null,
-            List < DocPreset> Presets = null)
+        #region PRIVATE_MEMBERS
+
+        // Private cache of DocuSign template IDs to reduce API calls
+        private static Dictionary<string, string> TemplatesList = new Dictionary<string, string>();
+
+        #endregion
+        
+        #region PRIVATE_METHODS
+        private static string GetTemplateId(string accountId, string templateName)
         {
-            if (!DocuSignConfig.Ready)
-                throw new Exception(Resources.DSCONFIG_NOT_SET);
+            string templateId = "";
 
-            // Signing Ceremony with a template
-            // 1. Create envelope request obj with template ID (get ID from DocuSign based on template name)
-            // 2. Use the SDK to create and send the envelope with a Template document in DocuSign
+            // Check the local cache 
+            if (TemplatesList.Count > 0)
+                TemplatesList.TryGetValue(templateName, out templateId);
 
-            // 1. Create envelope request object
-            // Read config values
-            string accountId = DocuSignConfig.AccountID;
-
-            // Get the template ID by calling the Templates API
-            TemplatesApi templatesApi = Authenticate.CreateTemplateApiClient();
-            TemplatesApi.ListTemplatesOptions options = new TemplatesApi.ListTemplatesOptions { searchText = Doc.DSTemplateName };
-            EnvelopeTemplateResults searchResults = templatesApi.ListTemplates(accountId, options);
-
-            string templateId;
-
-            // Process results
-            if (int.Parse(searchResults.ResultSetSize) > 0)
+            // If not found, go to DocuSign
+            if(string.IsNullOrEmpty(templateId))
             {
-                // Found the template! Record its id
-                templateId = searchResults.EnvelopeTemplates[0].TemplateId;
+                // Get the template ID by calling the Templates API
+                TemplatesApi templatesApi = Authenticate.CreateTemplateApiClient();
+                TemplatesApi.ListTemplatesOptions options = new TemplatesApi.ListTemplatesOptions { searchText = templateName };
+                EnvelopeTemplateResults searchResults = templatesApi.ListTemplates(accountId, options);
+            
+                // Process results
+                if (int.Parse(searchResults.ResultSetSize) > 0)
+                {
+                    // Found the template! Record its id
+                    templateId = searchResults.EnvelopeTemplates[0].TemplateId;
+                    TemplatesList.Add(templateName, templateId);
+                }
+                else
+                    throw new ApiException(404, String.Format(Resources.TEMPLATE_NOT_FOUND_x, templateName));
             }
-            else
-                throw new ApiException(404, String.Format(Resources.TEMPLATE_NOT_FOUND_x, Doc.DSTemplateName));
+
+            // Return found ID
+            return templateId;
+        }
+
+        private static EnvelopeDefinition CreateEnvelopeDefinition(
+            String accountId, 
+            String status,
+            DocumentModel Doc,
+            ReminderModel Rem = null,
+            ExpirationModel Exp = null,
+            NotificationCallBackModel Hook = null,
+            List<DocPreset> Presets = null)
+        {
+            // Get template ID
+            string templateId = GetTemplateId(accountId, Doc.DSTemplateName);
 
             // Start with the different components of the request
             // Create the signer recipient object 
@@ -155,7 +163,7 @@ namespace ECAR.DocuSign
                     UseAccountDefaults = "false"
                 };
 
-                if(Rem != null)
+                if (Rem != null)
                 {
                     notification.Reminders = new Reminders
                     {
@@ -165,7 +173,7 @@ namespace ECAR.DocuSign
                     };
                 }
 
-                if(Exp != null)
+                if (Exp != null)
                 {
                     notification.Expirations = new Expirations
                     {
@@ -176,9 +184,8 @@ namespace ECAR.DocuSign
                 }
             }
 
-            // Custom webhook notification
+            // Custom webhook notification if available
             EventNotification eventNotification = null;
-
             if (Hook != null)
             {
                 // Get Envelope event codes
@@ -210,22 +217,120 @@ namespace ECAR.DocuSign
             }
 
             // Bring the objects together in the EnvelopeDefinition
+            //  Set the envelopeId if available and status ('sent' or 'created')
             EnvelopeDefinition envelopeDefinition = new EnvelopeDefinition
             {
+                EnvelopeId = Doc.DSEnvelopeId ?? null,
                 EmailSubject = Doc.DSEmailSubject,
-                Status = "sent",
+                Status = status,
                 CompositeTemplates = new List<CompositeTemplate> { compTemplate },
                 Notification = notification ?? null,
                 EventNotification = eventNotification ?? null
             };
 
-            // 2. Use the SDK to create and send the envelope
+            return envelopeDefinition;
+        }
+
+        /// <summary>
+        /// Internal private method to call DocuSign to create (not send) an envelope for preview 
+        /// </summary>
+        /// <param name="Doc">Document data (in: document &amp; signer info; out: DocuSign envelope &amp; document ID)</param>
+        /// <param name="Rem">Reminder data</param>
+        /// <param name="Exp">Expiration Data</param>
+        /// <param name="Hook">Notification callback webhook Data</param>
+        /// <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
+        /// <returns>EnvelopeSummary object with result from DocuSign call</returns>
+        private static EnvelopeSummary CreateDocuSignPreview(
+            ref DocumentModel Doc,
+            ReminderModel Rem = null,
+            ExpirationModel Exp = null,
+            NotificationCallBackModel Hook = null,
+            List<DocPreset> Presets = null)
+        {
+            if (!DocuSignConfig.Ready)
+                throw new Exception(Resources.DSCONFIG_NOT_SET);
+
+            // Signing Ceremony with a template
+            // 1. Create envelope request obj with template ID (get ID from DocuSign based on template name)
+            // 2. Use the SDK to create and send the envelope with a Template document in DocuSign
+
+            // Read config values
+            string accountId = DocuSignConfig.AccountID;
+
+            // 1. Create envelope request object as "created" for preview
+            EnvelopeDefinition envelopeDefinition = CreateEnvelopeDefinition(accountId, EnvelopeStatus.STATUS_CREATED, Doc, Rem, Exp, Hook, Presets);
+
+            // 2. Use the SDK to create the envelope
             EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
             EnvelopeSummary results = envelopesApi.CreateEnvelope(accountId, envelopeDefinition);
+
+            // Set envelopeId in Doc object before returning
+            Doc.DSEnvelopeId = results.EnvelopeId;
 
             // return EnvelopeSummary back to caller
             return results;
         }
+
+
+        /// <summary>
+        /// Internal private method to call DocuSign for both embedded and asynchronous (email) signing
+        /// </summary>
+        /// <param name="Doc">Document data (in: document &amp; signer info; out: DocuSign envelope &amp; document ID)</param>
+        /// <param name="Rem">Reminder data</param>
+        /// <param name="Exp">Expiration Data</param>
+        /// <param name="Hook">Notification callback webhook Data</param>
+        /// <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
+        /// <returns>EnvelopeSummary object with result from DocuSign call</returns>
+        private static EnvelopeSummary ExecuteDocuSign(
+            ref DocumentModel Doc,
+            ReminderModel Rem = null,
+            ExpirationModel Exp = null,
+            NotificationCallBackModel Hook = null,
+            List<DocPreset> Presets = null)
+        {
+            if (!DocuSignConfig.Ready)
+                throw new Exception(Resources.DSCONFIG_NOT_SET);
+
+            /**********
+            // Signing Ceremony with a template
+            // Check if we have already created the envelope for preview
+            if (string.IsNullOrEmpty(Doc.DSEnvelopeId))
+            {
+                //  Create an envelope request obj with template ID (get ID from DocuSign based on template name)
+                CreateDocuSignPreview(ref Doc, Presets);
+            }
+
+            // Send the document for signature
+            EnvelopeSummary results = SendDocuSignEnvelope(ref Doc, Rem, Exp, Hook, Presets);
+
+            // Set envelopeId in Doc object before returning
+            Doc.DSEnvelopeId = results.EnvelopeId;
+
+            // return EnvelopeSummary back to caller
+            return results;
+            *********/
+
+            // Signing Ceremony with a template
+            // 1. Create envelope request obj with template ID (get ID from DocuSign based on template name)
+            // 2. Use the SDK to create and send the envelope with a Template document in DocuSign
+
+            // Read config values
+            string accountId = DocuSignConfig.AccountID;
+
+            // 1. Create envelope request object for sending
+            EnvelopeDefinition envelopeDefinition = CreateEnvelopeDefinition(accountId, EnvelopeStatus.STATUS_SENT, Doc, Rem, Exp, Hook, Presets);
+
+            // 2. Use the SDK to create and send the envelope
+            EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
+            EnvelopeSummary results = envelopesApi.CreateEnvelope(accountId, envelopeDefinition);
+
+            // Set envelopeId in Doc object before returning
+            Doc.DSEnvelopeId = results.EnvelopeId;
+
+            // return EnvelopeSummary back to caller
+            return results;
+        }
+        #endregion PRIVATE_METHODS
 
         #region PUBLIC_METHODS
         /// <summary>
@@ -235,7 +340,11 @@ namespace ECAR.DocuSign
         /// <param name="Doc">Document data (in: document &amp; signer info; out: DocuSign envelope &amp; document ID)</param>
         /// <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
         /// <returns>DocuSign URL for embedded signing</returns>
-        public static string EmbeddedTemplateSign(string AppReturnUrl, ref DocumentModel Doc, List<DocPreset> Presets = null)
+        /// <exception cref="System.Exception"></exception>
+        public static string EmbeddedTemplateSign(
+            string AppReturnUrl, 
+            ref DocumentModel Doc, 
+            List<DocPreset> Presets = null)
         {
             try
             {
@@ -253,7 +362,7 @@ namespace ECAR.DocuSign
                 // Populate EnvelopeId and DocumentId for return
                 //  DocumentId is always 1 for template sign
                 Doc.DSEnvelopeId = results.EnvelopeId;
-                Doc.DSDocumentId = "1";     
+                Doc.DSDocumentId = "1";
 
                 // 3. Create Envelope Recipient View request obj
                 RecipientViewRequest viewRequest = new RecipientViewRequest
@@ -273,7 +382,7 @@ namespace ECAR.DocuSign
                 EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
                 ViewUrl viewUrl = envelopesApi.CreateRecipientView(accountId, results.EnvelopeId, viewRequest);
 
-                // 5. Redirect the user's browser to the URL
+                // 5. Return the preview URL
                 return viewUrl.Url;
             }
             catch (ApiException ex)
@@ -295,7 +404,13 @@ namespace ECAR.DocuSign
         /// <param name="Exp">Expiration details if required for the DocuSign envelope</param>
         /// <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
         /// <returns>DocuSign URL for embedded signing</returns>
-        public static string EmbeddedTemplateSign(string AppReturnUrl, ref DocumentModel Doc, ReminderModel Rem, ExpirationModel Exp, List<DocPreset> Presets = null)
+        /// <exception cref="System.Exception"></exception>
+        public static string EmbeddedTemplateSign(
+            string AppReturnUrl, 
+            ref DocumentModel Doc, 
+            ReminderModel Rem, 
+            ExpirationModel Exp, 
+            List<DocPreset> Presets = null)
         {
             try
             {
@@ -333,7 +448,7 @@ namespace ECAR.DocuSign
                 EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
                 ViewUrl viewUrl = envelopesApi.CreateRecipientView(accountId, results.EnvelopeId, viewRequest);
 
-                // 5. Redirect the user's browser to the URL
+                // 5. Return the preview URL
                 return viewUrl.Url;
             }
             catch (ApiException ex)
@@ -352,7 +467,10 @@ namespace ECAR.DocuSign
         /// <param name="Doc">Document data (in: document &amp; signer info; out: DocuSign envelope &amp; document ID)</param>
         /// <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
         /// <returns>DocuSign envelope status</returns>
-        public static string EmailedTemplateSign(ref DocumentModel Doc, List<DocPreset> Presets = null)
+        /// <exception cref="System.Exception"></exception>
+        public static string EmailedTemplateSign(
+            ref DocumentModel Doc, 
+            List<DocPreset> Presets = null)
         {
             try
             {
@@ -396,7 +514,12 @@ namespace ECAR.DocuSign
         /// <param name="Exp">Expiration details if required for the DocuSign envelope</param>
         /// <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
         /// <returns>DocuSign envelope status</returns>
-        public static string EmailedTemplateSign(ref DocumentModel Doc, ReminderModel Rem, ExpirationModel Exp, List<DocPreset> Presets = null)
+        /// <exception cref="System.Exception"></exception>
+        public static string EmailedTemplateSign(
+            ref DocumentModel Doc, 
+            ReminderModel Rem, 
+            ExpirationModel Exp, 
+            List<DocPreset> Presets = null)
         {
             try
             {
@@ -441,10 +564,11 @@ namespace ECAR.DocuSign
         /// <param name="Hook">Notification callback webhook details</param>
         /// <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
         /// <returns>DocuSign envelope status</returns>
+        /// <exception cref="System.Exception"></exception>
         public static string EmailedTemplateSignWithCallBack(
-            ref DocumentModel Doc, 
-            ReminderModel Rem, 
-            ExpirationModel Exp, 
+            ref DocumentModel Doc,
+            ReminderModel Rem,
+            ExpirationModel Exp,
             NotificationCallBackModel Hook,
             List<DocPreset> Presets = null)
         {
@@ -481,6 +605,119 @@ namespace ECAR.DocuSign
                 throw ex;
             }
         }
+
+        /// <summary>
+        /// Create a preview URL for the DocuSign document to review that the recipients will see.
+        /// </summary>
+        /// <param name="Doc">Document data (in: document &amp; signer info; out: DocuSign envelope &amp; document ID)</param>
+        /// <param name="AppReturnUrl">Return URL that DocuSign should transfer control when the preview is closed</param>
+        /// <param name="SendByMail">Indicates whether the DocuSign envelope will be sent by mail or in an embedded ceremony</param>
+        /// <param name="Rem">Reminder details if required for DocuSign envelope</param>
+        /// <param name="Exp">Expiration details if required for the DocuSign envelope</param>
+        /// <param name="Hook">Notification callback webhook details</param>
+        /// <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
+        /// <returns>DocuSign URL for recipient preview</returns>
+        /// <exception cref="System.Exception"></exception>
+        public static string CreatePreviewURL(
+            ref DocumentModel Doc, 
+            string AppReturnUrl, 
+            bool SendByMail,
+            ReminderModel Rem,
+            ExpirationModel Exp,
+            NotificationCallBackModel Hook,
+            List<DocPreset> Presets = null)
+        {
+            try
+            {
+                // Create a preview URL
+                // 1. Create envelope request obj with template ID (get ID from DocuSign based on template name)
+                // 2. Use the SDK to create and send the envelope with a Template document in DocuSign
+                // 3. Create Envelope Recipient View request obj
+                // 4. Use the SDK to obtain a Recipient Preview URL
+                // 5. Return the Recipient Preview URL to the caller (takes user to DocuSign)
+
+                // Steps 1 & 2 are performed in the private method
+
+                // Create preview envelope without the clientUserId
+                string origSignerId = Doc.SignerId;
+                Doc.SignerId = (SendByMail) ? null : origSignerId;
+                EnvelopeSummary results = CreateDocuSignPreview(ref Doc, Rem, Exp, Hook, Presets);
+
+                // Reset signer ID, populate EnvelopeId and DocumentId for return
+                //  DocumentId is always 1 for template sign
+                Doc.SignerId = origSignerId;
+                Doc.DSEnvelopeId = results.EnvelopeId;
+                Doc.DSDocumentId = "1";
+
+                // 4. Use the SDK to obtain a Recipient View URL
+                // Read account ID from config
+                string accountId = DocuSignConfig.AccountID;
+
+                // Set up RecipientPreviewRequest object 
+                RecipientPreviewRequest previewRequest = new RecipientPreviewRequest
+                {
+                    ReturnUrl = AppReturnUrl,
+                    RecipientId = "1"
+                };
+
+                // Create API Client and call it
+                EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
+                ViewUrl viewUrl = envelopesApi.CreateEnvelopeRecipientPreview(accountId, results.EnvelopeId, previewRequest);
+
+                // 5. Set up the preview URL in the Doc object and return it
+                Doc.DSPreviewUrl = viewUrl.Url;
+                return viewUrl.Url;
+            }
+            catch (ApiException ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// Send a previously created DocuSign envelope for signature.
+        /// </summary>
+        /// <param name="Doc">Document data populated with the DocuSign envelope ID of the preview</param>
+        /// <returns>Boolean result from DocuSign call</returns>
+        /// <exception cref="System.Exception"></exception>
+        public static bool SendPreviewedEnvelope(
+            DocumentModel Doc)
+        {
+            if (!DocuSignConfig.Ready)
+                throw new Exception(Resources.DSCONFIG_NOT_SET);
+
+            // Return error if EnvelopeId is empty
+            if (string.IsNullOrEmpty(Doc.DSEnvelopeId))
+                throw new Exception(Resources.EMPTY_ENVELOPE_ID);
+
+            // 1. Create envelope request object
+            // Read config values
+            string accountId = DocuSignConfig.AccountID;
+
+            // Create API Client and call it
+            EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
+            Envelope envelope = new Envelope
+            {
+                Status = EnvelopeStatus.STATUS_SENT
+            };
+
+            // 2. Use the SDK to 'Send' the envelope by calling the update method
+            EnvelopeUpdateSummary updateSummary = envelopesApi.Update(accountId, Doc.DSEnvelopeId, envelope);
+
+            // If error details is not null, then error occurred  
+            if (updateSummary.ErrorDetails != null)
+            {
+                throw new Exception(updateSummary.ErrorDetails.Message);
+            }
+
+            // return EnvelopeSummary back to caller
+            return true;
+        }
+
         #endregion
     }
 }
