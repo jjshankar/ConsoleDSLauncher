@@ -5,7 +5,7 @@ using System.Text;
 namespace ECAR.DocuSign.Models
 {
     /// <summary>
-    /// Available types of DocuSign fields (tabs) for prefilling.
+    /// Available types of DocuSign fields (tabs) for prefilling. Other field types are currently not supported.
     /// </summary>
     public enum Presets
     {

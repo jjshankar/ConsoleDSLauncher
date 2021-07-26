@@ -11,7 +11,7 @@ namespace ECAR.DocuSign.Models
     {
         /// <summary>
         /// List of envelope event codes to get notifications for.  
-        /// Valid values are: "Sent", "Completed", "Declined", "Delivered", "Voided".
+        /// Valid values are: "Draft", "Sent", "Completed", "Declined", "Delivered", "Voided".
         /// </summary>
         public List<string> EnvelopeEvents;
 

@@ -5,9 +5,9 @@ using System.Text;
 namespace ECAR.DocuSign.Models
 {
     /// <summary>
-    /// Data model for a single document sent for signature to a single recipient via ECAR.DocuSign.
+    /// Data model for multiple documents sent as a packet to a single recipient for signature via ECAR.DocuSign.
     /// </summary>
-    public class DocumentModel
+    public class DocumentPacketModel
     {
         /// <summary>
         /// Email address for the recipient.
@@ -30,15 +30,19 @@ namespace ECAR.DocuSign.Models
         public string DSRoleName { get; set; }
 
         /// <summary>
-        /// Name of the DocuSign template to use.
+        /// Names of the DocuSign templates to use in this document packet.
         /// </summary>
-        public string DSTemplateName { get; set; }
+        public List<string> DSTemplateList { get; set; }
 
         /// <summary>
         /// Subject line for the email sent from DocuSign.
         /// </summary>
         public string DSEmailSubject { get; set; }
 
+        /// <summary>
+        /// Body text for the email sent from DocuSign.
+        /// </summary>
+        public string DSEmailBody { get; set; }
         /// <summary>
         /// Envelope ID returned from the DocuSign ceremony.
         /// </summary>
@@ -57,18 +61,10 @@ namespace ECAR.DocuSign.Models
         /// <summary>
         /// Default constructor. 
         /// </summary>
-        public DocumentModel()
+        public DocumentPacketModel()
         {            
         }
 
-        /// <summary>
-        /// Special object constructor that accepts a DocuSign EnvelopeId.
-        /// </summary>
-        /// <param name="envelopeId">DocuSign Envelope ID</param>
-        public DocumentModel(string envelopeId)
-        {
-            DSEnvelopeId = envelopeId;
-        }
     }
 
 }

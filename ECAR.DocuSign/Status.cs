@@ -266,11 +266,10 @@ namespace ECAR.DocuSign
         }
 
         /// <summary>
-        /// Retrieve info about the documents contained in a DocuSign envelope.
-        /// If envelope was signed, the signer's DocuSign certificate is appended to this list.
+        /// Retrieve info about the documents contained in a DocuSign envelope. If envelope was signed, the signer's DocuSign certificate is appended to this list.
         /// </summary>
         /// <param name="EnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
-        /// <returns>List of all documents in the requested envelope as EnvelopeDocumentModel objects.</returns>
+        /// <returns>List of all documents in the requested envelope as EnvelopeDocumentModel objects</returns>
         /// <exception cref="System.Exception"></exception>
         public static List<EnvelopeDocumentModel> DSGetAllDocuments(string EnvelopeID)
         {
@@ -838,6 +837,129 @@ namespace ECAR.DocuSign
                     }
                 }
                 return retVal;
+            }
+            catch (ApiException ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+
+        /// <summary>
+        /// Retrieve the user selected value within a drop-down field within a DocuSign document.
+        /// </summary>
+        /// <param name="TabLabel">Tab label of the date field in the DocuSign template</param>
+        /// <param name="EnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
+        /// <param name="DocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
+        /// <returns>Returns one of: "active", "signed", "declined" or "na" (e.g. for optional signature fields)</returns>
+        /// <exception cref="System.Exception"></exception>
+        public static string DSGetDocumentListField(string TabLabel, string EnvelopeID, string DocumentID = "0")
+        {
+            try
+            {
+                // Validate inputs
+                if (string.IsNullOrEmpty(TabLabel))
+                    throw new Exception(Resources.EMPTY_TAB_LABEL);
+
+                if (string.IsNullOrEmpty(EnvelopeID))
+                    throw new Exception(Resources.EMPTY_ENVELOPE_ID);
+
+                if (string.IsNullOrEmpty(DocumentID))
+                    throw new Exception(Resources.EMPTY_DOCUMENT_ID);
+
+                // Check config
+                if (!DocuSignConfig.Ready)
+                    throw new Exception(Resources.DSCONFIG_NOT_SET);
+
+                string retVal = "";
+
+                // Read account ID from config
+                string accountId = DocuSignConfig.AccountID;
+
+                // Create API Client and call it
+                EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
+                EnvelopeDocumentsResult docList = envelopesApi.ListDocuments(accountId, EnvelopeID);
+
+                if (docList.EnvelopeDocuments.Count > 0)
+                {
+                    // Get checkbox selection
+                    Tabs tabs = envelopesApi.GetDocumentTabs(accountId, EnvelopeID,
+                        (DocumentID == "0") ? docList.EnvelopeDocuments[0].DocumentId : DocumentID);
+                    if (tabs.ListTabs.Count > 0)
+                    {
+                        List listTab = tabs.ListTabs.Find(x => x.TabLabel == TabLabel);
+                        if (listTab == null)
+                            throw new Exception(string.Format(Resources.FIELD_x_NOT_FOUND, TabLabel));
+
+                        retVal = listTab.ListSelectedValue;
+                    }
+                }
+                return retVal;
+            }
+            catch (ApiException ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// Get a list of all DocuSign envelope IDs included in a given batch.
+        /// </summary>
+        /// <param name="BulkSendBatchID">The batch ID to get the envelopes for</param>
+        /// <returns>List of all envelopes from the requested batch as EnvelopeModel objects</returns>
+        /// <exception cref="System.Exception"></exception>
+        public static List<EnvelopeModel> DSGetBulkBatchEnvelopes(string BulkSendBatchID)
+        {
+            try
+            {
+                // Validate input
+                if (string.IsNullOrEmpty(BulkSendBatchID))
+                    throw new Exception(Resources.EMPTY_BATCHID_VALUE);
+
+                // Check config
+                if (!DocuSignConfig.Ready)
+                    throw new Exception(Resources.DSCONFIG_NOT_SET);
+
+                // Read account ID from config
+                string accountId = DocuSignConfig.AccountID;
+
+                // Create BulkEnvelopes API Client and call it
+                BulkEnvelopesApi bulkEnvelopesApi = Authenticate.CreateBulkEnvelopesApiClient();
+                EnvelopesInformation envInfo = bulkEnvelopesApi.GetBulkSendBatchEnvelopes(accountId, BulkSendBatchID);
+
+                List<EnvelopeModel> allEnvelopes = new List<EnvelopeModel>();
+                foreach (Envelope env in envInfo.Envelopes)
+                {
+                    allEnvelopes.Add(new EnvelopeModel
+                    {
+                        EnvelopeId = env.EnvelopeId,
+                        Status = env.Status,
+                        CompletedDateTime = env.CompletedDateTime,
+                        CreatedDateTime = env.CreatedDateTime,
+                        DeclinedDateTime = env.DeclinedDateTime,
+                        DeliveredDateTime = env.DeliveredDateTime,
+                        EmailBlurb = env.EmailBlurb,
+                        EmailSubject = env.EmailSubject,
+                        ExpireAfter = int.Parse(env.ExpireAfter ?? "0"),
+                        ExpireDateTime = env.ExpireDateTime,
+                        ExpireEnabled = bool.Parse(env.ExpireEnabled ?? "false"),
+                        LastModifiedDateTime = env.LastModifiedDateTime,
+                        SentDateTime = env.SentDateTime,
+                        StatusChangedDateTime = env.StatusChangedDateTime,
+                        VoidedDateTime = env.VoidedDateTime,
+                        VoidedReason = env.VoidedReason
+                    });
+                }
+
+                return allEnvelopes;
             }
             catch (ApiException ex)
             {

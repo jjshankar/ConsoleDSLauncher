@@ -120,6 +120,9 @@
   <data name="DSCONFIG_NOT_SET" xml:space="preserve">
     <value>DocuSign configuration not set.</value>
   </data>
+  <data name="EMPTY_BATCHID_VALUE" xml:space="preserve">
+    <value>Batch ID cannot be null or blank.</value>
+  </data>
   <data name="EMPTY_DOCUMENT_ID" xml:space="preserve">
     <value>DocuSign document ID cannot be null or blank.</value>
   </data>
@@ -127,18 +130,24 @@
     <value>DocuSign envelope ID cannot be null or blank.</value>
   </data>
   <data name="EMPTY_STARTDATE_VALUE" xml:space="preserve">
-    <value>Start date cannot be null.</value>
+    <value>Start date cannot be null or blank.</value>
   </data>
   <data name="EMPTY_TAB_LABEL" xml:space="preserve">
     <value>DocuSign tab label cannot be null or blank.</value>
+  </data>
+  <data name="EMPTY_TEMPLATE_NAME" xml:space="preserve">
+    <value>Template name cannot be null or blank.</value>
   </data>
   <data name="EMPTY_VOIDED_REASON" xml:space="preserve">
     <value>Voided reason cannot be null or blank.</value>
   </data>
   <data name="FIELD_x_NOT_FOUND" xml:space="preserve">
-    <value>Named field {0} was not found in the DocuSign document.</value>
+    <value>Named field: '{0}' was not found in the DocuSign document.</value>
+  </data>
+  <data name="INVALID_STATUS_FOR_EVENTNOTIFICATION_x" xml:space="preserve">
+    <value>The specified envelope status is invalid for event notification from DocuSign: '{0}'.</value>
   </data>
   <data name="TEMPLATE_NOT_FOUND_x" xml:space="preserve">
-    <value>DocuSign template not found: {1}.</value>
+    <value>DocuSign template not found: '{0}'.</value>
   </data>
 </root>

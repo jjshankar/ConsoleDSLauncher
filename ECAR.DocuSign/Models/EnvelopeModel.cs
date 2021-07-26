@@ -11,9 +11,9 @@ namespace ECAR.DocuSign.Models
     public class EnvelopeStatus
     {
         /// <summary>
-        /// EnvelopeStatus = "sent"
+        /// EnvelopeStatus = "any"
         /// </summary>
-        public static string STATUS_SENT { get { return "sent"; } }
+        public static string STATUS_ANY { get { return "any"; } }
 
         /// <summary>
         /// EnvelopeStatus = "created"
@@ -21,24 +21,14 @@ namespace ECAR.DocuSign.Models
         public static string STATUS_CREATED { get { return "created"; } }
 
         /// <summary>
+        /// EnvelopeStatus = "completed"
+        /// </summary>
+        public static string STATUS_COMPLETED { get { return "completed"; } }
+
+        /// <summary>
         /// EnvelopeStatus = "declined"
         /// </summary>
         public static string STATUS_DECLINED { get { return "declined"; } }
-
-        /// <summary>
-        /// EnvelopeStatus = "delivered"
-        /// </summary>
-        public static string STATUS_DELIVERED { get { return "delivered"; } }
-
-        /// <summary>
-        /// EnvelopeStatus = "voided"
-        /// </summary>
-        public static string STATUS_VOIDED { get { return "voided"; } }
-
-        /// <summary>
-        /// EnvelopeStatus = "any"
-        /// </summary>
-        public static string STATUS_ANY { get { return "any"; } }
 
         /// <summary>
         /// EnvelopeStatus = "deleted"
@@ -46,19 +36,34 @@ namespace ECAR.DocuSign.Models
         public static string STATUS_DELETED { get { return "deleted"; } }
 
         /// <summary>
+        /// EnvelopeStatus = "delivered"
+        /// </summary>
+        public static string STATUS_DELIVERED { get { return "delivered"; } }
+
+        /// <summary>
+        /// EnvelopeStatus = "draft"
+        /// </summary>
+        public static string STATUS_DRAFT { get { return "draft"; } }
+
+        /// <summary>
+        /// EnvelopeStatus = "sent"
+        /// </summary>
+        public static string STATUS_SENT { get { return "sent"; } }
+
+        /// <summary>
         /// EnvelopeStatus = "signed"
         /// </summary>
         public static string STATUS_SIGNED { get { return "signed"; } }
 
         /// <summary>
-        /// EnvelopeStatus = "completed"
-        /// </summary>
-        public static string STATUS_COMPLETED { get { return "completed"; } }
-
-        /// <summary>
         /// EnvelopeStatus = "timedout"
         /// </summary>
         public static string STATUS_TIMEDOUT { get { return "timedout"; } }
+
+        /// <summary>
+        /// EnvelopeStatus = "voided"
+        /// </summary>
+        public static string STATUS_VOIDED { get { return "voided"; } }
     }
 
     /// <summary>

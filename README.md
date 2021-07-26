@@ -1,5 +1,5 @@
 # ECAR.DocuSign
-### Last release: July 14, 2021 (ver. 1.0.19)
+### Last release: July 23, 2021 (ver. 1.0.20)
 
 A library to easily connect to DocuSign services and embed signing within your web application.  
 
@@ -19,7 +19,7 @@ Getting started with **ECAR.DocuSign** is as easy as 1..2..3
 3.	Call the method!
 
 
-# Sample Code
+# Starter Code 
 [Sample Controller](Sample.md)
 
 
@@ -132,7 +132,7 @@ Overloaded versions of signing methods are available that accept the reminder an
 ```
 
 
-# Previews, Resends and Voids
+# Previews
 ## This is how you create a preview of the DocuSign view the recipient would see
 Simply call the `CreatePreviewURL` method passing in the `DocumentModel` object by *reference* and other objects.  You will need to supply a boolean value indicating if this would be sent by mail.  The `AppReturnUrl` agrument is ignored by DocuSign, but required.
 - This method returns the preview URL that you can show in an `<iframe>`.
@@ -200,6 +200,69 @@ DocuSign will automatically `POST` to the webhook action whenever the envelope s
     }
 ```
 
+# Sending multiple documents in one envelope
+Sending document packets that consist of many DocuSign templates, just create a new instance of the `DocumentPacketModel` object and populate it with the names of the templates you would like to include in the envelope (using its `DSTemplateList` property).
+```csharp
+    DocumentPacketModel dsDocPacket = new DocumentPacketModel
+    {
+        DSEmailSubject = "Please sign this document packet (2 docs).",
+        DSRoleName = DSROLENAME,
+        DSTemplateList = new List<string> { DOCNAME, DOC2NAME },
+        SignerEmail = signerEmail,
+        SignerId = signerId,
+        SignerName = signerName
+    };
+```
+
+Set up the preset tabs, the return URL (for embedded sign) or notification (for email sign) objects, set up reminder and expiration if you require them, and call the corresponding `...PacketSign` methods.
+```csharp
+    // Template sign
+    string viewUrl = ECAR.DocuSign.TemplateSign.EmbeddedPacketSign(returnUrl, ref dsDocPacket, null, null, tabs);
+
+    // Email sign
+    string status = ECAR.DocuSign.TemplateSign.EmailedPacketSign(ref dsDocPacket, hook, null, null, tabs);
+```
+
+# Bulk/Batch Sending
+For sending the same document or packet to multiple recipients, utilizing DocuSign's bulk send function is recommended.  This reduces the number of calls made to the DocuSign API and provides a better user experience - the caller need not wait for all envelopes to finish sending; they can fire off the bulk send call and monitor for status changes in the webhook method.
+
+To do this, set up the corresponding bulk send object for a single document or multi-document packet.  In each of these objects, you will need to populate the recipient data and presets for each recipient in the corresponding `List<>` objects.
+
+```csharp
+    // Single Document
+    BulkSendDocumentList dsBulkDocList = new BulkSendDocumentList
+    {
+        BulkRecipientList = new List<BulkSendRecipientModel>(),     // set up recipient list
+        BulkBatchName = "«Custom name for your batch»",
+        DSBatchTemplateName = "«The template you want to send»",
+        BulkEmailSubject = "«Custom email subject for your batch»",
+        BulkEmailBody = "«Custom email body text for your batch»",
+    };
+
+    // Multi-doc packet
+    BulkSendPacketList  dsBulkPacketList = new BulkSendPacketList
+    {
+        BulkPacketRecipientList = new List<BulkSendPacketRecipientModel>(),    // set up recipient list
+        BulkBatchName = "«Custom name for your batch»",
+        DSBatchPacketTemplates = new List<string> { "«Template 1»", "«Template 2»", ... },
+        BulkEmailSubject = "«Custom email subject for your batch»",
+        BulkEmailBody = "«Custom email body text for your batch»",
+    };
+```
+
+Once the data is prepared, set up the notification object, and call the corresponding `BulkSend...` methods.  The ID of the batch returned from DocuSign is sent back to the caller.  The List ID and Batch ID are also populated in the bulk document list sent to the call.
+
+```csharp
+    // Single doc
+    string batchId = ECAR.DocuSign.TemplateSign.BulkSendTemplate(ref dsBulkDocList, hook);
+
+    // Doc Packet
+    string batchId = ECAR.DocuSign.TemplateSign.BulkSendPacket(ref dsBulkPacketList, hook);
+```
+
+The caller may store the batch ID (returned value or the `DSBatchID` property) after this call for status queries in the future.  
+
+NOTE: DocuSign takes a while to dispatch all the documents in the batch, so use your judgment before initiating the status query for a batch.
 
 # Status and Retrieval
 ## This is how you retrieve a list of DocuSign envelopes from a given date
@@ -232,6 +295,22 @@ DocuSign will automatically `POST` to the webhook action whenever the envelope s
         Console.WriteLine("\tVoidedDateTime: {0}", env.VoidedDateTime);
         Console.WriteLine("\tVoidedReason: {0}", env.VoidedReason);
     }
+```
+
+## This is how you retrieve a list of DocuSign envelopes from a specific batch
+```csharp
+    // Get batch status for a given batchID
+    List<EnvelopeModel> envs = ECAR.DocuSign.Status.DSGetBulkBatchEnvelopes(batchId);
+
+    foreach(EnvelopeModel env in envs)
+    {
+        Console.WriteLine("=======  Envelope ID: {0}  =======", env.EnvelopeId);
+        Console.WriteLine("\tEnvelope Sent: {0}", env.SentDateTime);
+        Console.WriteLine("\tEnvelope Delivered: {0}", env.DeliveredDateTime);
+        Console.WriteLine("\tEnvelope Status: {0}", env.Status);
+        Console.WriteLine("\tEnvelope Status Changed on: {0}", env.StatusChangedDateTime);
+        Console.WriteLine("\tEnvelope Delivered: {0}", env.DeliveredDateTime);
+    }  
 ```
 
 ## This is how you check the signature status of a DocuSign envelope
@@ -309,6 +388,8 @@ Call the `DSResendEnvelope` method and pass in the ID of the envelope to resend.
 ## This is how you void a previously sent envelope
 Call the `DSVoidEnvelope` method pass in the ID of the envelope to cancel/void.  The method also requires a non-empty string specifying the reason for voiding.  The envelope must *not* be in a `draft` or `completed` states.
 - This method returns true when successful, or an exception if the envelope is in an invalid state or in case of errors.
+**NOTE: THIS ACTION IS IRREVERSIBLE!**
+
 
 ```csharp
     bool bResult = ECAR.DocuSign.Status.DSVoidEnvelope(createdEnvelopeID, voidedReason)
@@ -327,14 +408,17 @@ Call the `DSVoidEnvelope` method pass in the ID of the envelope to cancel/void. 
 - [x] Support for reminders and expirations. *Available with 5/11/2021 release (>1.0.11)*
 - [x] Added support for emailing DocuSign envelopes (async signing). *Available with 5/11/2021 release (>1.0.11)*
 - [x] Added support for webhook callback from DocuSign for status change events for emailed envelopes. *Available with 6/25/2021 release (>1.0.18)*
-- [x] Added support for DocuSign preview and voiding. *Available with 7/14/2021 release (>1.0.19)*
+- [x] Added support for DocuSign preview, resends and voiding. *Available with 7/14/2021 release (>1.0.19)*
+- [x] Added support for sending multi-template document packets. *Available with 7/23/2021 release (>1.0.20)*
+- [x] Added support for batch sending single and document packets to multiple recipients. *Available with 7/23/2021 release (>1.0.20)*
 
 # Future enhancements
 - [ ] Prepare and present a custom document (passed in from the calling application) to the recipient
 
 # Maintenance releases
-- [x] Updated to use DocuSign.eSign.DLL v5.2. *Available with 03/02/2021 release (>1.0.10)*
+- ~~Updated to use DocuSign.eSign.DLL v5.2. *Available with 03/02/2021 release (>1.0.10)*~~
 - [x] Updated to support .NETCore3.1. *Available with 03/02/2021 release (>1.0.10)*
+- [x] Updated to use DocuSign.eSign.DLL v5.6.2. *Available with 07/23/2021 release (>1.0.20)*
 
 # Contribute
 Share your feedback/suggestions/requests

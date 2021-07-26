@@ -16,6 +16,56 @@
             <param name="jsonPayload">JSON event payload received from DocuSign</param>
             <returns>EnvelopeModel object populated with data from DocuSign</returns>
         </member>
+        <member name="M:ECAR.DocuSign.Common.Utils.GetTemplateId(System.String,System.String)">
+            <summary>
+            Get Template ID from local cache or DocuSign server for use in DocuSign calls.
+            </summary>
+            <param name="accountId">DocuSign account ID</param>
+            <param name="templateName">Template name to search</param>
+            <returns>DocuSign Template ID</returns>
+        </member>
+        <member name="M:ECAR.DocuSign.Common.Utils.ParsePresets(System.Collections.Generic.List{ECAR.DocuSign.Models.DocPreset})">
+            <summary>
+            Create the Tabs object from DocPresets for use in DocuSign calls.
+            </summary>
+            <param name="Presets">List of DocPreset objects</param>
+            <returns>DocuSign Tabs object</returns>
+        </member>
+        <member name="M:ECAR.DocuSign.Common.Utils.CreateCompositeTemplate(System.String,System.String,ECAR.DocuSign.Models.DocumentModel,System.Collections.Generic.List{ECAR.DocuSign.Models.DocPreset})">
+            <summary>
+            Create the CompositeTemplate objects for use in DocuSign calls.
+            </summary>
+            <param name="TemplateId">DocuSign ID of the template to use</param>
+            <param name="SeqNum">Sequence number for this template</param>
+            <param name="Doc">DocumentModel object with recipient data (do not use for bulk send)</param>
+            <param name="Presets">Presets for the current recipient (do not use for bulk send)</param>
+            <returns>DocuSign CompositeTemplate object</returns>
+        </member>
+        <member name="M:ECAR.DocuSign.Common.Utils.CreateCompositeTemplatePacket(System.String,System.Int32,ECAR.DocuSign.Models.DocumentPacketModel,System.Collections.Generic.List{ECAR.DocuSign.Models.DocPreset})">
+            <summary>
+            Create the CompositeTemplate objects for use with multi-document packets.
+            </summary>
+            <param name="TemplateId">DocuSign ID of the template to use</param>
+            <param name="SeqNum">Sequence number for this template</param>
+            <param name="Doc">DocumentPacketModel object with recipient data (do not use for bulk send)</param>
+            <param name="Presets">Presets for the current recipient (do not use for bulk send)</param>
+            <returns>DocuSign CompositeTemplate object</returns>
+        </member>
+        <member name="M:ECAR.DocuSign.Common.Utils.ParseNotifications(ECAR.DocuSign.Models.ReminderModel,ECAR.DocuSign.Models.ExpirationModel)">
+            <summary>
+            Create the Notification object for use in DocuSign calls.
+            </summary>
+            <param name="Rem">Reminder details</param>
+            <param name="Exp">Expiration details</param>
+            <returns>DocuSign Notification object</returns>
+        </member>
+        <member name="M:ECAR.DocuSign.Common.Utils.ParseEventNotifications(ECAR.DocuSign.Models.NotificationCallBackModel)">
+            <summary>
+            Create the EventNotification object for callback from DocuSign calls.
+            </summary>
+            <param name="Hook">Notification callback details</param>
+            <returns>DocuSign EventNotification object</returns>
+        </member>
         <member name="T:ECAR.DocuSign.DocuSignConfig">
             <summary>
             Configuration for ECAR.DocuSign access.
@@ -74,9 +124,172 @@
             Configuration readiness indicator.
             </summary>
         </member>
+        <member name="T:ECAR.DocuSign.Models.BulkSendDocumentList">
+            <summary>
+            Data model for a single document sent for signature to many recipients in a batch via ECAR.DocuSign.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.BulkSendDocumentList.BulkRecipientList">
+            <summary>
+            List of documents to send in a batch.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.BulkSendDocumentList.BulkBatchName">
+            <summary>
+            Friendly name/ID for the list/batch.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.BulkSendDocumentList.BulkEmailSubject">
+            <summary>
+            Subject text for the bulk batch emails
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.BulkSendDocumentList.BulkEmailBody">
+            <summary>
+            Body text for the bulk batch emails
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.BulkSendDocumentList.DSBatchTemplateName">
+            <summary>
+            DocuSign template to use for the batch.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.BulkSendDocumentList.DSListId">
+            <summary>
+            The ID of the list included in this batch returned by DocuSign.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.BulkSendDocumentList.DSBatchId">
+            <summary>
+            The ID of this batch returned by DocuSign.
+            </summary>
+        </member>
+        <member name="T:ECAR.DocuSign.Models.BulkSendRecipientModel">
+            <summary>
+            Construct for recipients in a batch/bulk send via DocuSign.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.BulkSendRecipientModel.SignerEmail">
+            <summary>
+            Email address for the recipient.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.BulkSendRecipientModel.SignerName">
+            <summary>
+            Display name for the recipient.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.BulkSendRecipientModel.SignerId">
+            <summary>
+            The recipient's identifier in the calling application (e.g. tracking number).
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.BulkSendRecipientModel.DSRoleName">
+            <summary>
+            Name of the DocuSign recipient role.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.BulkSendRecipientModel.Presets">
+            <summary>
+            List of preset fields for this recipient.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.BulkSendRecipientModel.CustomEmailSubject">
+            <summary>
+            Custom email subject (optional) for this recipient. 
+            *Will be overridden if BulkEmailSubject is set in the BulkSendDocumentList object.*
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.BulkSendRecipientModel.CustomEmailBody">
+            <summary>
+            Custom email body (optional) for this recipient. 
+            *Will be overridden if BulkEmailBody is set in the BulkSendDocumentList object.*
+            </summary>
+        </member>
+        <member name="T:ECAR.DocuSign.Models.BulkSendPacketList">
+            <summary>
+            Data model for sending multiple documents sent for signature to many recipients in a batch via ECAR.DocuSign.    
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.BulkSendPacketList.BulkPacketRecipientList">
+            <summary>
+            List of documents to send in a batch.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.BulkSendPacketList.BulkBatchName">
+            <summary>
+            Friendly name/ID for the list/batch.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.BulkSendPacketList.BulkEmailSubject">
+            <summary>
+            Subject text for the bulk batch emails
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.BulkSendPacketList.BulkEmailBody">
+            <summary>
+            Body text for the bulk batch emails
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.BulkSendPacketList.DSBatchPacketTemplates">
+            <summary>
+            DocuSign template to use for the batch.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.BulkSendPacketList.DSListId">
+            <summary>
+            The ID of the list included in this batch returned by DocuSign.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.BulkSendPacketList.DSBatchId">
+            <summary>
+            The ID of this batch returned by DocuSign.
+            </summary>
+        </member>
+        <member name="T:ECAR.DocuSign.Models.BulkSendPacketRecipientModel">
+            <summary>
+            Construct for batch/bulk sending doument packets for DocuSign signature.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.BulkSendPacketRecipientModel.SignerEmail">
+            <summary>
+            Email address for the recipient.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.BulkSendPacketRecipientModel.SignerName">
+            <summary>
+            Display name for the recipient.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.BulkSendPacketRecipientModel.SignerId">
+            <summary>
+            The recipient's identifier in the calling application (e.g. tracking number).
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.BulkSendPacketRecipientModel.DSRoleName">
+            <summary>
+            Name of the DocuSign recipient role.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.BulkSendPacketRecipientModel.Presets">
+            <summary>
+            List of preset fields for this document.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.BulkSendPacketRecipientModel.CustomEmailSubject">
+            <summary>
+            Custom email subject (optional) for the batch. 
+            *Will be overridden if DSEmailSubject is set in the DocumentModel object.*
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.BulkSendPacketRecipientModel.CustomEmailBody">
+            <summary>
+            Custom email body (optional) for the batch. 
+            </summary>
+        </member>
         <member name="T:ECAR.DocuSign.Models.Presets">
             <summary>
-            Available types of DocuSign fields (tabs) for prefilling.
+            Available types of DocuSign fields (tabs) for prefilling. Other field types are currently not supported.
             </summary>
         </member>
         <member name="F:ECAR.DocuSign.Models.Presets.Date">
@@ -126,7 +339,7 @@
         </member>
         <member name="T:ECAR.DocuSign.Models.DocumentModel">
             <summary>
-            Data model for documents sent for signature via ECAR.DocuSign.
+            Data model for a single document sent for signature to a single recipient via ECAR.DocuSign.
             </summary>
         </member>
         <member name="P:ECAR.DocuSign.Models.DocumentModel.SignerEmail">
@@ -185,6 +398,66 @@
             </summary>
             <param name="envelopeId">DocuSign Envelope ID</param>
         </member>
+        <member name="T:ECAR.DocuSign.Models.DocumentPacketModel">
+            <summary>
+            Data model for multiple documents sent as a packet to a single recipient for signature via ECAR.DocuSign.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.DocumentPacketModel.SignerEmail">
+            <summary>
+            Email address for the recipient.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.DocumentPacketModel.SignerName">
+            <summary>
+            Display name for the recipient.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.DocumentPacketModel.SignerId">
+            <summary>
+            The recipient's identifier in the calling application (e.g. tracking number).
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.DocumentPacketModel.DSRoleName">
+            <summary>
+            Name of the DocuSign recipient role.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.DocumentPacketModel.DSTemplateList">
+            <summary>
+            Names of the DocuSign templates to use in this document packet.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.DocumentPacketModel.DSEmailSubject">
+            <summary>
+            Subject line for the email sent from DocuSign.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.DocumentPacketModel.DSEmailBody">
+            <summary>
+            Body text for the email sent from DocuSign.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.DocumentPacketModel.DSEnvelopeId">
+            <summary>
+            Envelope ID returned from the DocuSign ceremony.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.DocumentPacketModel.DSDocumentId">
+            <summary>
+            Document ID returned from the DocuSign ceremony.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.DocumentPacketModel.DSPreviewUrl">
+            <summary>
+            Envelope Preview URL returned from the DocuSign.
+            </summary>
+        </member>
+        <member name="M:ECAR.DocuSign.Models.DocumentPacketModel.#ctor">
+            <summary>
+            Default constructor. 
+            </summary>
+        </member>
         <member name="T:ECAR.DocuSign.Models.EnvelopeDocumentModel">
             <summary>
             Data model for documents retrieved from DocuSign.
@@ -225,9 +498,9 @@
             Envelope Status retrieved from DocuSign.
             </summary>
         </member>
-        <member name="P:ECAR.DocuSign.Models.EnvelopeStatus.STATUS_SENT">
+        <member name="P:ECAR.DocuSign.Models.EnvelopeStatus.STATUS_ANY">
             <summary>
-            EnvelopeStatus = "sent"
+            EnvelopeStatus = "any"
             </summary>
         </member>
         <member name="P:ECAR.DocuSign.Models.EnvelopeStatus.STATUS_CREATED">
@@ -235,24 +508,14 @@
             EnvelopeStatus = "created"
             </summary>
         </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeStatus.STATUS_COMPLETED">
+            <summary>
+            EnvelopeStatus = "completed"
+            </summary>
+        </member>
         <member name="P:ECAR.DocuSign.Models.EnvelopeStatus.STATUS_DECLINED">
             <summary>
             EnvelopeStatus = "declined"
-            </summary>
-        </member>
-        <member name="P:ECAR.DocuSign.Models.EnvelopeStatus.STATUS_DELIVERED">
-            <summary>
-            EnvelopeStatus = "delivered"
-            </summary>
-        </member>
-        <member name="P:ECAR.DocuSign.Models.EnvelopeStatus.STATUS_VOIDED">
-            <summary>
-            EnvelopeStatus = "voided"
-            </summary>
-        </member>
-        <member name="P:ECAR.DocuSign.Models.EnvelopeStatus.STATUS_ANY">
-            <summary>
-            EnvelopeStatus = "any"
             </summary>
         </member>
         <member name="P:ECAR.DocuSign.Models.EnvelopeStatus.STATUS_DELETED">
@@ -260,19 +523,34 @@
             EnvelopeStatus = "deleted"
             </summary>
         </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeStatus.STATUS_DELIVERED">
+            <summary>
+            EnvelopeStatus = "delivered"
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeStatus.STATUS_DRAFT">
+            <summary>
+            EnvelopeStatus = "draft"
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeStatus.STATUS_SENT">
+            <summary>
+            EnvelopeStatus = "sent"
+            </summary>
+        </member>
         <member name="P:ECAR.DocuSign.Models.EnvelopeStatus.STATUS_SIGNED">
             <summary>
             EnvelopeStatus = "signed"
             </summary>
         </member>
-        <member name="P:ECAR.DocuSign.Models.EnvelopeStatus.STATUS_COMPLETED">
-            <summary>
-            EnvelopeStatus = "completed"
-            </summary>
-        </member>
         <member name="P:ECAR.DocuSign.Models.EnvelopeStatus.STATUS_TIMEDOUT">
             <summary>
             EnvelopeStatus = "timedout"
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeStatus.STATUS_VOIDED">
+            <summary>
+            EnvelopeStatus = "voided"
             </summary>
         </member>
         <member name="T:ECAR.DocuSign.Models.EnvelopeModel">
@@ -458,7 +736,7 @@
         <member name="F:ECAR.DocuSign.Models.NotificationCallBackModel.EnvelopeEvents">
             <summary>
             List of envelope event codes to get notifications for.  
-            Valid values are: "Sent", "Completed", "Declined", "Delivered", "Voided".
+            Valid values are: "Draft", "Sent", "Completed", "Declined", "Delivered", "Voided".
             </summary>
         </member>
         <member name="F:ECAR.DocuSign.Models.NotificationCallBackModel.WebHookUrl">
@@ -507,6 +785,11 @@
               Looks up a localized string similar to DocuSign configuration not set..
             </summary>
         </member>
+        <member name="P:ECAR.DocuSign.Properties.Resources.EMPTY_BATCHID_VALUE">
+            <summary>
+              Looks up a localized string similar to Batch ID cannot be null or blank..
+            </summary>
+        </member>
         <member name="P:ECAR.DocuSign.Properties.Resources.EMPTY_DOCUMENT_ID">
             <summary>
               Looks up a localized string similar to DocuSign document ID cannot be null or blank..
@@ -519,12 +802,17 @@
         </member>
         <member name="P:ECAR.DocuSign.Properties.Resources.EMPTY_STARTDATE_VALUE">
             <summary>
-              Looks up a localized string similar to Start date cannot be null..
+              Looks up a localized string similar to Start date cannot be null or blank..
             </summary>
         </member>
         <member name="P:ECAR.DocuSign.Properties.Resources.EMPTY_TAB_LABEL">
             <summary>
               Looks up a localized string similar to DocuSign tab label cannot be null or blank..
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Properties.Resources.EMPTY_TEMPLATE_NAME">
+            <summary>
+              Looks up a localized string similar to Template name cannot be null or blank..
             </summary>
         </member>
         <member name="P:ECAR.DocuSign.Properties.Resources.EMPTY_VOIDED_REASON">
@@ -534,12 +822,17 @@
         </member>
         <member name="P:ECAR.DocuSign.Properties.Resources.FIELD_x_NOT_FOUND">
             <summary>
-              Looks up a localized string similar to Named field {0} was not found in the DocuSign document..
+              Looks up a localized string similar to Named field: &apos;{0}&apos; was not found in the DocuSign document..
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Properties.Resources.INVALID_STATUS_FOR_EVENTNOTIFICATION_x">
+            <summary>
+              Looks up a localized string similar to The specified envelope status is invalid for event notification from DocuSign: &apos;{0}&apos;..
             </summary>
         </member>
         <member name="P:ECAR.DocuSign.Properties.Resources.TEMPLATE_NOT_FOUND_x">
             <summary>
-              Looks up a localized string similar to DocuSign template not found: {1}..
+              Looks up a localized string similar to DocuSign template not found: &apos;{0}&apos;..
             </summary>
         </member>
         <member name="T:ECAR.DocuSign.Status">
@@ -591,11 +884,10 @@
         </member>
         <member name="M:ECAR.DocuSign.Status.DSGetAllDocuments(System.String)">
             <summary>
-            Retrieve info about the documents contained in a DocuSign envelope.
-            If envelope was signed, the signer's DocuSign certificate is appended to this list.
+            Retrieve info about the documents contained in a DocuSign envelope. If envelope was signed, the signer's DocuSign certificate is appended to this list.
             </summary>
             <param name="EnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
-            <returns>List of all documents in the requested envelope as EnvelopeDocumentModel objects.</returns>
+            <returns>List of all documents in the requested envelope as EnvelopeDocumentModel objects</returns>
             <exception cref="T:System.Exception"></exception>
         </member>
         <member name="M:ECAR.DocuSign.Status.DSGetDocument(System.String,System.String)">
@@ -687,6 +979,24 @@
             <returns>Returns one of: "active", "signed", "declined" or "na" (e.g. for optional signature fields)</returns>
             <exception cref="T:System.Exception"></exception>
         </member>
+        <member name="M:ECAR.DocuSign.Status.DSGetDocumentListField(System.String,System.String,System.String)">
+            <summary>
+            Retrieve the user selected value within a drop-down field within a DocuSign document.
+            </summary>
+            <param name="TabLabel">Tab label of the date field in the DocuSign template</param>
+            <param name="EnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
+            <param name="DocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
+            <returns>Returns one of: "active", "signed", "declined" or "na" (e.g. for optional signature fields)</returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:ECAR.DocuSign.Status.DSGetBulkBatchEnvelopes(System.String)">
+            <summary>
+            Get a list of all DocuSign envelope IDs included in a given batch.
+            </summary>
+            <param name="BulkSendBatchID">The batch ID to get the envelopes for</param>
+            <returns>List of all envelopes from the requested batch as EnvelopeModel objects</returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
         <member name="T:ECAR.DocuSign.TemplateSign">
             <summary>
             ECAR.DocuSign embedded signing ceremony with a predefined document template.
@@ -708,6 +1018,17 @@
             Internal private method to call DocuSign for both embedded and asynchronous (email) signing
             </summary>
             <param name="Doc">Document data (in: document &amp; signer info; out: DocuSign envelope &amp; document ID)</param>
+            <param name="Rem">Reminder data</param>
+            <param name="Exp">Expiration Data</param>
+            <param name="Hook">Notification callback webhook Data</param>
+            <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
+            <returns>EnvelopeSummary object with result from DocuSign call</returns>
+        </member>
+        <member name="M:ECAR.DocuSign.TemplateSign.ExecuteDocuSignMultiple(ECAR.DocuSign.Models.DocumentPacketModel@,ECAR.DocuSign.Models.ReminderModel,ECAR.DocuSign.Models.ExpirationModel,ECAR.DocuSign.Models.NotificationCallBackModel,System.Collections.Generic.List{ECAR.DocuSign.Models.DocPreset})">
+            <summary>
+            Internal private method to call DocuSign for both embedded and asynchronous (email) signing
+            </summary>
+            <param name="DocPacket">Document Packet data (in: document list &amp; signer info; out: DocuSign envelope &amp; document ID)</param>
             <param name="Rem">Reminder data</param>
             <param name="Exp">Expiration Data</param>
             <param name="Hook">Notification callback webhook Data</param>
@@ -756,29 +1077,29 @@
             <returns>DocuSign envelope status</returns>
             <exception cref="T:System.Exception"></exception>
         </member>
-        <member name="M:ECAR.DocuSign.TemplateSign.EmailedTemplateSignWithCallBack(ECAR.DocuSign.Models.DocumentModel@,ECAR.DocuSign.Models.ReminderModel,ECAR.DocuSign.Models.ExpirationModel,ECAR.DocuSign.Models.NotificationCallBackModel,System.Collections.Generic.List{ECAR.DocuSign.Models.DocPreset})">
+        <member name="M:ECAR.DocuSign.TemplateSign.EmailedTemplateSignWithCallBack(ECAR.DocuSign.Models.DocumentModel@,ECAR.DocuSign.Models.NotificationCallBackModel,ECAR.DocuSign.Models.ReminderModel,ECAR.DocuSign.Models.ExpirationModel,System.Collections.Generic.List{ECAR.DocuSign.Models.DocPreset})">
             <summary>
-            Send a DocuSign for asynchronous signing via email (with reminder and expiration settings).
+            Send a DocuSign for asynchronous signing via email with callback option.
             </summary>
             <param name="Doc">Document data (in: document &amp; signer info; out: DocuSign envelope &amp; document ID)</param>
-            <param name="Rem">Reminder details if required for DocuSign envelope</param>
-            <param name="Exp">Expiration details if required for the DocuSign envelope</param>
             <param name="Hook">Notification callback webhook details</param>
+            <param name="Rem">Reminder details (optional) for DocuSign envelope</param>
+            <param name="Exp">Expiration details (optional) for the DocuSign envelope</param>
             <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
             <returns>DocuSign envelope status</returns>
             <exception cref="T:System.Exception"></exception>
         </member>
-        <member name="M:ECAR.DocuSign.TemplateSign.CreatePreviewURL(ECAR.DocuSign.Models.DocumentModel@,System.String,System.Boolean,ECAR.DocuSign.Models.ReminderModel,ECAR.DocuSign.Models.ExpirationModel,ECAR.DocuSign.Models.NotificationCallBackModel,System.Collections.Generic.List{ECAR.DocuSign.Models.DocPreset})">
+        <member name="M:ECAR.DocuSign.TemplateSign.CreatePreviewURL(ECAR.DocuSign.Models.DocumentModel@,System.String,System.Boolean,ECAR.DocuSign.Models.NotificationCallBackModel,ECAR.DocuSign.Models.ReminderModel,ECAR.DocuSign.Models.ExpirationModel,System.Collections.Generic.List{ECAR.DocuSign.Models.DocPreset})">
             <summary>
             Create a preview URL for the DocuSign document to review that the recipients will see.
             </summary>
             <param name="Doc">Document data (in: document &amp; signer info; out: DocuSign envelope &amp; document ID)</param>
             <param name="AppReturnUrl">Return URL that DocuSign should transfer control when the preview is closed</param>
             <param name="SendByMail">Indicates whether the DocuSign envelope will be sent by mail or in an embedded ceremony</param>
-            <param name="Rem">Reminder details if required for DocuSign envelope</param>
-            <param name="Exp">Expiration details if required for the DocuSign envelope</param>
             <param name="Hook">Notification callback webhook details</param>
-            <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
+            <param name="Rem">Reminder details (optional) for DocuSign envelope</param>
+            <param name="Exp">Expiration details (optional) for the DocuSign envelope</param>
+            <param name="Presets">Fields to prefill (optional) in the DocuSign document</param>
             <returns>DocuSign URL for recipient preview</returns>
             <exception cref="T:System.Exception"></exception>
         </member>
@@ -788,6 +1109,48 @@
             </summary>
             <param name="Doc">Document data populated with the DocuSign envelope ID of the preview</param>
             <returns>Boolean result from DocuSign call</returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:ECAR.DocuSign.TemplateSign.BulkSendTemplate(ECAR.DocuSign.Models.BulkSendDocumentList@,ECAR.DocuSign.Models.NotificationCallBackModel)">
+            <summary>
+            Send a single document (template) to multiple users using DocuSign's Bulk Send option.
+            </summary>
+            <param name="BulkSendData">Bulk send information (recipients, template, email message etc.) in a BulkSendDocumentList object; the List ID is returned in the object</param>
+            <param name="Hook">Callback notification webhook details</param>
+            <returns>The Batch ID of the current batch (as a string) for status queries</returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:ECAR.DocuSign.TemplateSign.BulkSendPacket(ECAR.DocuSign.Models.BulkSendPacketList@,ECAR.DocuSign.Models.NotificationCallBackModel)">
+            <summary>
+            Send a document packet containing multiple documents (templates) to multiple users using DocuSign's Bulk Send option.
+            </summary>
+            <param name="BulkSendData">Bulk send information (recipients, templates, email message etc.) in a BulkSendPacketList object; The List ID and Batch ID are returned in the object</param>
+            <param name="Hook">Callback notification webhook details</param>
+            <returns>The Batch ID of the current batch (as a string) for status queries</returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:ECAR.DocuSign.TemplateSign.EmailedPacketSign(ECAR.DocuSign.Models.DocumentPacketModel@,ECAR.DocuSign.Models.NotificationCallBackModel,ECAR.DocuSign.Models.ReminderModel,ECAR.DocuSign.Models.ExpirationModel,System.Collections.Generic.List{ECAR.DocuSign.Models.DocPreset})">
+            <summary>
+            Send a multi-document packet via DocuSign for email signing with callback option.
+            </summary>
+            <param name="Doc">Document data (in: document &amp; signer info; out: DocuSign envelope &amp; document ID)</param>
+            <param name="Hook">Notification callback webhook details</param>
+            <param name="Rem">Reminder details (optional) for DocuSign envelope</param>
+            <param name="Exp">Expiration details (optional) for the DocuSign envelope</param>
+            <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
+            <returns>DocuSign envelope status</returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:ECAR.DocuSign.TemplateSign.EmbeddedPacketSign(System.String,ECAR.DocuSign.Models.DocumentPacketModel@,ECAR.DocuSign.Models.ReminderModel,ECAR.DocuSign.Models.ExpirationModel,System.Collections.Generic.List{ECAR.DocuSign.Models.DocPreset})">
+            <summary>
+            Initiate embedded signing ceremony for a multi-document packet with DocuSign (with reminder and expiration settings).
+            </summary>
+            <param name="AppReturnUrl">Return URL that DocuSign should transfer control to after the embedded signing cermony is complete ('?envelopeId=[id]' will be appended)</param>
+            <param name="Doc">Document data (in: document &amp; signer info; out: DocuSign envelope &amp; document ID)</param>
+            <param name="Rem">Reminder details if required for DocuSign envelope</param>
+            <param name="Exp">Expiration details if required for the DocuSign envelope</param>
+            <param name="Presets">(Optional) Fields to prefill in the DocuSign document</param>
+            <returns>DocuSign URL for embedded signing</returns>
             <exception cref="T:System.Exception"></exception>
         </member>
     </members>

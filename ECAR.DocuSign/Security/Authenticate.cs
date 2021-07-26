@@ -10,6 +10,11 @@ namespace ECAR.DocuSign.Security
 {
     internal static class Authenticate
     {
+        private static ApiClient __apiClient;
+        private static EnvelopesApi __envelopesApi;
+        private static TemplatesApi __templatesApi;
+        private static BulkEnvelopesApi __bulkEnvelopesApi;
+
         public static string GetToken()
         {
             if (!DocuSignConfig.Ready)
@@ -47,7 +52,7 @@ namespace ECAR.DocuSign.Security
                 var accounts = userInfo.Accounts;
                 acct = accounts.FirstOrDefault(a => a.IsDefault == "true");
 
-                // Write JWT token, server path & expiry back to config 
+                // Write JWT token, server path & expiry back to in-memory config 
                 DocuSignConfig.AccessToken = accessToken;
                 DocuSignConfig.BasePath = acct.BaseUri;
                 DocuSignConfig.AccessTokenExpiration = DateTime.Now.AddSeconds(authToken.expires_in.Value);                
@@ -62,11 +67,19 @@ namespace ECAR.DocuSign.Security
             // Get access token
             string accessToken = GetToken();
 
-            // Create new ApiClient and set config
-            ApiClient apiClient = new ApiClient(DocuSignConfig.BasePath + DocuSignConfig.APISuffix);
-            apiClient.Configuration.AddDefaultHeader("Authorization", "Bearer " + accessToken);
+            if (__envelopesApi == null)
+            {
+                if (__apiClient == null)
+                {
+                    // Create new ApiClient and set config
+                    __apiClient = new ApiClient(DocuSignConfig.BasePath + DocuSignConfig.APISuffix);
+                    __apiClient.Configuration.AddDefaultHeader("Authorization", "Bearer " + accessToken);
+                }
 
-            return new EnvelopesApi(apiClient);
+                __envelopesApi = new EnvelopesApi(__apiClient);
+            }
+
+            return __envelopesApi;
         }
 
         public static TemplatesApi CreateTemplateApiClient()
@@ -74,11 +87,39 @@ namespace ECAR.DocuSign.Security
             // Get access token
             string accessToken = GetToken();
 
-            // Create new ApiClient and set config
-            ApiClient apiClient = new ApiClient(DocuSignConfig.BasePath + DocuSignConfig.APISuffix);
-            apiClient.Configuration.AddDefaultHeader("Authorization", "Bearer " + accessToken);
+            if (__templatesApi == null)
+            {
+                if (__apiClient == null)
+                {
+                    // Create new ApiClient and set config
+                    __apiClient = new ApiClient(DocuSignConfig.BasePath + DocuSignConfig.APISuffix);
+                    __apiClient.Configuration.AddDefaultHeader("Authorization", "Bearer " + accessToken);
+                }
 
-            return new TemplatesApi(apiClient);
+                __templatesApi = new TemplatesApi(__apiClient);
+            }
+
+            return __templatesApi;
+        }
+
+        public static BulkEnvelopesApi CreateBulkEnvelopesApiClient()
+        {
+            // Get access token
+            string accessToken = GetToken();
+
+            if (__bulkEnvelopesApi == null)
+            {
+                if (__apiClient == null)
+                {
+                    // Create new ApiClient and set config
+                    __apiClient = new ApiClient(DocuSignConfig.BasePath + DocuSignConfig.APISuffix);
+                    __apiClient.Configuration.AddDefaultHeader("Authorization", "Bearer " + accessToken);
+                }
+
+                __bulkEnvelopesApi = new BulkEnvelopesApi(__apiClient);
+            }
+
+            return __bulkEnvelopesApi;
         }
 
     }

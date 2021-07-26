@@ -70,6 +70,15 @@ namespace ECAR.DocuSign.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Batch ID cannot be null or blank..
+        /// </summary>
+        internal static string EMPTY_BATCHID_VALUE {
+            get {
+                return ResourceManager.GetString("EMPTY_BATCHID_VALUE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to DocuSign document ID cannot be null or blank..
         /// </summary>
         internal static string EMPTY_DOCUMENT_ID {
@@ -88,7 +97,7 @@ namespace ECAR.DocuSign.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Start date cannot be null..
+        ///   Looks up a localized string similar to Start date cannot be null or blank..
         /// </summary>
         internal static string EMPTY_STARTDATE_VALUE {
             get {
@@ -106,6 +115,15 @@ namespace ECAR.DocuSign.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Template name cannot be null or blank..
+        /// </summary>
+        internal static string EMPTY_TEMPLATE_NAME {
+            get {
+                return ResourceManager.GetString("EMPTY_TEMPLATE_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Voided reason cannot be null or blank..
         /// </summary>
         internal static string EMPTY_VOIDED_REASON {
@@ -115,7 +133,7 @@ namespace ECAR.DocuSign.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Named field {0} was not found in the DocuSign document..
+        ///   Looks up a localized string similar to Named field: &apos;{0}&apos; was not found in the DocuSign document..
         /// </summary>
         internal static string FIELD_x_NOT_FOUND {
             get {
@@ -124,7 +142,16 @@ namespace ECAR.DocuSign.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DocuSign template not found: {1}..
+        ///   Looks up a localized string similar to The specified envelope status is invalid for event notification from DocuSign: &apos;{0}&apos;..
+        /// </summary>
+        internal static string INVALID_STATUS_FOR_EVENTNOTIFICATION_x {
+            get {
+                return ResourceManager.GetString("INVALID_STATUS_FOR_EVENTNOTIFICATION_x", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DocuSign template not found: &apos;{0}&apos;..
         /// </summary>
         internal static string TEMPLATE_NOT_FOUND_x {
             get {
