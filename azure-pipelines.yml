@@ -8,6 +8,10 @@ variables:
 - group: ECAR Variable Group
 - group: ECAR.DocuSign
 - name: GitVersion.SemVer
+- name: pushToGRGFeed
+  value: true
+- name: GRGFeedConnection
+  value: GRG Artifacts
 
 resources:
   repositories:
@@ -28,3 +32,19 @@ steps:
       whatToPack: $(whatToPack)
       vstsFeedName: $(ECARPackageFeed)
       tag: 'v$(GitVersion.SemVer)'
+
+# This package is being used in GRG repositories hence pushed to the feed in GRG tenant
+# Push to GRG feed if variable is true
+- ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['pushToGRGFeed'], 'true')) }}:
+  - task: NuGetAuthenticate@0
+    displayName: 'Authenticate to GRG Artifacts'
+    inputs:
+      nuGetServiceConnections: $(GRGFeedConnection)
+  - task: NuGetCommand@2
+    displayName: 'NuGet push $(Build.DefinitionName)-$(Build.BuildNumber) to GRG Artifacts'
+    inputs:
+      command: push
+      nuGetFeedType: 'external'
+      publishFeedCredentials: $(GRGFeedConnection)
+      packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
+      versioningScheme: byBuildNumber
