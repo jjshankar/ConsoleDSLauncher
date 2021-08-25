@@ -129,6 +129,9 @@
   <data name="EMPTY_ENVELOPE_ID" xml:space="preserve">
     <value>DocuSign envelope ID cannot be null or blank.</value>
   </data>
+  <data name="EMPTY_SIGNER_ID_FOR_BATCH" xml:space="preserve">
+    <value>Not all recipients included in the current batch have an associated signer ID.</value>
+  </data>
   <data name="EMPTY_STARTDATE_VALUE" xml:space="preserve">
     <value>Start date cannot be null or blank.</value>
   </data>

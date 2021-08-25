@@ -66,6 +66,13 @@
             <param name="Hook">Notification callback details</param>
             <returns>DocuSign EventNotification object</returns>
         </member>
+        <member name="M:ECAR.DocuSign.Common.Utils.CreateSingleBulkSendingCopy(System.Object)">
+            <summary>
+            Helper method to create a bulk send copy object (for DRY principle)
+            </summary>
+            <param name="doc">Dynamic: must be a BulkSendRecipientModel or BulkSendPacketRecipientModel object</param>
+            <returns></returns>
+        </member>
         <member name="T:ECAR.DocuSign.DocuSignConfig">
             <summary>
             Configuration for ECAR.DocuSign access.
@@ -800,6 +807,11 @@
               Looks up a localized string similar to DocuSign envelope ID cannot be null or blank..
             </summary>
         </member>
+        <member name="P:ECAR.DocuSign.Properties.Resources.EMPTY_SIGNER_ID_FOR_BATCH">
+            <summary>
+              Looks up a localized string similar to Not all recipients included in the current batch have an associated signer ID..
+            </summary>
+        </member>
         <member name="P:ECAR.DocuSign.Properties.Resources.EMPTY_STARTDATE_VALUE">
             <summary>
               Looks up a localized string similar to Start date cannot be null or blank..
@@ -995,6 +1007,14 @@
             </summary>
             <param name="BulkSendBatchID">The batch ID to get the envelopes for</param>
             <returns>List of all envelopes from the requested batch as EnvelopeModel objects</returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:ECAR.DocuSign.Status.DSGetEnvelopeCustomFields(System.String)">
+            <summary>
+            Retrieve the custom fields from a DocuSign envelope
+            </summary>
+            <param name="EnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
+            <returns>Key pair dictionary of custom field IDs and values</returns>
             <exception cref="T:System.Exception"></exception>
         </member>
         <member name="T:ECAR.DocuSign.TemplateSign">

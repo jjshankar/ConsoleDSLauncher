@@ -1,5 +1,5 @@
 # ECAR.DocuSign
-### Last release: July 23, 2021 (ver. 1.0.20)
+### Last release: August 25, 2021 (ver. 1.0.21)
 
 A library to easily connect to DocuSign services and embed signing within your web application.  
 
@@ -252,6 +252,8 @@ To do this, set up the corresponding bulk send object for a single document or m
 
 Once the data is prepared, set up the notification object, and call the corresponding `BulkSend...` methods.  The ID of the batch returned from DocuSign is sent back to the caller.  The List ID and Batch ID are also populated in the bulk document list sent to the call.
 
+DocuSign automatically adds a custom field for the Batch ID (`"BulkBatchId"`) to each envelope in the batch.  In additon, each envelope in the batch will also contain custom fields for List ID (`"BULK_MAILING_LIST_ID"`) and Signer ID (`"BULK_MAILING_SIGNER_ID"`).  You can retrieve these per envelope to match it back to a batch, list and/or a signer.  See below for custom field retrieval.
+
 ```csharp
     // Single doc
     string batchId = ECAR.DocuSign.TemplateSign.BulkSendTemplate(ref dsBulkDocList, hook);
@@ -317,6 +319,12 @@ NOTE: DocuSign takes a while to dispatch all the documents in the batch, so use 
 ```csharp
     string status = ECAR.DocuSign.Status.DSCheckStatus(envelopeId);
 ```
+
+## This is how you retrieve a dictionary of custom fields in a DocuSign envelope
+```csharp
+    Dictionary<string, string> customFields = ECAR.DocuSign.Status.DSGetEnvelopeCustomFields(envelopeId);
+```
+Query the returned collection for the Batch ID (Key: `"BulkBatchId"`), List ID (Key: `"BULK_MAILING_LIST_ID"`) and Signer ID (Key: `"BULK_MAILING_SIGNER_ID"`) to get the corresponding values.
 
 ## This is how you retrieve a list of ALL recipients for an envelope
 ```csharp
@@ -411,6 +419,7 @@ Call the `DSVoidEnvelope` method pass in the ID of the envelope to cancel/void. 
 - [x] Added support for DocuSign preview, resends and voiding. *Available with 7/14/2021 release (>1.0.19)*
 - [x] Added support for sending multi-template document packets. *Available with 7/23/2021 release (>1.0.20)*
 - [x] Added support for batch sending single and document packets to multiple recipients. *Available with 7/23/2021 release (>1.0.20)*
+- [x] Custom fields to return the signer ID and batch ID for an envelope sent as part of a batch for matching. *Available with 8/25/2021 release (>1.0.21)*
 
 # Future enhancements
 - [ ] Prepare and present a custom document (passed in from the calling application) to the recipient

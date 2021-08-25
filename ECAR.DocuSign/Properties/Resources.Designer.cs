@@ -97,6 +97,15 @@ namespace ECAR.DocuSign.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Not all recipients included in the current batch have an associated signer ID..
+        /// </summary>
+        internal static string EMPTY_SIGNER_ID_FOR_BATCH {
+            get {
+                return ResourceManager.GetString("EMPTY_SIGNER_ID_FOR_BATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Start date cannot be null or blank..
         /// </summary>
         internal static string EMPTY_STARTDATE_VALUE {

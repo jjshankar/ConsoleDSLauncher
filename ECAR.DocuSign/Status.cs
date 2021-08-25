@@ -935,6 +935,10 @@ namespace ECAR.DocuSign
                 BulkEnvelopesApi bulkEnvelopesApi = Authenticate.CreateBulkEnvelopesApiClient();
                 EnvelopesInformation envInfo = bulkEnvelopesApi.GetBulkSendBatchEnvelopes(accountId, BulkSendBatchID);
 
+                // No envelopes available to process (batch may be in process; it is too early to check)
+                if (envInfo.Envelopes == null)
+                    return null;
+
                 List<EnvelopeModel> allEnvelopes = new List<EnvelopeModel>();
                 foreach (Envelope env in envInfo.Envelopes)
                 {
@@ -960,6 +964,55 @@ namespace ECAR.DocuSign
                 }
 
                 return allEnvelopes;
+            }
+            catch (ApiException ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// Retrieve the custom fields from a DocuSign envelope
+        /// </summary>
+        /// <param name="EnvelopeID">GUID of the DocuSign envelope sent to the signer</param>
+        /// <returns>Key pair dictionary of custom field IDs and values</returns>
+        /// <exception cref="System.Exception"></exception>
+        public static Dictionary<string, string> DSGetEnvelopeCustomFields(string EnvelopeID)
+        {
+            try
+            {
+                // Validate inputs
+                if (string.IsNullOrEmpty(EnvelopeID))
+                    throw new Exception(Resources.EMPTY_ENVELOPE_ID);
+
+                // Check config
+                if (!DocuSignConfig.Ready)
+                    throw new Exception(Resources.DSCONFIG_NOT_SET);
+
+                Dictionary<string, string> retDict = new Dictionary<string, string>();
+
+                // Read account ID from config
+                string accountId = DocuSignConfig.AccountID;
+
+                // Create API Client and call it
+                EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
+                CustomFieldsEnvelope customFields = envelopesApi.ListCustomFields(accountId, EnvelopeID);
+
+                foreach(ListCustomField list in customFields.ListCustomFields)
+                {
+                    retDict.Add(list.Name , list.Value);
+                }
+
+                foreach(TextCustomField text in customFields.TextCustomFields)
+                {
+                    retDict.Add(text.Name, text.Value);
+                }
+
+                return retDict;
             }
             catch (ApiException ex)
             {
