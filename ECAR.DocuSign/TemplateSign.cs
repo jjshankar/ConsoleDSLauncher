@@ -574,9 +574,14 @@ namespace ECAR.DocuSign
             var envelopeResults = envelopesApi.CreateEnvelope(accountId, envelopeDefinition);
 
             // Attach the list ID to the envelope
-            // We will add an envelope custom field set to the value of the listId (EnvelopeCustomFields::create)
-            // This Custom Field may be used for tracking the Bulk Send via the Envelopes::Get method
-            CustomFields fields = Utils.CreateCustomFields("BULK_MAILING_LIST_ID", createBulkListResult.ListId);
+            // We will add envelope custom fields set to the value of the listId (EnvelopeCustomFields::create)
+            // and a placeholder field for SignerId.  These Custom fields may be used for tracking the
+            // envelope ID from Bulk Send back to the batch and signer via the DSGetEnvelopeCustomFields method
+            Dictionary<string, string> fieldValuePairs = new Dictionary<string, string>();
+            fieldValuePairs.Add(Constants.CUSTOM_FIELD_BULK_MAILING_LIST_ID, createBulkListResult.ListId);
+            fieldValuePairs.Add(Constants.CUSTOM_FIELD_BULK_MAILING_SIGNER_ID, "_placeholder_");
+
+            CustomFields fields = Utils.CreateCustomTextFields(fieldValuePairs);
             envelopesApi.CreateCustomFields(accountId, envelopeResults.EnvelopeId, fields);
 
             // Add a placeholder Recipients object. 
@@ -647,9 +652,14 @@ namespace ECAR.DocuSign
             var envelopeResults = envelopesApi.CreateEnvelope(accountId, envelopeDefinition);
 
             // Attach the list ID to the envelope
-            // We will add an envelope custom field set to the value of the listId (EnvelopeCustomFields::create)
-            // This Custom Field may be used for tracking the Bulk Send via the Envelopes::Get method
-            CustomFields fields = Utils.CreateCustomFields("BULK_MAILING_LIST_ID", createBulkListResult.ListId);
+            // We will add envelope custom fields set to the value of the listId (EnvelopeCustomFields::create)
+            // and a placeholder field for SignerId.  These Custom fields may be used for tracking the
+            // envelope ID from Bulk Send back to the batch and signer via the DSGetEnvelopeCustomFields method
+            Dictionary<string, string> fieldValuePairs = new Dictionary<string, string>();
+            fieldValuePairs.Add(Constants.CUSTOM_FIELD_BULK_MAILING_LIST_ID, createBulkListResult.ListId);
+            fieldValuePairs.Add(Constants.CUSTOM_FIELD_BULK_MAILING_SIGNER_ID, "_placeholder_");
+
+            CustomFields fields = Utils.CreateCustomTextFields(fieldValuePairs);
             envelopesApi.CreateCustomFields(accountId, envelopeResults.EnvelopeId, fields);
 
             // Add a placeholder Recipients object. 
