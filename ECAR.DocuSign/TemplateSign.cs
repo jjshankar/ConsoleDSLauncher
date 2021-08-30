@@ -494,36 +494,47 @@ namespace ECAR.DocuSign
         public static bool SendPreviewedEnvelope(
             DocumentModel Doc)
         {
-            if (!DocuSignConfig.Ready)
-                throw new Exception(Resources.DSCONFIG_NOT_SET);
+            try
+            { 
+                if (!DocuSignConfig.Ready)
+                    throw new Exception(Resources.DSCONFIG_NOT_SET);
 
-            // Return error if EnvelopeId is empty
-            if (string.IsNullOrEmpty(Doc.DSEnvelopeId))
-                throw new Exception(Resources.EMPTY_ENVELOPE_ID);
+                // Return error if EnvelopeId is empty
+                if (string.IsNullOrEmpty(Doc.DSEnvelopeId))
+                    throw new Exception(Resources.EMPTY_ENVELOPE_ID);
 
-            // Read config values
-            string accountId = DocuSignConfig.AccountID;
+                // Read config values
+                string accountId = DocuSignConfig.AccountID;
 
-            // Create API Client and call it
-            EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
+                // Create API Client and call it
+                EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
 
-            // 1. Create envelope request object
-            Envelope envelope = new Envelope
-            {
-                Status = EnvelopeStatus.STATUS_SENT
-            };
+                // 1. Create envelope request object
+                Envelope envelope = new Envelope
+                {
+                    Status = EnvelopeStatus.STATUS_SENT
+                };
 
-            // 2. Use the SDK to 'Send' the envelope by calling the update method
-            EnvelopeUpdateSummary updateSummary = envelopesApi.Update(accountId, Doc.DSEnvelopeId, envelope);
+                // 2. Use the SDK to 'Send' the envelope by calling the update method
+                EnvelopeUpdateSummary updateSummary = envelopesApi.Update(accountId, Doc.DSEnvelopeId, envelope);
 
-            // If error details is not null, then error occurred  
-            if (updateSummary.ErrorDetails != null)
-            {
-                throw new Exception(updateSummary.ErrorDetails.Message);
+                // If error details is not null, then error occurred  
+                if (updateSummary.ErrorDetails != null)
+                {
+                    throw new Exception(updateSummary.ErrorDetails.Message);
+                }
+
+                // return EnvelopeSummary back to caller
+                return true;
             }
-
-            // return EnvelopeSummary back to caller
-            return true;
+            catch (ApiException ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
 
