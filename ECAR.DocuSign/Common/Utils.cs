@@ -375,6 +375,7 @@ namespace ECAR.DocuSign.Common
             {
                 EnvelopeId = Doc.DSEnvelopeId ?? null,
                 EmailSubject = Doc.DSEmailSubject,
+                EmailBlurb = Doc.DSEmailBody ?? null,
                 Status = status,
                 CompositeTemplates = new List<CompositeTemplate> { compTemplate },
                 Notification = notification ?? null,

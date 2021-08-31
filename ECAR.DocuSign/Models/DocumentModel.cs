@@ -40,6 +40,11 @@ namespace ECAR.DocuSign.Models
         public string DSEmailSubject { get; set; }
 
         /// <summary>
+        /// Text body for the email sent from DocuSign.
+        /// </summary>
+        public string DSEmailBody { get; set; }
+
+        /// <summary>
         /// Envelope ID returned from the DocuSign ceremony.
         /// </summary>
         public string DSEnvelopeId { get; internal set; }

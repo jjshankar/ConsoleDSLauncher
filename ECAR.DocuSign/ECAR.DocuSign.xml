@@ -379,6 +379,11 @@
             Subject line for the email sent from DocuSign.
             </summary>
         </member>
+        <member name="P:ECAR.DocuSign.Models.DocumentModel.DSEmailBody">
+            <summary>
+            Text body for the email sent from DocuSign.
+            </summary>
+        </member>
         <member name="P:ECAR.DocuSign.Models.DocumentModel.DSEnvelopeId">
             <summary>
             Envelope ID returned from the DocuSign ceremony.
