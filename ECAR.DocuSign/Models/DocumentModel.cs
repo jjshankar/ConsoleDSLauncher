@@ -60,10 +60,17 @@ namespace ECAR.DocuSign.Models
         public string DSPreviewUrl { get; internal set; }
 
         /// <summary>
+        /// Show/hide the EnvelopeID in the document sent through DocuSign (default = true).
+        /// *** Requires a corresponding setting in DocuSign admin to be set; ignored otherwise. ***
+        /// </summary>
+        public bool DSStampEnvelopeID { get; set; }
+
+        /// <summary>
         /// Default constructor. 
         /// </summary>
         public DocumentModel()
-        {            
+        {
+            DSStampEnvelopeID = true;
         }
 
         /// <summary>
@@ -73,6 +80,7 @@ namespace ECAR.DocuSign.Models
         public DocumentModel(string envelopeId)
         {
             DSEnvelopeId = envelopeId;
+            DSStampEnvelopeID = true;
         }
     }
 
