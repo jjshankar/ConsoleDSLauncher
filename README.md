@@ -1,5 +1,5 @@
 # ECAR.DocuSign
-### Last release: August 25, 2021 (ver. 1.0.21)
+### Last release: September 10, 2021 (ver. 1.0.25)
 
 A library to easily connect to DocuSign services and embed signing within your web application.  
 
@@ -41,15 +41,20 @@ Getting started with **ECAR.DocuSign** is as easy as 1..2..3
     DocumentModel dsDoc = new DocumentModel
     {
         DSEmailSubject = "«Email Subject»",
+        DSEmailBody = "«Email Body»",
         DSRoleName = "«Signer role name»",
         DSTemplateName = "«DocuSign template name»",
         SignerEmail = "«Recipient email»",
         SignerName = "«Recipient's name»",
 
         // DocuSign does not use the following attribute, but keeps it linked to the doc
-        SignerId = "«Your application's tracking ID for this recipient»"       
+        SignerId = "«Your application's tracking ID for this recipient»",
+
+        // Optional configuration value to show/hide envelope ID in the sent document (default = true)
+        DSStampEnvelopeID = false
     };
 ```
+*The `DSStampEnvelopeID` property requires a corresponding setting in DocuSign Settings under **Sending Settings** to* "Include Envelope ID by default".  *Contact your DocuSign admin to enable this setting.*
 
 ## This is how you prefill fields (if required)
 The field names must be defined in your DocuSign template
@@ -420,6 +425,8 @@ Call the `DSVoidEnvelope` method pass in the ID of the envelope to cancel/void. 
 - [x] Added support for sending multi-template document packets. *Available with 7/23/2021 release (>1.0.20)*
 - [x] Added support for batch sending single and document packets to multiple recipients. *Available with 7/23/2021 release (>1.0.20)*
 - [x] Custom fields to return the signer ID and batch ID for an envelope sent as part of a batch for matching. *Available with 8/25/2021 release (>1.0.21)*
+- [x] Custom email subject and body for single emails. *Available with 8/30/2021 release (>1.0.24)*
+- [x] Added option to suppress envelope ID stamping in mailed envelopes. *Available with 9/10/2021 release (>1.0.25)*
 
 # Future enhancements
 - [ ] Prepare and present a custom document (passed in from the calling application) to the recipient

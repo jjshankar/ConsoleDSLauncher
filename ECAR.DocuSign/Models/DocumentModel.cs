@@ -61,6 +61,7 @@ namespace ECAR.DocuSign.Models
 
         /// <summary>
         /// Show/hide the EnvelopeID in the document sent through DocuSign (default = true).
+        /// *** Requires a corresponding setting in DocuSign admin to be set; ignored otherwise. ***
         /// </summary>
         public bool DSStampEnvelopeID { get; set; }
 

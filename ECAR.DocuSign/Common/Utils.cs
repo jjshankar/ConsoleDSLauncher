@@ -380,7 +380,7 @@ namespace ECAR.DocuSign.Common
                 CompositeTemplates = new List<CompositeTemplate> { compTemplate },
                 Notification = notification ?? null,
                 EventNotification = eventNotification ?? null,
-                EnvelopeIdStamping = (Doc.DSStampEnvelopeID) ? "true" : "false"
+                EnvelopeIdStamping = Doc.DSStampEnvelopeID ? "true" : "false"
             };
 
             return envelopeDefinition;
