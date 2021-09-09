@@ -399,6 +399,11 @@
             Envelope Preview URL returned from the DocuSign.
             </summary>
         </member>
+        <member name="P:ECAR.DocuSign.Models.DocumentModel.DSStampEnvelopeID">
+            <summary>
+            Show/hide the EnvelopeID in the document sent through DocuSign (default = true).
+            </summary>
+        </member>
         <member name="M:ECAR.DocuSign.Models.DocumentModel.#ctor">
             <summary>
             Default constructor. 
