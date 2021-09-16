@@ -402,6 +402,7 @@
         <member name="P:ECAR.DocuSign.Models.DocumentModel.DSStampEnvelopeID">
             <summary>
             Show/hide the EnvelopeID in the document sent through DocuSign (default = true).
+            *** Requires a corresponding setting in DocuSign admin to be set; ignored otherwise. ***
             </summary>
         </member>
         <member name="M:ECAR.DocuSign.Models.DocumentModel.#ctor">
