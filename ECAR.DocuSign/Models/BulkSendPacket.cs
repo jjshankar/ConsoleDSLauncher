@@ -43,6 +43,26 @@ namespace ECAR.DocuSign.Models
         /// The ID of this batch returned by DocuSign.
         /// </summary>
         public string DSBatchId { get; internal set; }
+
+        /// <summary>
+        /// Show/hide the EnvelopeID in the document sent through DocuSign (default = true).
+        /// *** Requires a corresponding setting in DocuSign admin to be set; ignored otherwise. ***
+        /// </summary>
+        public bool DSStampEnvelopeId { get; set; }
+
+        /// <summary>
+        /// Allow/block recipients from reassigning envelopes sent to them (default = true).
+        /// </summary>
+        public bool DSAllowReassign { get; set; }
+
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
+        public BulkSendPacketList()
+        {
+            DSStampEnvelopeId = true;
+            DSAllowReassign = true;
+        }
     }
 
     /// <summary>
@@ -76,6 +96,17 @@ namespace ECAR.DocuSign.Models
         public List<DocPreset> Presets { get; set; }
 
         /// <summary>
+        /// Show/hide the EnvelopeID in the document sent through DocuSign (default = true).
+        /// *** Requires a corresponding setting in DocuSign admin to be set; ignored otherwise. ***
+        /// </summary>
+        public bool DSStampEnvelopeID { get; set; }
+
+        /// <summary>
+        /// Allow/block recipients from reassigning envelopes sent to them (default = true).
+        /// </summary>
+        public bool DSAllowReassign { get; set; }
+
+        /// <summary>
         /// Custom email subject (optional) for the batch. 
         /// *Will be overridden if DSEmailSubject is set in the DocumentModel object.*
         /// </summary>
@@ -85,5 +116,14 @@ namespace ECAR.DocuSign.Models
         /// Custom email body (optional) for the batch. 
         /// </summary>
         public string CustomEmailBody { get; set; }
+
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
+        public BulkSendPacketRecipientModel()
+        {
+            DSStampEnvelopeID = true;
+            DSAllowReassign = true;
+        }
     }
 }

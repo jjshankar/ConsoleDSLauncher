@@ -171,6 +171,22 @@
             The ID of this batch returned by DocuSign.
             </summary>
         </member>
+        <member name="P:ECAR.DocuSign.Models.BulkSendDocumentList.DSStampEnvelopeId">
+            <summary>
+            Show/hide the EnvelopeID in the document sent through DocuSign (default = true).
+            *** Requires a corresponding setting in DocuSign admin to be set; ignored otherwise. ***
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.BulkSendDocumentList.DSAllowReassign">
+            <summary>
+            Allow/block recipients from reassigning envelopes sent to them (default = true).
+            </summary>
+        </member>
+        <member name="M:ECAR.DocuSign.Models.BulkSendDocumentList.#ctor">
+            <summary>
+            Default constructor.
+            </summary>
+        </member>
         <member name="T:ECAR.DocuSign.Models.BulkSendRecipientModel">
             <summary>
             Construct for recipients in a batch/bulk send via DocuSign.
@@ -213,6 +229,11 @@
             *Will be overridden if BulkEmailBody is set in the BulkSendDocumentList object.*
             </summary>
         </member>
+        <member name="M:ECAR.DocuSign.Models.BulkSendRecipientModel.#ctor">
+            <summary>
+            Default constructor.
+            </summary>
+        </member>
         <member name="T:ECAR.DocuSign.Models.BulkSendPacketList">
             <summary>
             Data model for sending multiple documents sent for signature to many recipients in a batch via ECAR.DocuSign.    
@@ -253,6 +274,22 @@
             The ID of this batch returned by DocuSign.
             </summary>
         </member>
+        <member name="P:ECAR.DocuSign.Models.BulkSendPacketList.DSStampEnvelopeId">
+            <summary>
+            Show/hide the EnvelopeID in the document sent through DocuSign (default = true).
+            *** Requires a corresponding setting in DocuSign admin to be set; ignored otherwise. ***
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.BulkSendPacketList.DSAllowReassign">
+            <summary>
+            Allow/block recipients from reassigning envelopes sent to them (default = true).
+            </summary>
+        </member>
+        <member name="M:ECAR.DocuSign.Models.BulkSendPacketList.#ctor">
+            <summary>
+            Default constructor.
+            </summary>
+        </member>
         <member name="T:ECAR.DocuSign.Models.BulkSendPacketRecipientModel">
             <summary>
             Construct for batch/bulk sending doument packets for DocuSign signature.
@@ -283,6 +320,17 @@
             List of preset fields for this document.
             </summary>
         </member>
+        <member name="P:ECAR.DocuSign.Models.BulkSendPacketRecipientModel.DSStampEnvelopeID">
+            <summary>
+            Show/hide the EnvelopeID in the document sent through DocuSign (default = true).
+            *** Requires a corresponding setting in DocuSign admin to be set; ignored otherwise. ***
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.BulkSendPacketRecipientModel.DSAllowReassign">
+            <summary>
+            Allow/block recipients from reassigning envelopes sent to them (default = true).
+            </summary>
+        </member>
         <member name="P:ECAR.DocuSign.Models.BulkSendPacketRecipientModel.CustomEmailSubject">
             <summary>
             Custom email subject (optional) for the batch. 
@@ -292,6 +340,11 @@
         <member name="P:ECAR.DocuSign.Models.BulkSendPacketRecipientModel.CustomEmailBody">
             <summary>
             Custom email body (optional) for the batch. 
+            </summary>
+        </member>
+        <member name="M:ECAR.DocuSign.Models.BulkSendPacketRecipientModel.#ctor">
+            <summary>
+            Default constructor.
             </summary>
         </member>
         <member name="T:ECAR.DocuSign.Models.Presets">
@@ -399,10 +452,15 @@
             Envelope Preview URL returned from the DocuSign.
             </summary>
         </member>
-        <member name="P:ECAR.DocuSign.Models.DocumentModel.DSStampEnvelopeID">
+        <member name="P:ECAR.DocuSign.Models.DocumentModel.DSStampEnvelopeId">
             <summary>
             Show/hide the EnvelopeID in the document sent through DocuSign (default = true).
             *** Requires a corresponding setting in DocuSign admin to be set; ignored otherwise. ***
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.DocumentModel.DSAllowReassign">
+            <summary>
+            Allow/block recipients from reassigning envelopes sent to them (default = true).
             </summary>
         </member>
         <member name="M:ECAR.DocuSign.Models.DocumentModel.#ctor">
@@ -469,6 +527,17 @@
         <member name="P:ECAR.DocuSign.Models.DocumentPacketModel.DSPreviewUrl">
             <summary>
             Envelope Preview URL returned from the DocuSign.
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.DocumentPacketModel.DSStampEnvelopeId">
+            <summary>
+            Show/hide the EnvelopeID in the document sent through DocuSign (default = true).
+            *** Requires a corresponding setting in DocuSign admin to be set; ignored otherwise. ***
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.DocumentPacketModel.DSAllowReassign">
+            <summary>
+            Allow/block recipients from reassigning envelopes sent to them (default = true).
             </summary>
         </member>
         <member name="M:ECAR.DocuSign.Models.DocumentPacketModel.#ctor">

@@ -380,7 +380,8 @@ namespace ECAR.DocuSign.Common
                 CompositeTemplates = new List<CompositeTemplate> { compTemplate },
                 Notification = notification ?? null,
                 EventNotification = eventNotification ?? null,
-                EnvelopeIdStamping = Doc.DSStampEnvelopeID ? "true" : "false"
+                EnvelopeIdStamping = Doc.DSStampEnvelopeId ? "true" : "false",
+                AllowReassign = Doc.DSAllowReassign ? "true" : "false",
             };
 
             return envelopeDefinition;
@@ -432,7 +433,9 @@ namespace ECAR.DocuSign.Common
                 Status = status,
                 CompositeTemplates = compTemplates,
                 Notification = notification ?? null,
-                EventNotification = eventNotification ?? null
+                EventNotification = eventNotification ?? null,
+                EnvelopeIdStamping = DocPacket.DSStampEnvelopeId ? "true" : "false",
+                AllowReassign = DocPacket.DSAllowReassign ? "true" : "false",
             };
 
             return envelopeDefinition;
