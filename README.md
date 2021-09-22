@@ -1,5 +1,5 @@
 # ECAR.DocuSign
-### Last release: September 10, 2021 (ver. 1.0.25)
+### Last release: September 22, 2021 (ver. 1.0.27)
 
 A library to easily connect to DocuSign services and embed signing within your web application.  
 
@@ -51,7 +51,10 @@ Getting started with **ECAR.DocuSign** is as easy as 1..2..3
         SignerId = "«Your application's tracking ID for this recipient»",
 
         // Optional configuration value to show/hide envelope ID in the sent document (default = true)
-        DSStampEnvelopeID = false
+        DSStampEnvelopeID = false,
+
+        // Optional configuration value to block recipients from reassigning envelopes sent to them (default = true).
+        DSAllowReassign = false,
     };
 ```
 *The `DSStampEnvelopeID` property requires a corresponding setting in DocuSign Settings under **Sending Settings** to* "Include Envelope ID by default".  *Contact your DocuSign admin to enable this setting.*
@@ -427,6 +430,8 @@ Call the `DSVoidEnvelope` method pass in the ID of the envelope to cancel/void. 
 - [x] Custom fields to return the signer ID and batch ID for an envelope sent as part of a batch for matching. *Available with 8/25/2021 release (>1.0.21)*
 - [x] Custom email subject and body for single emails. *Available with 8/30/2021 release (>1.0.24)*
 - [x] Added option to suppress envelope ID stamping in mailed envelopes. *Available with 9/10/2021 release (>1.0.25)*
+- [x] Extended envelope ID stamping to bulk envelopes. *Available with 9/22/2021 release (>1.0.27)*
+- [x] Added option to disallow envelope reassignment by recipients. *Available with 9/22/2021 release (>1.0.27)*
 
 # Future enhancements
 - [ ] Prepare and present a custom document (passed in from the calling application) to the recipient
