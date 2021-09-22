@@ -43,6 +43,27 @@ namespace ECAR.DocuSign.Models
         /// The ID of this batch returned by DocuSign.
         /// </summary>
         public string DSBatchId { get; internal set; }
+
+        /// <summary>
+        /// Show/hide the EnvelopeID in the document sent through DocuSign (default = true).
+        /// *** Requires a corresponding setting in DocuSign admin to be set; ignored otherwise. ***
+        /// </summary>
+        public bool DSStampEnvelopeId { get; set; }
+
+        /// <summary>
+        /// Allow/block recipients from reassigning envelopes sent to them (default = true).
+        /// </summary>
+        public bool DSAllowReassign { get; set; }
+
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
+        public BulkSendDocumentList()
+        {
+            DSStampEnvelopeId = true;
+            DSAllowReassign = true;
+        }
+
     }
 
     /// <summary>
@@ -86,5 +107,12 @@ namespace ECAR.DocuSign.Models
         /// *Will be overridden if BulkEmailBody is set in the BulkSendDocumentList object.*
         /// </summary>
         public string CustomEmailBody { get; set; }
+
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
+        public BulkSendRecipientModel()
+        {
+        }
     }
 }

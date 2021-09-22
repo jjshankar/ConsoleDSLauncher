@@ -15,6 +15,13 @@ namespace ECAR.DocuSign
     /// </summary>
     public static class Status
     {
+#if DEBUG
+        public static void AdjustExpiration(int sec)
+        {
+            DocuSignConfig.AccessTokenExpiration = DateTime.Now.AddSeconds(sec);
+        }
+#endif
+
         /// <summary>
         /// Get a list of all DocuSign envelope IDs starting from a given date.
         /// </summary>

@@ -579,6 +579,8 @@ namespace ECAR.DocuSign
                 Status = "created",
                 EventNotification = (Hook != null) ? Utils.ParseEventNotifications(Hook) : null,
                 CompositeTemplates = new List<CompositeTemplate> { compTemplate },
+                EnvelopeIdStamping = BulkSendData.DSStampEnvelopeId ? "true" : "false",
+                AllowReassign = BulkSendData.DSAllowReassign ? "true" : "false"
             };
 
             EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
@@ -657,6 +659,8 @@ namespace ECAR.DocuSign
                 Status = "created",
                 EventNotification = (Hook != null) ? Utils.ParseEventNotifications(Hook) : null,
                 CompositeTemplates = packetTemplates,
+                EnvelopeIdStamping = BulkSendData.DSStampEnvelopeId ? "true" : "false",
+                AllowReassign = BulkSendData.DSAllowReassign ? "true" : "false"
             };
 
             EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();

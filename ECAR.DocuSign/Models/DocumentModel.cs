@@ -63,14 +63,20 @@ namespace ECAR.DocuSign.Models
         /// Show/hide the EnvelopeID in the document sent through DocuSign (default = true).
         /// *** Requires a corresponding setting in DocuSign admin to be set; ignored otherwise. ***
         /// </summary>
-        public bool DSStampEnvelopeID { get; set; }
+        public bool DSStampEnvelopeId { get; set; }
+
+        /// <summary>
+        /// Allow/block recipients from reassigning envelopes sent to them (default = true).
+        /// </summary>
+        public bool DSAllowReassign { get; set; }
 
         /// <summary>
         /// Default constructor. 
         /// </summary>
         public DocumentModel()
         {
-            DSStampEnvelopeID = true;
+            DSStampEnvelopeId = true;
+            DSAllowReassign = true;
         }
 
         /// <summary>
@@ -80,7 +86,8 @@ namespace ECAR.DocuSign.Models
         public DocumentModel(string envelopeId)
         {
             DSEnvelopeId = envelopeId;
-            DSStampEnvelopeID = true;
+            DSStampEnvelopeId = true;
+            DSAllowReassign = true;
         }
     }
 

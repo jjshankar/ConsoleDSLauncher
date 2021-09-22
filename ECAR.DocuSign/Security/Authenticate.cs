@@ -82,33 +82,24 @@ namespace ECAR.DocuSign.Security
 
         public static EnvelopesApi CreateEnvelopesApiClient()
         {
-            // Get access token
-            string accessToken = GetToken();
-
             if (__envelopesApi == null)
-                __envelopesApi = new EnvelopesApi(GetApiClient(accessToken));
+                __envelopesApi = new EnvelopesApi(GetApiClient(GetToken()));
 
             return __envelopesApi;
         }
 
         public static TemplatesApi CreateTemplateApiClient()
         {
-            // Get access token
-            string accessToken = GetToken();
-
             if (__templatesApi == null)
-                __templatesApi = new TemplatesApi(GetApiClient(accessToken));
+                __templatesApi = new TemplatesApi(GetApiClient(GetToken()));
 
             return __templatesApi;
         }
 
         public static BulkEnvelopesApi CreateBulkEnvelopesApiClient()
         {
-            // Get access token
-            string accessToken = GetToken();
-
             if (__bulkEnvelopesApi == null)
-                __bulkEnvelopesApi = new BulkEnvelopesApi(GetApiClient(accessToken));
+                __bulkEnvelopesApi = new BulkEnvelopesApi(GetApiClient(GetToken()));
 
             return __bulkEnvelopesApi;
         }
