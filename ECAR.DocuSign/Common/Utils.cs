@@ -13,10 +13,65 @@ namespace ECAR.DocuSign.Common
 {
     internal static class Utils
     {
-        #region PRIVATE_MEMBERS
+        #region PRIVATE_MEMBERS_AND_METHODS
 
         // Private cache of DocuSign template IDs to reduce API calls
         private static readonly Dictionary<string, string> __TemplateIDCache = new Dictionary<string, string>();
+
+
+        /// <summary>
+        /// Helper method to create a bulk send copy object (for DRY principle)
+        /// </summary>
+        /// <param name="doc">Dynamic: must be a BulkSendRecipientModel or BulkSendPacketRecipientModel object</param>
+        /// <returns></returns>
+        private static BulkSendingCopy CreateSingleBulkSendingCopy(dynamic doc)
+        {
+            if (string.IsNullOrEmpty(doc.SignerId))
+                throw new Exception(Resources.EMPTY_SIGNER_ID_FOR_BATCH);
+
+            List<BulkSendingCopyCustomField> customfields = new List<BulkSendingCopyCustomField>();
+            customfields.Add(new BulkSendingCopyCustomField
+            {
+                Name = Constants.CUSTOM_FIELD_BULK_MAILING_SIGNER_ID,
+                Value = doc.SignerId
+            });
+
+            BulkSendingCopy copy = new BulkSendingCopy
+            {
+                Recipients = new List<BulkSendingCopyRecipient>(),
+                EmailSubject = doc.CustomEmailSubject,
+                EmailBlurb = doc.CustomEmailBody,
+                CustomFields = customfields
+            };
+
+            // Set up presets for this recipient
+            List<BulkSendingCopyTab> recipientTabs = null;
+            if (doc.Presets != null)
+            {
+                recipientTabs = new List<BulkSendingCopyTab>();
+                foreach (DocPreset tab in doc.Presets)
+                {
+                    recipientTabs.Add(new BulkSendingCopyTab
+                    {
+                        InitialValue = tab.Value,
+                        TabLabel = tab.Label
+                    });
+                };
+            }
+
+            // Create the bulk recipient object 
+            BulkSendingCopyRecipient recipient = new BulkSendingCopyRecipient
+            {
+                Name = doc.SignerName,
+                Email = doc.SignerEmail,
+                RoleName = doc.DSRoleName,
+                Tabs = recipientTabs
+            };
+
+            // Add recipient to copy object and add that to bulk copies
+            copy.Recipients.Add(recipient);
+            return copy;
+        }
 
         #endregion
 
@@ -321,7 +376,11 @@ namespace ECAR.DocuSign.Common
             return new EventNotification
             {
                 EnvelopeEvents = envelopeEvents,
-                EventData = new ConnectEventData { Format = "json", Version = "restv2.1" },
+                EventData = new ConnectEventData { 
+                    Format = "json", 
+                    Version = "restv2.1",
+                    IncludeData = new List<string> { "custom_fields", "recipients", "tabs" }
+                },
                 IncludeCertificateOfCompletion = "false",
                 IncludeCertificateWithSoap = "false",
                 IncludeDocumentFields = "false",
@@ -439,61 +498,6 @@ namespace ECAR.DocuSign.Common
             };
 
             return envelopeDefinition;
-        }
-
-
-        /// <summary>
-        /// Helper method to create a bulk send copy object (for DRY principle)
-        /// </summary>
-        /// <param name="doc">Dynamic: must be a BulkSendRecipientModel or BulkSendPacketRecipientModel object</param>
-        /// <returns></returns>
-        private static BulkSendingCopy CreateSingleBulkSendingCopy(dynamic doc)
-        {
-            if (string.IsNullOrEmpty(doc.SignerId))
-                throw new Exception(Resources.EMPTY_SIGNER_ID_FOR_BATCH);
-
-            List<BulkSendingCopyCustomField> customfields = new List<BulkSendingCopyCustomField>();
-            customfields.Add(new BulkSendingCopyCustomField
-            {
-                Name = Constants.CUSTOM_FIELD_BULK_MAILING_SIGNER_ID,
-                Value = doc.SignerId
-            });
-
-            BulkSendingCopy copy = new BulkSendingCopy
-            {
-                Recipients = new List<BulkSendingCopyRecipient>(),
-                EmailSubject = doc.CustomEmailSubject,
-                EmailBlurb = doc.CustomEmailBody,
-                CustomFields = customfields
-            };
-
-            // Set up presets for this recipient
-            List<BulkSendingCopyTab> recipientTabs = null;
-            if (doc.Presets != null)
-            {
-                recipientTabs = new List<BulkSendingCopyTab>();
-                foreach (DocPreset tab in doc.Presets)
-                {
-                    recipientTabs.Add(new BulkSendingCopyTab
-                    {
-                        InitialValue = tab.Value,
-                        TabLabel = tab.Label
-                    });
-                };
-            }
-
-            // Create the bulk recipient object 
-            BulkSendingCopyRecipient recipient = new BulkSendingCopyRecipient
-            {
-                Name = doc.SignerName,
-                Email = doc.SignerEmail,
-                RoleName = doc.DSRoleName,
-                Tabs = recipientTabs
-            };
-
-            // Add recipient to copy object and add that to bulk copies
-            copy.Recipients.Add(recipient);
-            return copy;
         }
 
         public static BulkSendingList CreateTemplateBulkSendingList(BulkSendDocumentList BulkRecipients)

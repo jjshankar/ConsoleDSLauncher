@@ -97,7 +97,7 @@ namespace ECAR.DocuSign.Models
         public string VoidedDateTime { get; internal set; }
 
         /// <summary>
-        /// The date and time the status changed (UTC/ISO)..
+        /// The date and time the status changed (UTC/ISO).
         /// </summary>
         public string StatusChangedDateTime { get; internal set; }
 
@@ -150,5 +150,10 @@ namespace ECAR.DocuSign.Models
         /// The date and time the envelope was delivered (UTC/ISO).
         /// </summary>
         public string DeliveredDateTime { get; internal set; }
+
+        /// <summary>
+        /// Key Value pair of custom fields contained in this envelope.
+        /// </summary>
+        public Dictionary<string, string> EnvelopeCustomFields { get; internal set; }
     }
 }

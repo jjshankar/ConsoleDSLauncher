@@ -53,7 +53,21 @@ namespace ECAR.DocuSign
                 EnvelopesInformation envInfo = envelopesApi.ListStatusChanges(accountId, options);
                 List<EnvelopeModel> allEnvelopes = new List<EnvelopeModel>();
                 foreach (Envelope env in envInfo.Envelopes)
-                {                    
+                {
+                    Dictionary<string, string> customFields = null;
+
+                    // Get envelope custom fields
+                    if (env.CustomFields != null)
+                    {
+                        customFields = new Dictionary<string, string>();
+
+                        foreach (ListCustomField list in env.CustomFields.ListCustomFields)
+                            customFields.Add(list.Name, list.Value);
+
+                        foreach (TextCustomField text in env.CustomFields.TextCustomFields)
+                            customFields.Add(text.Name, text.Value);
+                    }
+
                     allEnvelopes.Add(new EnvelopeModel { 
                         EnvelopeId = env.EnvelopeId,
                         Status = env.Status,
@@ -70,7 +84,8 @@ namespace ECAR.DocuSign
                         SentDateTime = env.SentDateTime,
                         StatusChangedDateTime = env.StatusChangedDateTime,
                         VoidedDateTime = env.VoidedDateTime,
-                        VoidedReason = env.VoidedReason                        
+                        VoidedReason = env.VoidedReason,
+                        EnvelopeCustomFields = customFields
                     });
                 }
 
@@ -949,6 +964,18 @@ namespace ECAR.DocuSign
                 List<EnvelopeModel> allEnvelopes = new List<EnvelopeModel>();
                 foreach (Envelope env in envInfo.Envelopes)
                 {
+                    Dictionary<string, string> customFields = null;
+
+                    if (env.CustomFields != null)
+                    {
+                        customFields = new Dictionary<string, string>();
+                        foreach (ListCustomField list in env.CustomFields.ListCustomFields)
+                            customFields.Add(list.Name, list.Value);
+
+                        foreach (TextCustomField text in env.CustomFields.TextCustomFields)
+                            customFields.Add(text.Name, text.Value);
+                    }
+                    
                     allEnvelopes.Add(new EnvelopeModel
                     {
                         EnvelopeId = env.EnvelopeId,
@@ -966,7 +993,8 @@ namespace ECAR.DocuSign
                         SentDateTime = env.SentDateTime,
                         StatusChangedDateTime = env.StatusChangedDateTime,
                         VoidedDateTime = env.VoidedDateTime,
-                        VoidedReason = env.VoidedReason
+                        VoidedReason = env.VoidedReason,
+                        EnvelopeCustomFields = customFields
                     });
                 }
 
@@ -1010,14 +1038,10 @@ namespace ECAR.DocuSign
                 CustomFieldsEnvelope customFields = envelopesApi.ListCustomFields(accountId, EnvelopeID);
 
                 foreach(ListCustomField list in customFields.ListCustomFields)
-                {
                     retDict.Add(list.Name , list.Value);
-                }
 
                 foreach(TextCustomField text in customFields.TextCustomFields)
-                {
                     retDict.Add(text.Name, text.Value);
-                }
 
                 return retDict;
             }
