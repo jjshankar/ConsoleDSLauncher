@@ -16,6 +16,10 @@ namespace ECAR.DocuSign
     public static class Status
     {
 #if DEBUG
+        /// <summary>
+        ///  DEBUG ONLY
+        /// </summary>
+        /// <param name="sec"></param>
         public static void AdjustExpiration(int sec)
         {
             DocuSignConfig.AccessTokenExpiration = DateTime.Now.AddSeconds(sec);

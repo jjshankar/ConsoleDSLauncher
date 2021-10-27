@@ -463,6 +463,11 @@
             Allow/block recipients from reassigning envelopes sent to them (default = true).
             </summary>
         </member>
+        <member name="P:ECAR.DocuSign.Models.DocumentModel.DSAllowPrintAndSign">
+            <summary>
+            Allow/block recipients from printing and signing (wet sign) envelopes sent to them (default = true).
+            </summary>
+        </member>
         <member name="M:ECAR.DocuSign.Models.DocumentModel.#ctor">
             <summary>
             Default constructor. 
@@ -538,6 +543,11 @@
         <member name="P:ECAR.DocuSign.Models.DocumentPacketModel.DSAllowReassign">
             <summary>
             Allow/block recipients from reassigning envelopes sent to them (default = true).
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.DocumentPacketModel.DSAllowPrintAndSign">
+            <summary>
+            Allow/block recipients from printing and signing (wet sign) envelopes sent to them (default = true).
             </summary>
         </member>
         <member name="M:ECAR.DocuSign.Models.DocumentPacketModel.#ctor">
@@ -936,6 +946,12 @@
             <summary>
             Access documents signed using ECAR.DocuSign.
             </summary>
+        </member>
+        <member name="M:ECAR.DocuSign.Status.AdjustExpiration(System.Int32)">
+            <summary>
+             DEBUG ONLY
+            </summary>
+            <param name="sec"></param>
         </member>
         <member name="M:ECAR.DocuSign.Status.DSGetAllEnvelopes(System.DateTime)">
             <summary>

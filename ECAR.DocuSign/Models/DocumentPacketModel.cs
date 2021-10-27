@@ -70,12 +70,18 @@ namespace ECAR.DocuSign.Models
         public bool DSAllowReassign { get; set; }
 
         /// <summary>
+        /// Allow/block recipients from printing and signing (wet sign) envelopes sent to them (default = true).
+        /// </summary>
+        public bool DSAllowPrintAndSign { get; set; }
+        
+        /// <summary>
         /// Default constructor. 
         /// </summary>
         public DocumentPacketModel()
         {
             DSStampEnvelopeId = true;
             DSAllowReassign = true;
+            DSAllowPrintAndSign = true;
         }
 
     }

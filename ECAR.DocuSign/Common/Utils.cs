@@ -441,6 +441,7 @@ namespace ECAR.DocuSign.Common
                 EventNotification = eventNotification ?? null,
                 EnvelopeIdStamping = Doc.DSStampEnvelopeId ? "true" : "false",
                 AllowReassign = Doc.DSAllowReassign ? "true" : "false",
+                EnableWetSign = Doc.DSAllowPrintAndSign ? "true" : "false",
             };
 
             return envelopeDefinition;
@@ -495,6 +496,7 @@ namespace ECAR.DocuSign.Common
                 EventNotification = eventNotification ?? null,
                 EnvelopeIdStamping = DocPacket.DSStampEnvelopeId ? "true" : "false",
                 AllowReassign = DocPacket.DSAllowReassign ? "true" : "false",
+                EnableWetSign = DocPacket.DSAllowPrintAndSign ? "true" : "false",
             };
 
             return envelopeDefinition;
