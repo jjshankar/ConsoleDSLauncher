@@ -580,7 +580,8 @@ namespace ECAR.DocuSign
                 EventNotification = (Hook != null) ? Utils.ParseEventNotifications(Hook) : null,
                 CompositeTemplates = new List<CompositeTemplate> { compTemplate },
                 EnvelopeIdStamping = BulkSendData.DSStampEnvelopeId ? "true" : "false",
-                AllowReassign = BulkSendData.DSAllowReassign ? "true" : "false"
+                AllowReassign = BulkSendData.DSAllowReassign ? "true" : "false",
+                EnableWetSign = BulkSendData.DSAllowPrintAndSign ? "true" : "false",
             };
 
             EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
@@ -660,7 +661,8 @@ namespace ECAR.DocuSign
                 EventNotification = (Hook != null) ? Utils.ParseEventNotifications(Hook) : null,
                 CompositeTemplates = packetTemplates,
                 EnvelopeIdStamping = BulkSendData.DSStampEnvelopeId ? "true" : "false",
-                AllowReassign = BulkSendData.DSAllowReassign ? "true" : "false"
+                AllowReassign = BulkSendData.DSAllowReassign ? "true" : "false",
+                EnableWetSign = BulkSendData.DSAllowPrintAndSign ? "true" : "false",
             };
 
             EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();

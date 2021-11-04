@@ -182,6 +182,11 @@
             Allow/block recipients from reassigning envelopes sent to them (default = true).
             </summary>
         </member>
+        <member name="P:ECAR.DocuSign.Models.BulkSendDocumentList.DSAllowPrintAndSign">
+            <summary>
+            Allow/block recipients from printing and signing (wet sign) envelopes sent to them (default = true).
+            </summary>
+        </member>
         <member name="M:ECAR.DocuSign.Models.BulkSendDocumentList.#ctor">
             <summary>
             Default constructor.
@@ -283,6 +288,11 @@
         <member name="P:ECAR.DocuSign.Models.BulkSendPacketList.DSAllowReassign">
             <summary>
             Allow/block recipients from reassigning envelopes sent to them (default = true).
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.BulkSendPacketList.DSAllowPrintAndSign">
+            <summary>
+            Allow/block recipients from printing and signing (wet sign) envelopes sent to them (default = true).
             </summary>
         </member>
         <member name="M:ECAR.DocuSign.Models.BulkSendPacketList.#ctor">
