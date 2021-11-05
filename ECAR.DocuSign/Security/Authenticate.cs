@@ -14,6 +14,7 @@ namespace ECAR.DocuSign.Security
         private static EnvelopesApi __envelopesApi;
         private static TemplatesApi __templatesApi;
         private static BulkEnvelopesApi __bulkEnvelopesApi;
+        private static string __currentUserId = "";
 
         private static ApiClient GetApiClient(string accessToken)
         {
@@ -43,7 +44,9 @@ namespace ECAR.DocuSign.Security
             DateTime expiry = DocuSignConfig.AccessTokenExpiration;
 
             // Check if we need to refresh token
-            if (string.IsNullOrEmpty(accessToken) || expiry == null || expiry < DateTime.Now.AddMinutes(5))
+            //  Token is refreshed if it is null, expired or when the DocuSign sending user changes
+            if (string.IsNullOrEmpty(accessToken) || expiry == null || expiry < DateTime.Now.AddMinutes(5)
+                || string.IsNullOrEmpty(__currentUserId) || DocuSignConfig.UserGUID != __currentUserId)
             {
                 ApiClient apiClient = new ApiClient();
 
@@ -61,6 +64,9 @@ namespace ECAR.DocuSign.Security
                 __envelopesApi = null;
                 __templatesApi = null;
                 __bulkEnvelopesApi = null;
+
+                // Remember send as user in private variable
+                __currentUserId = userGuid;
 
                 // Validate
                 apiClient.SetOAuthBasePath(DocuSignConfig.AuthServer);
@@ -82,7 +88,7 @@ namespace ECAR.DocuSign.Security
 
         public static EnvelopesApi CreateEnvelopesApiClient()
         {
-            if (__envelopesApi == null)
+            if (__envelopesApi == null || DocuSignConfig.UserGUID != __currentUserId)
                 __envelopesApi = new EnvelopesApi(GetApiClient(GetToken()));
 
             return __envelopesApi;
@@ -90,7 +96,7 @@ namespace ECAR.DocuSign.Security
 
         public static TemplatesApi CreateTemplateApiClient()
         {
-            if (__templatesApi == null)
+            if (__templatesApi == null || DocuSignConfig.UserGUID != __currentUserId)
                 __templatesApi = new TemplatesApi(GetApiClient(GetToken()));
 
             return __templatesApi;
@@ -98,7 +104,7 @@ namespace ECAR.DocuSign.Security
 
         public static BulkEnvelopesApi CreateBulkEnvelopesApiClient()
         {
-            if (__bulkEnvelopesApi == null)
+            if (__bulkEnvelopesApi == null || DocuSignConfig.UserGUID != __currentUserId)
                 __bulkEnvelopesApi = new BulkEnvelopesApi(GetApiClient(GetToken()));
 
             return __bulkEnvelopesApi;
