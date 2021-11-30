@@ -36,9 +36,29 @@ namespace ECAR.DocuSign
                 CreatedDateTime = (string)(root.SelectToken("createdDateTime") ?? ""),
                 DeclinedDateTime = (string)(root.SelectToken("declinedDateTime") ?? ""),
                 DeliveredDateTime = (string)(root.SelectToken("deliveredDateTime") ?? ""),
-                EmailBlurb = ""
+                EmailBlurb = (string)(root.SelectToken("emailBlurb") ?? ""),
+                EnvelopeCustomFields = null
             };
-            
+
+            // Read customFields from the payload
+            JToken customFields = root["customFields"];
+            if (customFields != null)
+            {
+                Dictionary<string, string> dictCustomFields = new Dictionary<string, string>();
+
+                JEnumerable<JToken> listCustomFields = customFields["listCustomFields"].Children();
+                JEnumerable<JToken> textCustomFields = customFields["textCustomFields"].Children();
+
+                foreach (JToken titem in textCustomFields)
+                    dictCustomFields.Add((string)titem["name"], (string)titem["value"]);
+
+                foreach (JToken litem in listCustomFields)
+                    dictCustomFields.Add((string)litem["name"], (string)litem["value"]);
+
+                // Return the dictionary
+                envelopeModel.EnvelopeCustomFields = dictCustomFields;
+            }
+
             return envelopeModel;
 
         }

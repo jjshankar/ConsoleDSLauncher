@@ -16,6 +16,13 @@
             <param name="jsonPayload">JSON event payload received from DocuSign</param>
             <returns>EnvelopeModel object populated with data from DocuSign</returns>
         </member>
+        <member name="M:ECAR.DocuSign.Common.Utils.CreateSingleBulkSendingCopy(System.Object)">
+            <summary>
+            Helper method to create a bulk send copy object (for DRY principle)
+            </summary>
+            <param name="doc">Dynamic: must be a BulkSendRecipientModel or BulkSendPacketRecipientModel object</param>
+            <returns></returns>
+        </member>
         <member name="M:ECAR.DocuSign.Common.Utils.GetTemplateId(System.String,System.String)">
             <summary>
             Get Template ID from local cache or DocuSign server for use in DocuSign calls.
@@ -65,13 +72,6 @@
             </summary>
             <param name="Hook">Notification callback details</param>
             <returns>DocuSign EventNotification object</returns>
-        </member>
-        <member name="M:ECAR.DocuSign.Common.Utils.CreateSingleBulkSendingCopy(System.Object)">
-            <summary>
-            Helper method to create a bulk send copy object (for DRY principle)
-            </summary>
-            <param name="doc">Dynamic: must be a BulkSendRecipientModel or BulkSendPacketRecipientModel object</param>
-            <returns></returns>
         </member>
         <member name="T:ECAR.DocuSign.DocuSignConfig">
             <summary>
@@ -182,6 +182,11 @@
             Allow/block recipients from reassigning envelopes sent to them (default = true).
             </summary>
         </member>
+        <member name="P:ECAR.DocuSign.Models.BulkSendDocumentList.DSAllowPrintAndSign">
+            <summary>
+            Allow/block recipients from printing and signing (wet sign) envelopes sent to them (default = true).
+            </summary>
+        </member>
         <member name="M:ECAR.DocuSign.Models.BulkSendDocumentList.#ctor">
             <summary>
             Default constructor.
@@ -283,6 +288,11 @@
         <member name="P:ECAR.DocuSign.Models.BulkSendPacketList.DSAllowReassign">
             <summary>
             Allow/block recipients from reassigning envelopes sent to them (default = true).
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.BulkSendPacketList.DSAllowPrintAndSign">
+            <summary>
+            Allow/block recipients from printing and signing (wet sign) envelopes sent to them (default = true).
             </summary>
         </member>
         <member name="M:ECAR.DocuSign.Models.BulkSendPacketList.#ctor">
@@ -463,6 +473,11 @@
             Allow/block recipients from reassigning envelopes sent to them (default = true).
             </summary>
         </member>
+        <member name="P:ECAR.DocuSign.Models.DocumentModel.DSAllowPrintAndSign">
+            <summary>
+            Allow/block recipients from printing and signing (wet sign) envelopes sent to them (default = true).
+            </summary>
+        </member>
         <member name="M:ECAR.DocuSign.Models.DocumentModel.#ctor">
             <summary>
             Default constructor. 
@@ -538,6 +553,11 @@
         <member name="P:ECAR.DocuSign.Models.DocumentPacketModel.DSAllowReassign">
             <summary>
             Allow/block recipients from reassigning envelopes sent to them (default = true).
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.DocumentPacketModel.DSAllowPrintAndSign">
+            <summary>
+            Allow/block recipients from printing and signing (wet sign) envelopes sent to them (default = true).
             </summary>
         </member>
         <member name="M:ECAR.DocuSign.Models.DocumentPacketModel.#ctor">
@@ -672,7 +692,7 @@
         </member>
         <member name="P:ECAR.DocuSign.Models.EnvelopeModel.StatusChangedDateTime">
             <summary>
-            The date and time the status changed (UTC/ISO)..
+            The date and time the status changed (UTC/ISO).
             </summary>
         </member>
         <member name="P:ECAR.DocuSign.Models.EnvelopeModel.Status">
@@ -723,6 +743,11 @@
         <member name="P:ECAR.DocuSign.Models.EnvelopeModel.DeliveredDateTime">
             <summary>
             The date and time the envelope was delivered (UTC/ISO).
+            </summary>
+        </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeModel.EnvelopeCustomFields">
+            <summary>
+            Key Value pair of custom fields contained in this envelope.
             </summary>
         </member>
         <member name="T:ECAR.DocuSign.Models.EnvelopeRecipientModel">
@@ -931,6 +956,12 @@
             <summary>
             Access documents signed using ECAR.DocuSign.
             </summary>
+        </member>
+        <member name="M:ECAR.DocuSign.Status.AdjustExpiration(System.Int32)">
+            <summary>
+             DEBUG ONLY
+            </summary>
+            <param name="sec"></param>
         </member>
         <member name="M:ECAR.DocuSign.Status.DSGetAllEnvelopes(System.DateTime)">
             <summary>
