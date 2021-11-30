@@ -55,6 +55,10 @@ Getting started with **ECAR.DocuSign** is as easy as 1..2..3
 
         // Optional configuration value to block recipients from reassigning envelopes sent to them (default = true).
         DSAllowReassign = false,
+
+        // Optional configuration value block recipients from printing and signing (wet sign) envelopes sent to them (default = true).
+        DSAllowPrintAndSign = false;
+
     };
 ```
 *The `DSStampEnvelopeID` property requires a corresponding setting in DocuSign Settings under **Sending Settings** to* "Include Envelope ID by default".  *Contact your DocuSign admin to enable this setting.*
@@ -404,12 +408,26 @@ Call the `DSResendEnvelope` method and pass in the ID of the envelope to resend.
 ## This is how you void a previously sent envelope
 Call the `DSVoidEnvelope` method pass in the ID of the envelope to cancel/void.  The method also requires a non-empty string specifying the reason for voiding.  The envelope must *not* be in a `draft` or `completed` states.
 - This method returns true when successful, or an exception if the envelope is in an invalid state or in case of errors.
-**NOTE: THIS ACTION IS IRREVERSIBLE!**
-
 
 ```csharp
     bool bResult = ECAR.DocuSign.Status.DSVoidEnvelope(createdEnvelopeID, voidedReason)
 ```
+***NOTE: THIS ACTION IS IRREVERSIBLE!***
+
+
+# Change Sending User
+## This is how to switch the DocuSign user that sends the envelopes 
+To change the DocuSign user that sends the envelopes, simply change the configuration value and call the standard methods.  All user IDs must exist as a valid user for your account in DocuSign.
+- Changing the user ID regenerates the DocuSign JWT. Use this feature sparingly.
+
+```csharp
+    if(toggleSendAs)
+        DocuSignConfig.UserGUID = ConfigurationManager.AppSettings["DS_UserGUID_2"];
+    else
+        DocuSignConfig.UserGUID = ConfigurationManager.AppSettings["DS_UserGUID_1"];
+```
+
+***NOTE: THE USER LAST SET WILL BE USED FOR ALL SUBSEQUENT CALLS. EXERCISE CAUTION WHILE USING THIS FEATURE.***
 
 
 # Limitations/known issues
@@ -432,6 +450,9 @@ Call the `DSVoidEnvelope` method pass in the ID of the envelope to cancel/void. 
 - [x] Added option to suppress envelope ID stamping in mailed envelopes. *Available with 9/10/2021 release (>1.0.25)*
 - [x] Extended envelope ID stamping to bulk envelopes. *Available with 9/22/2021 release (>1.0.27)*
 - [x] Added option to disallow envelope reassignment by recipients. *Available with 9/22/2021 release (>1.0.27)*
+- [x] Receive custom fields in the callback JSON so it can be cached to reduce DocuSign API calls. *Available with 11/29/2021 release (>1.0.28)*
+- [x] Added support to suppress/enable wet signing (print and sign) in DocuSign. *Available with 11/29/2021 release (>1.0.28)*
+- [x] Added support to change the DocuSign SendAs user within the same session. *Available with 11/29/2021 release (>1.0.28)*
 
 # Future enhancements
 - [ ] Prepare and present a custom document (passed in from the calling application) to the recipient
