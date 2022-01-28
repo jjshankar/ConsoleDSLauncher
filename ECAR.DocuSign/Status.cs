@@ -58,9 +58,8 @@ namespace ECAR.DocuSign
                 List<EnvelopeModel> allEnvelopes = new List<EnvelopeModel>();
                 foreach (Envelope env in envInfo.Envelopes)
                 {
-                    Dictionary<string, string> customFields = null;
-
                     // Get envelope custom fields
+                    Dictionary<string, string> customFields = null;
                     if (env.CustomFields != null)
                     {
                         customFields = new Dictionary<string, string>();
@@ -70,6 +69,33 @@ namespace ECAR.DocuSign
 
                         foreach (TextCustomField text in env.CustomFields.TextCustomFields)
                             customFields.Add(text.Name, text.Value);
+                    }
+
+                    // Get recipents data
+                    List<EnvelopeRecipientModel> recipients = null;
+                    if (env.Recipients != null && env.Recipients.Signers != null)
+                    {
+                        recipients = new List<EnvelopeRecipientModel>();
+
+                        foreach (Signer s in env.Recipients.Signers)
+                        {
+                            recipients.Add(new EnvelopeRecipientModel
+                            {
+                                RecipientId = s.RecipientId,
+                                ClientUserId = s.ClientUserId,
+                                DeclinedDateTime = s.DeclinedDateTime,
+                                DeclinedReason = s.DeclinedReason,
+                                DeliveredDateTime = s.DeliveredDateTime,
+                                Email = s.Email,
+                                Name = s.Name,
+                                RecipientType = s.RecipientType,
+                                RoleName = s.RoleName,
+                                SignatureName = s.SignatureInfo?.SignatureName,
+                                SignedDateTime = s.SignedDateTime,
+                                Status = s.Status,
+                                DSUserGUID = s.UserId
+                            });
+                        }
                     }
 
                     allEnvelopes.Add(new EnvelopeModel { 
@@ -89,11 +115,123 @@ namespace ECAR.DocuSign
                         StatusChangedDateTime = env.StatusChangedDateTime,
                         VoidedDateTime = env.VoidedDateTime,
                         VoidedReason = env.VoidedReason,
-                        EnvelopeCustomFields = customFields
+                        EnvelopeCustomFields = customFields,
+                        EnvelopeRecipients = recipients
                     });
                 }
 
                 return allEnvelopes;
+            }
+            catch (ApiException ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// Get the envelope object for a given enveloe ID.
+        /// </summary>
+        /// <param name="EnvelopeID">The envelope ID to retrieve</param>
+        /// <returns>An EnvelopeModel object with the details of the speicified envelope</returns>
+        /// <exception cref="System.Exception"></exception>
+        public static EnvelopeModel DSGetEnvelope(string EnvelopeID)
+        {
+            try
+            {
+                // Validate input
+                if (EnvelopeID == null)
+                    throw new Exception(Resources.EMPTY_ENVELOPE_ID);
+
+                // Check config
+                if (!DocuSignConfig.Ready)
+                    throw new Exception(Resources.DSCONFIG_NOT_SET);
+
+                // Read account ID from config
+                string accountId = DocuSignConfig.AccountID;
+
+                // Return value
+                EnvelopeModel retEnvelope = null;
+                EnvelopesApi.GetEnvelopeOptions queryOptions = new EnvelopesApi.GetEnvelopeOptions
+                {
+                    include = "recipients, custom_fields"
+                };
+
+                // Create API Client and call it
+                EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
+                Envelope env = envelopesApi.GetEnvelope(accountId, EnvelopeID, queryOptions);
+
+                if (env != null)                
+                {
+                    // Get envelope custom fields
+                    Dictionary<string, string> customFields = null;
+                    CustomFields envCustomFields = env.CustomFields;
+                    if (envCustomFields != null)
+                    {
+                        customFields = new Dictionary<string, string>();
+
+                        foreach (ListCustomField list in envCustomFields.ListCustomFields)
+                            customFields.Add(list.Name, list.Value);
+
+                        foreach (TextCustomField text in envCustomFields.TextCustomFields)
+                            customFields.Add(text.Name, text.Value);
+                    }
+
+                    // Get recipents data
+                    List<EnvelopeRecipientModel> recipients = null;
+                    Recipients envRecipients = env.Recipients;
+                    if (envRecipients != null && envRecipients.Signers != null)
+                    {
+                        recipients = new List<EnvelopeRecipientModel>();
+
+                        foreach (Signer s in envRecipients.Signers)
+                        {
+                            recipients.Add(new EnvelopeRecipientModel
+                            {
+                                RecipientId = s.RecipientId,
+                                ClientUserId = s.ClientUserId,
+                                DeclinedDateTime = s.DeclinedDateTime,
+                                DeclinedReason = s.DeclinedReason,
+                                DeliveredDateTime = s.DeliveredDateTime,
+                                Email = s.Email,
+                                Name = s.Name,
+                                RecipientType = s.RecipientType,
+                                RoleName = s.RoleName,
+                                SignatureName = s.SignatureInfo?.SignatureName,
+                                SignedDateTime = s.SignedDateTime,
+                                Status = s.Status,
+                                DSUserGUID = s.UserId
+                            });
+                        }
+                    }
+
+                    retEnvelope = new EnvelopeModel
+                    {
+                        EnvelopeId = env.EnvelopeId,
+                        Status = env.Status,
+                        CompletedDateTime = env.CompletedDateTime,
+                        CreatedDateTime = env.CreatedDateTime,
+                        DeclinedDateTime = env.DeclinedDateTime,
+                        DeliveredDateTime = env.DeliveredDateTime,
+                        EmailBlurb = env.EmailBlurb,
+                        EmailSubject = env.EmailSubject,
+                        ExpireAfter = int.Parse(env.ExpireAfter ?? "0"),
+                        ExpireDateTime = env.ExpireDateTime,
+                        ExpireEnabled = bool.Parse(env.ExpireEnabled ?? "false"),
+                        LastModifiedDateTime = env.LastModifiedDateTime,
+                        SentDateTime = env.SentDateTime,
+                        StatusChangedDateTime = env.StatusChangedDateTime,
+                        VoidedDateTime = env.VoidedDateTime,
+                        VoidedReason = env.VoidedReason,
+                        EnvelopeCustomFields = customFields,
+                        EnvelopeRecipients = recipients
+                    };
+                }
+
+                return retEnvelope;
             }
             catch (ApiException ex)
             {
@@ -131,10 +269,10 @@ namespace ECAR.DocuSign
                 Recipients results = envelopesApi.ListRecipients(accountId, EnvelopeID);
 
                 // Return value
-                List<EnvelopeRecipientModel> recipents = new List<EnvelopeRecipientModel>();
+                List<EnvelopeRecipientModel> recipients = new List<EnvelopeRecipientModel>();
                 foreach(Signer s in results.Signers)
                 {
-                    recipents.Add(new EnvelopeRecipientModel {
+                    recipients.Add(new EnvelopeRecipientModel {
                         RecipientId = s.RecipientId,
                         ClientUserId = s.ClientUserId,
                         DeclinedDateTime =  s.DeclinedDateTime,
@@ -151,7 +289,7 @@ namespace ECAR.DocuSign
                     });
                 }
 
-                return recipents;
+                return recipients;
             }
             catch (ApiException ex)
             {
@@ -414,10 +552,14 @@ namespace ECAR.DocuSign
 
                 // Read account ID from config
                 string accountId = DocuSignConfig.AccountID;
+                EnvelopesApi.ListDocumentsOptions queryOptions = new EnvelopesApi.ListDocumentsOptions
+                {
+                    includeTabs = "true"
+                };
 
                 // Create API Client and call it
                 EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
-                EnvelopeDocumentsResult docList = envelopesApi.ListDocuments(accountId, EnvelopeID);
+                EnvelopeDocumentsResult docList = envelopesApi.ListDocuments(accountId, EnvelopeID, queryOptions);
 
                 if (docList.EnvelopeDocuments.Count > 0)
                 {
@@ -957,9 +1099,15 @@ namespace ECAR.DocuSign
                 // Read account ID from config
                 string accountId = DocuSignConfig.AccountID;
 
+                // Set up options to return recipient info
+                BulkEnvelopesApi.GetBulkSendBatchEnvelopesOptions queryOptions = new BulkEnvelopesApi.GetBulkSendBatchEnvelopesOptions
+                {
+                    include = "recipients"
+                };
+
                 // Create BulkEnvelopes API Client and call it
                 BulkEnvelopesApi bulkEnvelopesApi = Authenticate.CreateBulkEnvelopesApiClient();
-                EnvelopesInformation envInfo = bulkEnvelopesApi.GetBulkSendBatchEnvelopes(accountId, BulkSendBatchID);
+                EnvelopesInformation envInfo = bulkEnvelopesApi.GetBulkSendBatchEnvelopes(accountId, BulkSendBatchID, queryOptions);
 
                 // No envelopes available to process (batch may be in process; it is too early to check)
                 if (envInfo.Envelopes == null)
@@ -969,7 +1117,6 @@ namespace ECAR.DocuSign
                 foreach (Envelope env in envInfo.Envelopes)
                 {
                     Dictionary<string, string> customFields = null;
-
                     if (env.CustomFields != null)
                     {
                         customFields = new Dictionary<string, string>();
@@ -979,7 +1126,34 @@ namespace ECAR.DocuSign
                         foreach (TextCustomField text in env.CustomFields.TextCustomFields)
                             customFields.Add(text.Name, text.Value);
                     }
-                    
+
+                    // Get recipents data
+                    List<EnvelopeRecipientModel> recipients = null;
+                    if (env.Recipients != null && env.Recipients.Signers != null)
+                    {
+                        recipients = new List<EnvelopeRecipientModel>();
+
+                        foreach (Signer s in env.Recipients.Signers)
+                        {
+                            recipients.Add(new EnvelopeRecipientModel
+                            {
+                                RecipientId = s.RecipientId,
+                                ClientUserId = s.ClientUserId,
+                                DeclinedDateTime = s.DeclinedDateTime,
+                                DeclinedReason = s.DeclinedReason,
+                                DeliveredDateTime = s.DeliveredDateTime,
+                                Email = s.Email,
+                                Name = s.Name,
+                                RecipientType = s.RecipientType,
+                                RoleName = s.RoleName,
+                                SignatureName = s.SignatureInfo?.SignatureName,
+                                SignedDateTime = s.SignedDateTime,
+                                Status = s.Status,
+                                DSUserGUID = s.UserId
+                            });
+                        }
+                    }
+
                     allEnvelopes.Add(new EnvelopeModel
                     {
                         EnvelopeId = env.EnvelopeId,
@@ -998,7 +1172,8 @@ namespace ECAR.DocuSign
                         StatusChangedDateTime = env.StatusChangedDateTime,
                         VoidedDateTime = env.VoidedDateTime,
                         VoidedReason = env.VoidedReason,
-                        EnvelopeCustomFields = customFields
+                        EnvelopeCustomFields = customFields,
+                        EnvelopeRecipients = recipients
                     });
                 }
 

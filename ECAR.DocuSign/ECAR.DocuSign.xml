@@ -750,6 +750,11 @@
             Key Value pair of custom fields contained in this envelope.
             </summary>
         </member>
+        <member name="P:ECAR.DocuSign.Models.EnvelopeModel.EnvelopeRecipients">
+            <summary>
+            List of recipients this envelope was sent to with status and details for each.
+            </summary>
+        </member>
         <member name="T:ECAR.DocuSign.Models.EnvelopeRecipientModel">
             <summary>
             Data model for document recipients retrieved from DocuSign.
@@ -969,6 +974,14 @@
             </summary>
             <param name="StartDate">The date to start querying from</param>
             <returns>List of all envelopes from the given date as EnvelopeModel objects</returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:ECAR.DocuSign.Status.DSGetEnvelope(System.String)">
+            <summary>
+            Get the envelope object for a given enveloe ID.
+            </summary>
+            <param name="EnvelopeID">The envelope ID to retrieve</param>
+            <returns>An EnvelopeModel object with the details of the speicified envelope</returns>
             <exception cref="T:System.Exception"></exception>
         </member>
         <member name="M:ECAR.DocuSign.Status.DSGetAllRecipients(System.String)">

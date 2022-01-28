@@ -155,5 +155,10 @@ namespace ECAR.DocuSign.Models
         /// Key Value pair of custom fields contained in this envelope.
         /// </summary>
         public Dictionary<string, string> EnvelopeCustomFields { get; internal set; }
+
+        /// <summary>
+        /// List of recipients this envelope was sent to with status and details for each.
+        /// </summary>
+        public List<EnvelopeRecipientModel> EnvelopeRecipients { get; internal set; }
     }
 }
