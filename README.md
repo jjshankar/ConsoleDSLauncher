@@ -1,5 +1,5 @@
 # ECAR.DocuSign
-### Last release: September 22, 2021 (ver. 1.0.27)
+### Last release: January 31, 2022 (ver. 1.0.31)
 
 A library to easily connect to DocuSign services and embed signing within your web application.  
 
@@ -133,7 +133,8 @@ Use the corresponding models for reminders (`ReminderModel`) or expiration (`Exp
     };
 ```
 
-Overloaded versions of signing methods are available that accept the reminder and expiration objects.  *Note: You may pass empty (`null`) objects for either argument.*
+Overloaded versions of signing methods are available that accept the reminder and expiration objects.  You may pass empty (`null`) objects for either argument.
+
 ```csharp
     // Embedded signing 
     string viewUrl = ECAR.DocuSign.TemplateSign.EmbeddedTemplateSign(returnUrl, ref dsDoc, rem, exp, tabs);
@@ -212,6 +213,8 @@ DocuSign will automatically `POST` to the webhook action whenever the envelope s
     }
 ```
 
+***NOTE: EXAMINE THE RETURNED*** `EnvelopeModel` ***MODEL FOR OBJECTS AND PROPERTIES THAT ARE AVAILABLE TO THE WEBHOOK METHOD.***
+
 # Sending multiple documents in one envelope
 Sending document packets that consist of many DocuSign templates, just create a new instance of the `DocumentPacketModel` object and populate it with the names of the templates you would like to include in the envelope (using its `DSTemplateList` property).
 ```csharp
@@ -276,7 +279,7 @@ DocuSign automatically adds a custom field for the Batch ID (`"BulkBatchId"`) to
 
 The caller may store the batch ID (returned value or the `DSBatchID` property) after this call for status queries in the future.  
 
-NOTE: DocuSign takes a while to dispatch all the documents in the batch, so use your judgment before initiating the status query for a batch.
+***NOTE: DOCUSIGN TAKES A WHILE TO DISPATCH ALL THE DOCUMENTS IN THE BATCH. USE YOUR JUDGMENT BEFORE INITIATING THE STATUS QUERY FOR A BATCH.***
 
 # Status and Retrieval
 ## This is how you retrieve a list of DocuSign envelopes from a given date
@@ -453,14 +456,16 @@ To change the DocuSign user that sends the envelopes, simply change the configur
 - [x] Receive custom fields in the callback JSON so it can be cached to reduce DocuSign API calls. *Available with 11/29/2021 release (>1.0.28)*
 - [x] Added support to suppress/enable wet signing (print and sign) in DocuSign. *Available with 11/29/2021 release (>1.0.28)*
 - [x] Added support to change the DocuSign SendAs user within the same session. *Available with 11/29/2021 release (>1.0.28)*
+- [x] Added support to retrieve decline reason (if supplied) in the webhook Process method. *Available with 1/31/2022 release (>1.0.31)*
 
 # Future enhancements
 - [ ] Prepare and present a custom document (passed in from the calling application) to the recipient
 
 # Maintenance releases
-- ~~Updated to use DocuSign.eSign.DLL v5.2. *Available with 03/02/2021 release (>1.0.10)*~~
 - [x] Updated to support .NETCore3.1. *Available with 03/02/2021 release (>1.0.10)*
-- [x] Updated to use DocuSign.eSign.DLL v5.6.2. *Available with 07/23/2021 release (>1.0.20)*
+- ~~Updated to use DocuSign.eSign.DLL v5.2. *Available with 03/02/2021 release (>1.0.10)*~~
+- ~~Updated to use DocuSign.eSign.DLL v5.6.2. *Available with 7/23/2021 release (>1.0.20)*~~
+- [x] Updated to use DocuSign.eSign.DLL v5.8.0. *Available with 1/31/2022 release (>1.0.31)*
 
 # Contribute
 Share your feedback/suggestions/requests
