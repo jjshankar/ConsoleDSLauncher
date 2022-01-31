@@ -59,6 +59,38 @@ namespace ECAR.DocuSign
                 envelopeModel.EnvelopeCustomFields = dictCustomFields;
             }
 
+            // Read recipient data from the payload
+            JToken recipients = root["recipients"];
+
+            if (recipients != null)
+            {
+                List<EnvelopeRecipientModel> recipientList = new List<EnvelopeRecipientModel>();
+                JEnumerable<JToken> signers = recipients["signers"].Children();
+
+                foreach (JToken s in signers)
+                {
+                    recipientList.Add(new EnvelopeRecipientModel
+                    {
+                        RecipientId = (string)s["recipientId"],
+                        ClientUserId = "",                                      // this will be empty for emailed documents
+                        DeclinedDateTime = (string)s["declinedDateTime"],
+                        DeclinedReason = (string)s["declinedReason"],
+                        DeliveredDateTime = (string)s["deliveredDateTime"],
+                        Email = (string)s["email"],
+                        Name = (string)s["name"],
+                        RecipientType = (string)s["recipientType"],
+                        RoleName = (string)s["roleName"],
+                        //SignatureName = (string)s.SignatureInfo?.SignatureName,
+                        SignedDateTime = (string)s["signedDateTime"],
+                        Status = (string)s["status"],
+                        DSUserGUID = (string)s["userId"],
+                    });
+                }
+
+                // Add the list to output
+                envelopeModel.EnvelopeRecipients = recipientList;
+            }
+
             return envelopeModel;
 
         }

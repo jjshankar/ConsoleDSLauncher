@@ -15,16 +15,19 @@ namespace ECAR.DocuSign
     /// </summary>
     public static class Status
     {
-#if DEBUG
-        /// <summary>
-        ///  DEBUG ONLY
-        /// </summary>
-        /// <param name="sec"></param>
-        public static void AdjustExpiration(int sec)
-        {
-            DocuSignConfig.AccessTokenExpiration = DateTime.Now.AddSeconds(sec);
-        }
-#endif
+
+    #region PUBLIC_METHODS
+
+    #if DEBUG
+            /// <summary>
+            ///  DEBUG ONLY
+            /// </summary>
+            /// <param name="sec"></param>
+            public static void AdjustExpiration(int sec)
+            {
+                DocuSignConfig.AccessTokenExpiration = DateTime.Now.AddSeconds(sec);
+            }
+    #endif
 
         /// <summary>
         /// Get a list of all DocuSign envelope IDs starting from a given date.
@@ -58,9 +61,8 @@ namespace ECAR.DocuSign
                 List<EnvelopeModel> allEnvelopes = new List<EnvelopeModel>();
                 foreach (Envelope env in envInfo.Envelopes)
                 {
-                    Dictionary<string, string> customFields = null;
-
                     // Get envelope custom fields
+                    Dictionary<string, string> customFields = null;
                     if (env.CustomFields != null)
                     {
                         customFields = new Dictionary<string, string>();
@@ -70,6 +72,33 @@ namespace ECAR.DocuSign
 
                         foreach (TextCustomField text in env.CustomFields.TextCustomFields)
                             customFields.Add(text.Name, text.Value);
+                    }
+
+                    // Get recipents data
+                    List<EnvelopeRecipientModel> recipients = null;
+                    if (env.Recipients != null && env.Recipients.Signers != null)
+                    {
+                        recipients = new List<EnvelopeRecipientModel>();
+
+                        foreach (Signer s in env.Recipients.Signers)
+                        {
+                            recipients.Add(new EnvelopeRecipientModel
+                            {
+                                RecipientId = s.RecipientId,
+                                ClientUserId = s.ClientUserId,
+                                DeclinedDateTime = s.DeclinedDateTime,
+                                DeclinedReason = s.DeclinedReason,
+                                DeliveredDateTime = s.DeliveredDateTime,
+                                Email = s.Email,
+                                Name = s.Name,
+                                RecipientType = s.RecipientType,
+                                RoleName = s.RoleName,
+                                SignatureName = s.SignatureInfo?.SignatureName,
+                                SignedDateTime = s.SignedDateTime,
+                                Status = s.Status,
+                                DSUserGUID = s.UserId
+                            });
+                        }
                     }
 
                     allEnvelopes.Add(new EnvelopeModel { 
@@ -89,11 +118,123 @@ namespace ECAR.DocuSign
                         StatusChangedDateTime = env.StatusChangedDateTime,
                         VoidedDateTime = env.VoidedDateTime,
                         VoidedReason = env.VoidedReason,
-                        EnvelopeCustomFields = customFields
+                        EnvelopeCustomFields = customFields,
+                        EnvelopeRecipients = recipients
                     });
                 }
 
                 return allEnvelopes;
+            }
+            catch (ApiException ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// Get the envelope object for a given enveloe ID.
+        /// </summary>
+        /// <param name="EnvelopeID">The envelope ID to retrieve</param>
+        /// <returns>An EnvelopeModel object with the details of the speicified envelope</returns>
+        /// <exception cref="System.Exception"></exception>
+        public static EnvelopeModel DSGetEnvelope(string EnvelopeID)
+        {
+            try
+            {
+                // Validate input
+                if (EnvelopeID == null)
+                    throw new Exception(Resources.EMPTY_ENVELOPE_ID);
+
+                // Check config
+                if (!DocuSignConfig.Ready)
+                    throw new Exception(Resources.DSCONFIG_NOT_SET);
+
+                // Read account ID from config
+                string accountId = DocuSignConfig.AccountID;
+
+                // Return value
+                EnvelopeModel retEnvelope = null;
+                EnvelopesApi.GetEnvelopeOptions queryOptions = new EnvelopesApi.GetEnvelopeOptions
+                {
+                    include = "recipients, custom_fields"
+                };
+
+                // Create API Client and call it
+                EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
+                Envelope env = envelopesApi.GetEnvelope(accountId, EnvelopeID, queryOptions);
+
+                if (env != null)                
+                {
+                    // Get envelope custom fields
+                    Dictionary<string, string> customFields = null;
+                    CustomFields envCustomFields = env.CustomFields;
+                    if (envCustomFields != null)
+                    {
+                        customFields = new Dictionary<string, string>();
+
+                        foreach (ListCustomField list in envCustomFields.ListCustomFields)
+                            customFields.Add(list.Name, list.Value);
+
+                        foreach (TextCustomField text in envCustomFields.TextCustomFields)
+                            customFields.Add(text.Name, text.Value);
+                    }
+
+                    // Get recipents data
+                    List<EnvelopeRecipientModel> recipients = null;
+                    Recipients envRecipients = env.Recipients;
+                    if (envRecipients != null && envRecipients.Signers != null)
+                    {
+                        recipients = new List<EnvelopeRecipientModel>();
+
+                        foreach (Signer s in envRecipients.Signers)
+                        {
+                            recipients.Add(new EnvelopeRecipientModel
+                            {
+                                RecipientId = s.RecipientId,
+                                ClientUserId = s.ClientUserId,
+                                DeclinedDateTime = s.DeclinedDateTime,
+                                DeclinedReason = s.DeclinedReason,
+                                DeliveredDateTime = s.DeliveredDateTime,
+                                Email = s.Email,
+                                Name = s.Name,
+                                RecipientType = s.RecipientType,
+                                RoleName = s.RoleName,
+                                SignatureName = s.SignatureInfo?.SignatureName,
+                                SignedDateTime = s.SignedDateTime,
+                                Status = s.Status,
+                                DSUserGUID = s.UserId
+                            });
+                        }
+                    }
+
+                    retEnvelope = new EnvelopeModel
+                    {
+                        EnvelopeId = env.EnvelopeId,
+                        Status = env.Status,
+                        CompletedDateTime = env.CompletedDateTime,
+                        CreatedDateTime = env.CreatedDateTime,
+                        DeclinedDateTime = env.DeclinedDateTime,
+                        DeliveredDateTime = env.DeliveredDateTime,
+                        EmailBlurb = env.EmailBlurb,
+                        EmailSubject = env.EmailSubject,
+                        ExpireAfter = int.Parse(env.ExpireAfter ?? "0"),
+                        ExpireDateTime = env.ExpireDateTime,
+                        ExpireEnabled = bool.Parse(env.ExpireEnabled ?? "false"),
+                        LastModifiedDateTime = env.LastModifiedDateTime,
+                        SentDateTime = env.SentDateTime,
+                        StatusChangedDateTime = env.StatusChangedDateTime,
+                        VoidedDateTime = env.VoidedDateTime,
+                        VoidedReason = env.VoidedReason,
+                        EnvelopeCustomFields = customFields,
+                        EnvelopeRecipients = recipients
+                    };
+                }
+
+                return retEnvelope;
             }
             catch (ApiException ex)
             {
@@ -131,10 +272,10 @@ namespace ECAR.DocuSign
                 Recipients results = envelopesApi.ListRecipients(accountId, EnvelopeID);
 
                 // Return value
-                List<EnvelopeRecipientModel> recipents = new List<EnvelopeRecipientModel>();
+                List<EnvelopeRecipientModel> recipients = new List<EnvelopeRecipientModel>();
                 foreach(Signer s in results.Signers)
                 {
-                    recipents.Add(new EnvelopeRecipientModel {
+                    recipients.Add(new EnvelopeRecipientModel {
                         RecipientId = s.RecipientId,
                         ClientUserId = s.ClientUserId,
                         DeclinedDateTime =  s.DeclinedDateTime,
@@ -151,7 +292,7 @@ namespace ECAR.DocuSign
                     });
                 }
 
-                return recipents;
+                return recipients;
             }
             catch (ApiException ex)
             {
@@ -392,47 +533,11 @@ namespace ECAR.DocuSign
         /// <param name="DocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
         /// <returns>Returns the check box's selected value as a string ("true" or "false")</returns>
         /// <exception cref="System.Exception"></exception>
-        public static string DSGetDocumentCheckBoxField(string TabLabel, string EnvelopeID, string DocumentID = "0")
+        public static string DSGetDocumentCheckBoxField(string TabLabel, string EnvelopeID, string DocumentID = "1")
         {
             try
             {
-                // Validate inputs
-                if (string.IsNullOrEmpty(TabLabel))
-                    throw new Exception(Resources.EMPTY_TAB_LABEL);
-
-                if (string.IsNullOrEmpty(EnvelopeID))
-                    throw new Exception(Resources.EMPTY_ENVELOPE_ID);
-
-                if (string.IsNullOrEmpty(DocumentID))
-                    throw new Exception(Resources.EMPTY_DOCUMENT_ID);
-
-                // Check config
-                if (!DocuSignConfig.Ready)
-                    throw new Exception(Resources.DSCONFIG_NOT_SET);
-
-                string retVal = "";
-
-                // Read account ID from config
-                string accountId = DocuSignConfig.AccountID;
-
-                // Create API Client and call it
-                EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
-                EnvelopeDocumentsResult docList = envelopesApi.ListDocuments(accountId, EnvelopeID);
-
-                if (docList.EnvelopeDocuments.Count > 0)
-                {
-                    // Get checkbox selection
-                    Tabs tabs = envelopesApi.GetDocumentTabs(accountId, EnvelopeID,
-                        (DocumentID == "0") ? docList.EnvelopeDocuments[0].DocumentId : DocumentID);
-                    if (tabs.CheckboxTabs.Count > 0)
-                    {
-                        Checkbox consent = tabs.CheckboxTabs.Find(x => x.TabLabel == TabLabel);
-                        if (consent == null)
-                            throw new Exception(string.Format(Resources.FIELD_x_NOT_FOUND, TabLabel));
-
-                        retVal = string.IsNullOrEmpty(consent.Selected) ? "false" : consent.Selected;
-                    }
-                }
+                string retVal = GetDocumentTabValue(TabLabel, EnvelopeID, DocumentID, TabTypes.Checkbox);
                 return retVal;
             }
             catch (ApiException ex)
@@ -453,47 +558,11 @@ namespace ECAR.DocuSign
         /// <param name="DocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
         /// <returns>User entered text in the field</returns>
         /// <exception cref="System.Exception"></exception>
-        public static string DSGetDocumentTextField(string TabLabel, string EnvelopeID, string DocumentID = "0")
+        public static string DSGetDocumentTextField(string TabLabel, string EnvelopeID, string DocumentID = "1")
         {
             try
             {
-                // Validate inputs
-                if (string.IsNullOrEmpty(TabLabel))
-                    throw new Exception(Resources.EMPTY_TAB_LABEL);
-
-                if (string.IsNullOrEmpty(EnvelopeID))
-                    throw new Exception(Resources.EMPTY_ENVELOPE_ID);
-
-                if (string.IsNullOrEmpty(DocumentID))
-                    throw new Exception(Resources.EMPTY_DOCUMENT_ID);
-
-                // Check config
-                if (!DocuSignConfig.Ready)
-                    throw new Exception(Resources.DSCONFIG_NOT_SET);
-
-                string retVal = "";
-
-                // Read account ID from config
-                string accountId = DocuSignConfig.AccountID;
-
-                // Create API Client and call it
-                EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
-                EnvelopeDocumentsResult docList = envelopesApi.ListDocuments(accountId, EnvelopeID);
-
-                if (docList.EnvelopeDocuments.Count > 0)
-                {
-                    // Get checkbox selection
-                    Tabs tabs = envelopesApi.GetDocumentTabs(accountId, EnvelopeID,
-                        (DocumentID == "0") ? docList.EnvelopeDocuments[0].DocumentId : DocumentID);
-                    if (tabs.TextTabs.Count > 0)
-                    {
-                        Text textTab = tabs.TextTabs.Find(x => x.TabLabel == TabLabel);
-                        if (textTab == null)
-                            throw new Exception(string.Format(Resources.FIELD_x_NOT_FOUND, TabLabel));
-
-                        retVal = textTab.Value;
-                    }
-                }
+                string retVal = GetDocumentTabValue(TabLabel, EnvelopeID, DocumentID, TabTypes.Text);
                 return retVal;
             }
             catch (ApiException ex)
@@ -514,47 +583,11 @@ namespace ECAR.DocuSign
         /// <param name="DocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
         /// <returns>User entered SSN text in the field</returns>
         /// <exception cref="System.Exception"></exception>
-        public static string DSGetDocumentSsnField(string TabLabel, string EnvelopeID, string DocumentID = "0")
+        public static string DSGetDocumentSsnField(string TabLabel, string EnvelopeID, string DocumentID = "1")
         {
             try
             {
-                // Validate inputs
-                if (string.IsNullOrEmpty(TabLabel))
-                    throw new Exception(Resources.EMPTY_TAB_LABEL);
-
-                if (string.IsNullOrEmpty(EnvelopeID))
-                    throw new Exception(Resources.EMPTY_ENVELOPE_ID);
-
-                if (string.IsNullOrEmpty(DocumentID))
-                    throw new Exception(Resources.EMPTY_DOCUMENT_ID);
-
-                // Check config
-                if (!DocuSignConfig.Ready)
-                    throw new Exception(Resources.DSCONFIG_NOT_SET);
-
-                string retVal = "";
-
-                // Read account ID from config
-                string accountId = DocuSignConfig.AccountID;
-
-                // Create API Client and call it
-                EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
-                EnvelopeDocumentsResult docList = envelopesApi.ListDocuments(accountId, EnvelopeID);
-
-                if (docList.EnvelopeDocuments.Count > 0)
-                {
-                    // Get checkbox selection
-                    Tabs tabs = envelopesApi.GetDocumentTabs(accountId, EnvelopeID,
-                        (DocumentID == "0") ? docList.EnvelopeDocuments[0].DocumentId : DocumentID);
-                    if (tabs.SsnTabs.Count > 0)
-                    {
-                        Ssn ssnTab = tabs.SsnTabs.Find(x => x.TabLabel == TabLabel);
-                        if (ssnTab == null)
-                            throw new Exception(string.Format(Resources.FIELD_x_NOT_FOUND, TabLabel));
-
-                        retVal = ssnTab.Value;
-                    }
-                }
+                string retVal = GetDocumentTabValue(TabLabel, EnvelopeID, DocumentID, TabTypes.Ssn);
                 return retVal;
             }
             catch (ApiException ex)
@@ -576,47 +609,11 @@ namespace ECAR.DocuSign
         /// <param name="DocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
         /// <returns>Date signed as set in the named field</returns>
         /// <exception cref="System.Exception"></exception>
-        public static string DSGetDocumentDateSignedField(string TabLabel, string EnvelopeID, string DocumentID = "0")
+        public static string DSGetDocumentDateSignedField(string TabLabel, string EnvelopeID, string DocumentID = "1")
         {
             try
             {
-                // Validate inputs
-                if (string.IsNullOrEmpty(TabLabel))
-                    throw new Exception(Resources.EMPTY_TAB_LABEL);
-
-                if (string.IsNullOrEmpty(EnvelopeID))
-                    throw new Exception(Resources.EMPTY_ENVELOPE_ID);
-
-                if (string.IsNullOrEmpty(DocumentID))
-                    throw new Exception(Resources.EMPTY_DOCUMENT_ID);
-
-                // Check config
-                if (!DocuSignConfig.Ready)
-                    throw new Exception(Resources.DSCONFIG_NOT_SET);
-
-                string retVal = "";
-
-                // Read account ID from config
-                string accountId = DocuSignConfig.AccountID;
-
-                // Create API Client and call it
-                EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
-                EnvelopeDocumentsResult docList = envelopesApi.ListDocuments(accountId, EnvelopeID);
-
-                if (docList.EnvelopeDocuments.Count > 0)
-                {
-                    // Get checkbox selection
-                    Tabs tabs = envelopesApi.GetDocumentTabs(accountId, EnvelopeID,
-                        (DocumentID == "0") ? docList.EnvelopeDocuments[0].DocumentId : DocumentID);
-                    if (tabs.DateSignedTabs.Count > 0)
-                    {
-                        DateSigned dtSignedTab = tabs.DateSignedTabs.Find(x => x.TabLabel == TabLabel);
-                        if (dtSignedTab == null)
-                            throw new Exception(string.Format(Resources.FIELD_x_NOT_FOUND, TabLabel));
-
-                        retVal = dtSignedTab.Value;
-                    }
-                }
+                string retVal = GetDocumentTabValue(TabLabel, EnvelopeID, DocumentID, TabTypes.DateSigned);
                 return retVal;
             }
             catch (ApiException ex)
@@ -637,47 +634,11 @@ namespace ECAR.DocuSign
         /// <param name="DocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
         /// <returns>User provided date value in the named field</returns>
         /// <exception cref="System.Exception"></exception>
-        public static string DSGetDocumentDateField(string TabLabel, string EnvelopeID, string DocumentID = "0")
+        public static string DSGetDocumentDateField(string TabLabel, string EnvelopeID, string DocumentID = "1")
         {
             try
             {
-                // Validate inputs
-                if (string.IsNullOrEmpty(TabLabel))
-                    throw new Exception(Resources.EMPTY_TAB_LABEL);
-
-                if (string.IsNullOrEmpty(EnvelopeID))
-                    throw new Exception(Resources.EMPTY_ENVELOPE_ID);
-
-                if (string.IsNullOrEmpty(DocumentID))
-                    throw new Exception(Resources.EMPTY_DOCUMENT_ID);
-
-                // Check config
-                if (!DocuSignConfig.Ready)
-                    throw new Exception(Resources.DSCONFIG_NOT_SET);
-
-                string retVal = "";
-
-                // Read account ID from config
-                string accountId = DocuSignConfig.AccountID;
-
-                // Create API Client and call it
-                EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
-                EnvelopeDocumentsResult docList = envelopesApi.ListDocuments(accountId, EnvelopeID);
-
-                if (docList.EnvelopeDocuments.Count > 0)
-                {
-                    // Get checkbox selection
-                    Tabs tabs = envelopesApi.GetDocumentTabs(accountId, EnvelopeID,
-                        (DocumentID == "0") ? docList.EnvelopeDocuments[0].DocumentId : DocumentID);
-                    if (tabs.DateTabs.Count > 0)
-                    {
-                        Date dtTab = tabs.DateTabs.Find(x => x.TabLabel == TabLabel);
-                        if (dtTab == null)
-                            throw new Exception(string.Format(Resources.FIELD_x_NOT_FOUND, TabLabel));
-
-                        retVal = dtTab.Value;
-                    }
-                }
+                string retVal = GetDocumentTabValue(TabLabel, EnvelopeID, DocumentID, TabTypes.Date);
                 return retVal;
             }
             catch (ApiException ex)
@@ -699,47 +660,11 @@ namespace ECAR.DocuSign
         /// <param name="DocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
         /// <returns>User provided first name in the named field</returns>
         /// <exception cref="System.Exception"></exception>
-        public static string DSGetDocumentFirstNameField(string TabLabel, string EnvelopeID, string DocumentID = "0")
+        public static string DSGetDocumentFirstNameField(string TabLabel, string EnvelopeID, string DocumentID = "1")
         {
             try
             {
-                // Validate inputs
-                if (string.IsNullOrEmpty(TabLabel))
-                    throw new Exception(Resources.EMPTY_TAB_LABEL);
-
-                if (string.IsNullOrEmpty(EnvelopeID))
-                    throw new Exception(Resources.EMPTY_ENVELOPE_ID);
-
-                if (string.IsNullOrEmpty(DocumentID))
-                    throw new Exception(Resources.EMPTY_DOCUMENT_ID);
-
-                // Check config
-                if (!DocuSignConfig.Ready)
-                    throw new Exception(Resources.DSCONFIG_NOT_SET);
-
-                string retVal = "";
-
-                // Read account ID from config
-                string accountId = DocuSignConfig.AccountID;
-
-                // Create API Client and call it
-                EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
-                EnvelopeDocumentsResult docList = envelopesApi.ListDocuments(accountId, EnvelopeID);
-
-                if (docList.EnvelopeDocuments.Count > 0)
-                {
-                    // Get checkbox selection
-                    Tabs tabs = envelopesApi.GetDocumentTabs(accountId, EnvelopeID,
-                        (DocumentID == "0") ? docList.EnvelopeDocuments[0].DocumentId : DocumentID);
-                    if (tabs.FirstNameTabs.Count > 0)
-                    {
-                        FirstName fnTab = tabs.FirstNameTabs.Find(x => x.TabLabel == TabLabel);
-                        if (fnTab == null)
-                            throw new Exception(string.Format(Resources.FIELD_x_NOT_FOUND, TabLabel));
-
-                        retVal = fnTab.Value;
-                    }
-                }
+                string retVal = GetDocumentTabValue(TabLabel, EnvelopeID, DocumentID, TabTypes.FirstName);
                 return retVal;
             }
             catch (ApiException ex)
@@ -760,47 +685,11 @@ namespace ECAR.DocuSign
         /// <param name="DocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
         /// <returns>User provided last name value in the named field</returns>
         /// <exception cref="System.Exception"></exception>
-        public static string DSGetDocumentLastNameField(string TabLabel, string EnvelopeID, string DocumentID = "0")
+        public static string DSGetDocumentLastNameField(string TabLabel, string EnvelopeID, string DocumentID = "1")
         {
             try
             {
-                // Validate inputs
-                if (string.IsNullOrEmpty(TabLabel))
-                    throw new Exception(Resources.EMPTY_TAB_LABEL);
-
-                if (string.IsNullOrEmpty(EnvelopeID))
-                    throw new Exception(Resources.EMPTY_ENVELOPE_ID);
-
-                if (string.IsNullOrEmpty(DocumentID))
-                    throw new Exception(Resources.EMPTY_DOCUMENT_ID);
-
-                // Check config
-                if (!DocuSignConfig.Ready)
-                    throw new Exception(Resources.DSCONFIG_NOT_SET);
-
-                string retVal = "";
-
-                // Read account ID from config
-                string accountId = DocuSignConfig.AccountID;
-
-                // Create API Client and call it
-                EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
-                EnvelopeDocumentsResult docList = envelopesApi.ListDocuments(accountId, EnvelopeID);
-
-                if (docList.EnvelopeDocuments.Count > 0)
-                {
-                    // Get checkbox selection
-                    Tabs tabs = envelopesApi.GetDocumentTabs(accountId, EnvelopeID,
-                        (DocumentID == "0") ? docList.EnvelopeDocuments[0].DocumentId : DocumentID);
-                    if (tabs.LastNameTabs.Count > 0)
-                    {
-                        LastName lnTab = tabs.LastNameTabs.Find(x => x.TabLabel == TabLabel);
-                        if (lnTab == null)
-                            throw new Exception(string.Format(Resources.FIELD_x_NOT_FOUND, TabLabel));
-
-                        retVal = lnTab.Value;
-                    }
-                }
+                string retVal = GetDocumentTabValue(TabLabel, EnvelopeID, DocumentID, TabTypes.LastName);
                 return retVal;
             }
             catch (ApiException ex)
@@ -821,47 +710,11 @@ namespace ECAR.DocuSign
         /// <param name="DocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
         /// <returns>Returns one of: "active", "signed", "declined" or "na" (e.g. for optional signature fields)</returns>
         /// <exception cref="System.Exception"></exception>
-        public static string DSGetDocumentSignHereField(string TabLabel, string EnvelopeID, string DocumentID = "0")
+        public static string DSGetDocumentSignHereField(string TabLabel, string EnvelopeID, string DocumentID = "1")
         {
             try
             {
-                // Validate inputs
-                if (string.IsNullOrEmpty(TabLabel))
-                    throw new Exception(Resources.EMPTY_TAB_LABEL);
-
-                if (string.IsNullOrEmpty(EnvelopeID))
-                    throw new Exception(Resources.EMPTY_ENVELOPE_ID);
-
-                if (string.IsNullOrEmpty(DocumentID))
-                    throw new Exception(Resources.EMPTY_DOCUMENT_ID);
-
-                // Check config
-                if (!DocuSignConfig.Ready)
-                    throw new Exception(Resources.DSCONFIG_NOT_SET);
-
-                string retVal = "";
-
-                // Read account ID from config
-                string accountId = DocuSignConfig.AccountID;
-
-                // Create API Client and call it
-                EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
-                EnvelopeDocumentsResult docList = envelopesApi.ListDocuments(accountId, EnvelopeID);
-
-                if (docList.EnvelopeDocuments.Count > 0)
-                {
-                    // Get checkbox selection
-                    Tabs tabs = envelopesApi.GetDocumentTabs(accountId, EnvelopeID,
-                        (DocumentID == "0") ? docList.EnvelopeDocuments[0].DocumentId : DocumentID);
-                    if (tabs.SignHereTabs.Count > 0)
-                    {
-                        SignHere signTab = tabs.SignHereTabs.Find(x => x.TabLabel == TabLabel);
-                        if (signTab == null)
-                            throw new Exception(string.Format(Resources.FIELD_x_NOT_FOUND, TabLabel));
-
-                        retVal = signTab.Status;
-                    }
-                }
+                string retVal = GetDocumentTabValue(TabLabel, EnvelopeID, DocumentID, TabTypes.SignHere);
                 return retVal;
             }
             catch (ApiException ex)
@@ -883,47 +736,11 @@ namespace ECAR.DocuSign
         /// <param name="DocumentID">Document ID (optional; if not passed, defaults to first document in the envelope)</param>
         /// <returns>Returns one of: "active", "signed", "declined" or "na" (e.g. for optional signature fields)</returns>
         /// <exception cref="System.Exception"></exception>
-        public static string DSGetDocumentListField(string TabLabel, string EnvelopeID, string DocumentID = "0")
+        public static string DSGetDocumentListField(string TabLabel, string EnvelopeID, string DocumentID = "1")
         {
             try
             {
-                // Validate inputs
-                if (string.IsNullOrEmpty(TabLabel))
-                    throw new Exception(Resources.EMPTY_TAB_LABEL);
-
-                if (string.IsNullOrEmpty(EnvelopeID))
-                    throw new Exception(Resources.EMPTY_ENVELOPE_ID);
-
-                if (string.IsNullOrEmpty(DocumentID))
-                    throw new Exception(Resources.EMPTY_DOCUMENT_ID);
-
-                // Check config
-                if (!DocuSignConfig.Ready)
-                    throw new Exception(Resources.DSCONFIG_NOT_SET);
-
-                string retVal = "";
-
-                // Read account ID from config
-                string accountId = DocuSignConfig.AccountID;
-
-                // Create API Client and call it
-                EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
-                EnvelopeDocumentsResult docList = envelopesApi.ListDocuments(accountId, EnvelopeID);
-
-                if (docList.EnvelopeDocuments.Count > 0)
-                {
-                    // Get checkbox selection
-                    Tabs tabs = envelopesApi.GetDocumentTabs(accountId, EnvelopeID,
-                        (DocumentID == "0") ? docList.EnvelopeDocuments[0].DocumentId : DocumentID);
-                    if (tabs.ListTabs.Count > 0)
-                    {
-                        List listTab = tabs.ListTabs.Find(x => x.TabLabel == TabLabel);
-                        if (listTab == null)
-                            throw new Exception(string.Format(Resources.FIELD_x_NOT_FOUND, TabLabel));
-
-                        retVal = listTab.ListSelectedValue;
-                    }
-                }
+                string retVal = GetDocumentTabValue(TabLabel, EnvelopeID, DocumentID, TabTypes.List);
                 return retVal;
             }
             catch (ApiException ex)
@@ -957,9 +774,15 @@ namespace ECAR.DocuSign
                 // Read account ID from config
                 string accountId = DocuSignConfig.AccountID;
 
+                // Set up options to return recipient info
+                BulkEnvelopesApi.GetBulkSendBatchEnvelopesOptions queryOptions = new BulkEnvelopesApi.GetBulkSendBatchEnvelopesOptions
+                {
+                    include = "recipients"
+                };
+
                 // Create BulkEnvelopes API Client and call it
                 BulkEnvelopesApi bulkEnvelopesApi = Authenticate.CreateBulkEnvelopesApiClient();
-                EnvelopesInformation envInfo = bulkEnvelopesApi.GetBulkSendBatchEnvelopes(accountId, BulkSendBatchID);
+                EnvelopesInformation envInfo = bulkEnvelopesApi.GetBulkSendBatchEnvelopes(accountId, BulkSendBatchID, queryOptions);
 
                 // No envelopes available to process (batch may be in process; it is too early to check)
                 if (envInfo.Envelopes == null)
@@ -969,7 +792,6 @@ namespace ECAR.DocuSign
                 foreach (Envelope env in envInfo.Envelopes)
                 {
                     Dictionary<string, string> customFields = null;
-
                     if (env.CustomFields != null)
                     {
                         customFields = new Dictionary<string, string>();
@@ -979,7 +801,34 @@ namespace ECAR.DocuSign
                         foreach (TextCustomField text in env.CustomFields.TextCustomFields)
                             customFields.Add(text.Name, text.Value);
                     }
-                    
+
+                    // Get recipents data
+                    List<EnvelopeRecipientModel> recipients = null;
+                    if (env.Recipients != null && env.Recipients.Signers != null)
+                    {
+                        recipients = new List<EnvelopeRecipientModel>();
+
+                        foreach (Signer s in env.Recipients.Signers)
+                        {
+                            recipients.Add(new EnvelopeRecipientModel
+                            {
+                                RecipientId = s.RecipientId,
+                                ClientUserId = s.ClientUserId,
+                                DeclinedDateTime = s.DeclinedDateTime,
+                                DeclinedReason = s.DeclinedReason,
+                                DeliveredDateTime = s.DeliveredDateTime,
+                                Email = s.Email,
+                                Name = s.Name,
+                                RecipientType = s.RecipientType,
+                                RoleName = s.RoleName,
+                                SignatureName = s.SignatureInfo?.SignatureName,
+                                SignedDateTime = s.SignedDateTime,
+                                Status = s.Status,
+                                DSUserGUID = s.UserId
+                            });
+                        }
+                    }
+
                     allEnvelopes.Add(new EnvelopeModel
                     {
                         EnvelopeId = env.EnvelopeId,
@@ -998,7 +847,8 @@ namespace ECAR.DocuSign
                         StatusChangedDateTime = env.StatusChangedDateTime,
                         VoidedDateTime = env.VoidedDateTime,
                         VoidedReason = env.VoidedReason,
-                        EnvelopeCustomFields = customFields
+                        EnvelopeCustomFields = customFields,
+                        EnvelopeRecipients = recipients
                     });
                 }
 
@@ -1058,5 +908,166 @@ namespace ECAR.DocuSign
                 throw ex;
             }
         }
+
+        #endregion PUBLIC_METHODS
+
+
+    #region PRIVATES
+
+        private enum TabTypes
+        {
+            Checkbox,
+            Text,
+            Ssn,
+            Date,
+            DateSigned,
+            FirstName,
+            LastName,
+            List,
+            SignHere
+        } 
+
+        private static string GetDocumentTabValue(string TabLabel, string EnvelopeID, string DocumentID, TabTypes tabType)
+        {
+            // Validate inputs
+            if (string.IsNullOrEmpty(TabLabel))
+                throw new Exception(Resources.EMPTY_TAB_LABEL);
+
+            if (string.IsNullOrEmpty(EnvelopeID))
+                throw new Exception(Resources.EMPTY_ENVELOPE_ID);
+
+            if (string.IsNullOrEmpty(DocumentID))
+                throw new Exception(Resources.EMPTY_DOCUMENT_ID);
+
+            // Check config
+            if (!DocuSignConfig.Ready)
+                throw new Exception(Resources.DSCONFIG_NOT_SET);
+
+            string retVal = "";
+
+            // Read account ID from config
+            string accountId = DocuSignConfig.AccountID;
+
+            // Create API Client and call it
+            EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
+            Tabs tabs = envelopesApi.GetDocumentTabs(accountId, EnvelopeID, DocumentID);
+
+            if (tabs != null)
+            {
+                switch (tabType)
+                {
+                    case TabTypes.Checkbox:
+                        // Get checkbox selection
+                        if (tabs.CheckboxTabs.Count > 0)
+                        {
+                            Checkbox consent = tabs.CheckboxTabs.Find(x => x.TabLabel == TabLabel);
+                            if (consent == null)
+                                throw new Exception(string.Format(Resources.FIELD_x_NOT_FOUND, TabLabel));
+
+                            retVal = string.IsNullOrEmpty(consent.Selected) ? "false" : consent.Selected;
+                        }
+                        break;
+
+                    case TabTypes.Text:
+                        // Get text field
+                        if (tabs.TextTabs.Count > 0)
+                        {
+                            Text textTab = tabs.TextTabs.Find(x => x.TabLabel == TabLabel);
+                            if (textTab == null)
+                                throw new Exception(string.Format(Resources.FIELD_x_NOT_FOUND, TabLabel));
+
+                            retVal = textTab.Value;
+                        }
+                        break;
+
+                    case TabTypes.Ssn:
+                        // Get SSN field
+                        if (tabs.SsnTabs.Count > 0)
+                        {
+                            Ssn ssnTab = tabs.SsnTabs.Find(x => x.TabLabel == TabLabel);
+                            if (ssnTab == null)
+                                throw new Exception(string.Format(Resources.FIELD_x_NOT_FOUND, TabLabel));
+
+                            retVal = ssnTab.Value;
+                        }
+                        break;
+
+                    case TabTypes.DateSigned:
+                        // Get DateSigned field
+                        if (tabs.DateSignedTabs.Count > 0)
+                        {
+                            DateSigned dtSignedTab = tabs.DateSignedTabs.Find(x => x.TabLabel == TabLabel);
+                            if (dtSignedTab == null)
+                                throw new Exception(string.Format(Resources.FIELD_x_NOT_FOUND, TabLabel));
+
+                            retVal = dtSignedTab.Value;
+                        }
+                        break;
+
+                    case TabTypes.Date:
+                        // Get Date field
+                        if (tabs.DateTabs.Count > 0)
+                        {
+                            Date dtTab = tabs.DateTabs.Find(x => x.TabLabel == TabLabel);
+                            if (dtTab == null)
+                                throw new Exception(string.Format(Resources.FIELD_x_NOT_FOUND, TabLabel));
+
+                            retVal = dtTab.Value;
+                        }
+                        break;
+
+                    case TabTypes.FirstName:
+                        // Get first name field
+                        if (tabs.FirstNameTabs.Count > 0)
+                        {
+                            FirstName fnTab = tabs.FirstNameTabs.Find(x => x.TabLabel == TabLabel);
+                            if (fnTab == null)
+                                throw new Exception(string.Format(Resources.FIELD_x_NOT_FOUND, TabLabel));
+
+                            retVal = fnTab.Value;
+                        }
+                        break;
+
+                    case TabTypes.LastName:
+                        // Get last name field
+                        if (tabs.LastNameTabs.Count > 0)
+                        {
+                            LastName lnTab = tabs.LastNameTabs.Find(x => x.TabLabel == TabLabel);
+                            if (lnTab == null)
+                                throw new Exception(string.Format(Resources.FIELD_x_NOT_FOUND, TabLabel));
+
+                            retVal = lnTab.Value;
+                        }
+                        break;
+
+                    case TabTypes.List:
+                        // Get drop down field 
+                        if (tabs.ListTabs.Count > 0)
+                        {
+                            List listTab = tabs.ListTabs.Find(x => x.TabLabel == TabLabel);
+                            if (listTab == null)
+                                throw new Exception(string.Format(Resources.FIELD_x_NOT_FOUND, TabLabel));
+
+                            retVal = listTab.ListSelectedValue;
+                        }
+                        break;
+
+                    case TabTypes.SignHere:
+                        // Get SignHere field
+                        if (tabs.SignHereTabs.Count > 0)
+                        {
+                            SignHere signTab = tabs.SignHereTabs.Find(x => x.TabLabel == TabLabel);
+                            if (signTab == null)
+                                throw new Exception(string.Format(Resources.FIELD_x_NOT_FOUND, TabLabel));
+
+                            retVal = signTab.Status;
+                        }
+                        break;
+                }
+            }
+            return retVal;
+        }
+
+        #endregion PRIVATES
     }
 }

@@ -10,15 +10,15 @@
     <copyright>Epiq Global</copyright>
     <dependencies>
       <group targetFramework=".NETFramework4.6">
-        <dependency id="DocuSign.eSign.dll" version="5.6.2" exclude="Build,Analyzers" />
+        <dependency id="DocuSign.eSign.dll" version="5.8.0" exclude="Build,Analyzers" />
         <dependency id="Newtonsoft.Json" version="13.0.1" exclude="Build,Analyzers" />
       </group>
       <group targetFramework=".NETCoreApp3.1">
-        <dependency id="DocuSign.eSign.dll" version="5.6.2" exclude="Build,Analyzers" />
+        <dependency id="DocuSign.eSign.dll" version="5.8.0" exclude="Build,Analyzers" />
         <dependency id="Newtonsoft.Json" version="13.0.1" exclude="Build,Analyzers" />
       </group>
       <group targetFramework=".NETStandard2.0">
-        <dependency id="DocuSign.eSign.dll" version="5.6.2" exclude="Build,Analyzers" />
+        <dependency id="DocuSign.eSign.dll" version="5.8.0" exclude="Build,Analyzers" />
         <dependency id="Newtonsoft.Json" version="13.0.1" exclude="Build,Analyzers" />
       </group>
     </dependencies>
