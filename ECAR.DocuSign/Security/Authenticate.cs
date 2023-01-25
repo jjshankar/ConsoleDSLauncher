@@ -10,18 +10,18 @@ namespace ECAR.DocuSign.Security
 {
     internal static class Authenticate
     {
-        private static ApiClient __apiClient;
+        private static DocuSignClient __apiClient;
         private static EnvelopesApi __envelopesApi;
         private static TemplatesApi __templatesApi;
         private static BulkEnvelopesApi __bulkEnvelopesApi;
         private static string __currentUserId = "";
 
-        private static ApiClient GetApiClient(string accessToken)
+        private static DocuSignClient GetApiClient(string accessToken)
         {
             if (__apiClient == null)
             {
                 // Create new ApiClient and set config
-                __apiClient = new ApiClient(DocuSignConfig.BasePath + DocuSignConfig.APISuffix);
+                __apiClient = new DocuSignClient(DocuSignConfig.BasePath + DocuSignConfig.APISuffix);
                 __apiClient.Configuration.AddDefaultHeader("Authorization", "Bearer " + accessToken);
             }
 
@@ -48,7 +48,7 @@ namespace ECAR.DocuSign.Security
             if (string.IsNullOrEmpty(accessToken) || expiry == null || expiry < DateTime.Now.AddMinutes(5)
                 || string.IsNullOrEmpty(__currentUserId) || DocuSignConfig.UserGUID != __currentUserId)
             {
-                ApiClient apiClient = new ApiClient();
+                DocuSignClient apiClient = new DocuSignClient();
 
                 // Get new token
                 OAuth.OAuthToken authToken = apiClient.RequestJWTUserToken(clientId,

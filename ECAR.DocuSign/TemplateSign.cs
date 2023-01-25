@@ -562,7 +562,6 @@ namespace ECAR.DocuSign
 
             // Create API Client and call it
             BulkEnvelopesApi bulkEnvelopesApi = Authenticate.CreateBulkEnvelopesApiClient();
-            BulkSendingList createBulkListResult = bulkEnvelopesApi.CreateBulkSendList(accountId, bulkSendingList);
 
             // Create the envelope with the template 
             string templateId = Utils.GetTemplateId(accountId, BulkSendData.DSBatchTemplateName);
@@ -586,6 +585,9 @@ namespace ECAR.DocuSign
 
             EnvelopesApi envelopesApi = Authenticate.CreateEnvelopesApiClient();
             var envelopeResults = envelopesApi.CreateEnvelope(accountId, envelopeDefinition);
+
+            // Create bulk sending list
+            BulkSendingList createBulkListResult = bulkEnvelopesApi.CreateBulkSendList(accountId, bulkSendingList);
 
             // Attach the list ID to the envelope
             // We will add envelope custom fields set to the value of the listId (EnvelopeCustomFields::create)
