@@ -53,7 +53,12 @@ namespace ECAR.DocuSign.Common
                 {
                     recipientTabs.Add(new BulkSendingCopyTab
                     {
-                        InitialValue = tab.Value,
+                        /* DOCUSIGN SUPPORT TICKET: https://support.docusign.com/en/cases/10844982
+                         *  For bulk sending API, checkBox preset value needs to be set to "X" for checked (true)
+                         *  Ref: https://support.docusign.com/s/document-item?language=en_US&bundleId=wtn1643071711000&topicId=sed1578456384133.html&_LANG=enus
+                         *  
+                         */
+                        InitialValue = (tab.Type == Models.Presets.Checkbox) ? (tab.Value == "true" ? "X" : tab.Value) : tab.Value,
                         TabLabel = tab.Label
                     });
                 };
